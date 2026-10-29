@@ -1,27 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="ChordAir Icon">
-  <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0f172a" />
-      <stop offset="100%" stop-color="#1e293b" />
-    </linearGradient>
-    <linearGradient id="accent" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#38bdf8" />
-      <stop offset="100%" stop-color="#0284c7" />
-    </linearGradient>
-  </defs>
-  <rect width="512" height="512" rx="112" fill="url(#bg)" />
-  <!-- 5 White Keys -->
-  <rect x="68" y="108" width="68" height="296" rx="14" fill="url(#accent)" />
-  <rect x="144" y="108" width="68" height="296" rx="14" fill="#f8fafc" />
-  <rect x="220" y="108" width="68" height="296" rx="14" fill="url(#accent)" />
-  <rect x="296" y="108" width="68" height="296" rx="14" fill="#f8fafc" />
-  <rect x="372" y="108" width="68" height="296" rx="14" fill="url(#accent)" />
-  <!-- Highlight Dots on C-E-G -->
-  <circle cx="102" cy="356" r="14" fill="#0f172a" />
-  <circle cx="254" cy="356" r="14" fill="#0f172a" />
-  <circle cx="406" cy="356" r="14" fill="#0f172a" />
-  <!-- Black Keys -->
-  <rect x="118" y="108" width="44" height="178" rx="10" fill="#0f172a" stroke="#334155" stroke-width="4" />
-  <rect x="194" y="108" width="44" height="178" rx="10" fill="#0f172a" stroke="#334155" stroke-width="4" />
-  <rect x="346" y="108" width="44" height="178" rx="10" fill="#0f172a" stroke="#334155" stroke-width="4" />
+  <rect width="512" height="512" rx="112" fill="#090d16" />
+  <rect x="18" y="18" width="476" height="476" rx="96" fill="none" stroke="#283655" stroke-width="16" />
+  <!-- Left Key (Active Sky Blue) -->
+  <rect x="92" y="96" width="92" height="320" rx="28" fill="#38bdf8" />
+  <!-- Middle Key (White/Slate) -->
+  <rect x="210" y="96" width="92" height="320" rx="28" fill="#e2e8f0" />
+  <!-- Right Key (Active Sky Blue) -->
+  <rect x="328" y="96" width="92" height="320" rx="28" fill="#38bdf8" />
 </svg>

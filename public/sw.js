@@ -1,5 +1,13 @@
-const CACHE_NAME = 'chordair-cache-v1';
-const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './icons/icon.svg'];
+const CACHE_NAME = 'chordair-cache-v2';
+const APP_SHELL = [
+  './',
+  './index.html',
+  './manifest.webmanifest',
+  './icons/icon.svg',
+  './icons/apple-touch-icon.png',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
+];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
