@@ -3,7 +3,7 @@
  *
  * Uses real studio recordings of a Yamaha C5 Grand Piano (Salamander Grand Piano, CC-BY)
  * for key centers C4, D#4, F#4, A4, C5, D#5, F#5, A5, pitch-shifted across neighboring
- * semitones (at most ±1 semitone) via Web Audio API AudioBufferSourceNode.playbackRate.
+ * semitones (at most ±2 semitones) via Web Audio API AudioBufferSourceNode.playbackRate.
  * If offline before samples finish loading, falls back seamlessly to physical-modeling synthesis.
  */
 
@@ -11,7 +11,7 @@ const SALAMANDER_BASE_URL = 'https://tonejs.github.io/audio/salamander/';
 
 /**
  * Sample anchor points every 3 semitones across our 2-octave keyboard (C4 = 60 to B5 = 83).
- * Pitch-shifting at most ±1 semitone preserves authentic hammer attack and wooden soundboard timbre.
+ * Pitch-shifting at most ±2 semitones preserves authentic hammer attack and wooden soundboard timbre.
  */
 const SAMPLE_ANCHORS: ReadonlyArray<{ midi: number; file: string }> = [
   { midi: 60, file: 'C4.mp3' },
@@ -26,8 +26,46 @@ const SAMPLE_ANCHORS: ReadonlyArray<{ midi: number; file: string }> = [
 
 let audioCtx: AudioContext | null = null;
 let masterCompressor: DynamicsCompressorNode | null = null;
-let preloadStarted = false;
+let decodeStarted = false;
+const rawSamplePromises = new Map<number, Promise<ArrayBuffer>>();
 const sampleBuffers = new Map<number, AudioBuffer>();
+
+/**
+ * Fetches raw MP3 ArrayBuffers on app boot and decodes them immediately using
+ * OfflineAudioContext (which does not require a user gesture in modern browsers),
+ * so sampleBuffers is already populated before the user's very first tap.
+ */
+export function warmUpPianoSamples(): void {
+  if (typeof window === 'undefined') return;
+  if (rawSamplePromises.size > 0) return;
+
+  const OfflineCtxClass =
+    window.OfflineAudioContext ||
+    (window as unknown as { webkitOfflineAudioContext?: typeof OfflineAudioContext })
+      .webkitOfflineAudioContext;
+
+  const decoderCtx = OfflineCtxClass ? new OfflineCtxClass(2, 44100, 44100) : null;
+
+  for (const anchor of SAMPLE_ANCHORS) {
+    const promise = fetch(`${SALAMANDER_BASE_URL}${anchor.file}`).then((res) => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.arrayBuffer();
+    });
+
+    rawSamplePromises.set(anchor.midi, promise);
+
+    if (decoderCtx) {
+      promise
+        .then((buf) => decoderCtx.decodeAudioData(buf.slice(0)))
+        .then((decoded) => {
+          sampleBuffers.set(anchor.midi, decoded);
+        })
+        .catch(() => {
+          // Will retry with main AudioContext or use fallback synth
+        });
+    }
+  }
+}
 
 function getAudioEngine(): {
   ctx: AudioContext;
@@ -57,9 +95,27 @@ function getAudioEngine(): {
     masterCompressor.connect(audioCtx.destination);
   }
 
-  if (!preloadStarted) {
-    preloadStarted = true;
-    preloadGrandPianoSamples(audioCtx);
+  if (!decodeStarted) {
+    decodeStarted = true;
+    warmUpPianoSamples();
+    for (const anchor of SAMPLE_ANCHORS) {
+      if (sampleBuffers.has(anchor.midi)) continue;
+      const rawPromise = rawSamplePromises.get(anchor.midi);
+      if (rawPromise) {
+        const ctxRef = audioCtx;
+        rawPromise
+          .then((buf) => {
+            if (!sampleBuffers.has(anchor.midi)) {
+              return ctxRef.decodeAudioData(buf.slice(0));
+            }
+            return null;
+          })
+          .then((decoded) => {
+            if (decoded) sampleBuffers.set(anchor.midi, decoded);
+          })
+          .catch(() => {});
+      }
+    }
   }
 
   return {
@@ -69,27 +125,9 @@ function getAudioEngine(): {
 }
 
 /**
- * Asynchronously fetches and decodes real Yamaha C5 Grand Piano samples.
- */
-function preloadGrandPianoSamples(ctx: AudioContext): void {
-  for (const anchor of SAMPLE_ANCHORS) {
-    fetch(`${SALAMANDER_BASE_URL}${anchor.file}`)
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.arrayBuffer();
-      })
-      .then((arrayBuffer) => ctx.decodeAudioData(arrayBuffer))
-      .then((decoded) => {
-        sampleBuffers.set(anchor.midi, decoded);
-      })
-      .catch(() => {
-        // Fallback synthesizer handles playback if offline or blocked
-      });
-  }
-}
-
-/**
- * Finds the closest loaded grand piano sample anchor for a given MIDI note.
+ * Finds the closest loaded grand piano sample anchor for a given MIDI note,
+ * enforcing a maximum distance of 2 semitones so partially loaded sample sets
+ * never pitch-shift a note across octaves.
  */
 function findClosestLoadedSample(targetMidi: number): {
   anchorMidi: number;
@@ -100,7 +138,7 @@ function findClosestLoadedSample(targetMidi: number): {
 
   for (const [anchorMidi, buffer] of sampleBuffers.entries()) {
     const dist = Math.abs(targetMidi - anchorMidi);
-    if (dist < minDistance) {
+    if (dist <= 2 && dist < minDistance) {
       minDistance = dist;
       bestAnchor = { anchorMidi, buffer };
     }
@@ -134,25 +172,25 @@ export function playNote(
     const source = ctx.createBufferSource();
     source.buffer = closestSample.buffer;
 
-    // Pitch-shift by exact semitone difference from the closest recorded sample
     const semitoneDiff = midi - closestSample.anchorMidi;
     source.playbackRate.setValueAtTime(Math.pow(2, semitoneDiff / 12), now);
 
     const noteGain = ctx.createGain();
     noteGain.gain.setValueAtTime(gainScale, now);
-    // Natural release tail at the end of duration
     noteGain.gain.setValueAtTime(gainScale, now + Math.max(0.2, duration - 0.35));
     noteGain.gain.exponentialRampToValueAtTime(0.0008, now + duration);
 
     source.connect(noteGain);
     noteGain.connect(compressor);
+    source.onended = () => {
+      noteGain.disconnect();
+    };
 
     source.start(now);
     source.stop(now + duration + 0.05);
     return;
   }
 
-  // Fallback acoustic synthesizer (used only while samples are downloading on first click)
   playFallbackAcousticNote(ctx, compressor, midi, now, duration, gainScale * 0.38);
 }
 
@@ -189,9 +227,9 @@ function playFallbackAcousticNote(
     { n: 4, amp: 0.1, decayRatio: 0.35, detune: 0 },
   ];
 
-  for (const p of partials) {
+  partials.forEach((p, idx) => {
     const partialFreq = freq * p.n * Math.sqrt(1 + inharmonicityB * p.n * p.n);
-    if (partialFreq > 14000) continue;
+    if (partialFreq > 14000) return;
 
     const osc = ctx.createOscillator();
     const pGain = ctx.createGain();
@@ -205,20 +243,15 @@ function playFallbackAcousticNote(
 
     osc.connect(pGain);
     pGain.connect(filter);
+    if (idx === 0) {
+      osc.onended = () => {
+        filter.disconnect();
+        voiceGain.disconnect();
+      };
+    }
     osc.start(now);
     osc.stop(now + pDur + 0.04);
-  }
-}
-
-/**
- * Begins preloading the grand piano samples in the background as soon as the app boots.
- */
-export function warmUpPianoSamples(): void {
-  if (typeof window === 'undefined') return;
-  // Trigger sample fetch into browser HTTP/ServiceWorker cache even before AudioContext is unlocked
-  for (const anchor of SAMPLE_ANCHORS) {
-    fetch(`${SALAMANDER_BASE_URL}${anchor.file}`).catch(() => {});
-  }
+  });
 }
 
 /**

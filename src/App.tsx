@@ -6,61 +6,106 @@ import { PianoKeyboard } from './components/PianoKeyboard';
 import { SettingsModal } from './components/SettingsModal';
 import { TheoryGuide } from './components/TheoryGuide';
 import { playChord } from './domain/audio';
-import { DEFAULT_SETTINGS } from './domain/chords';
+import {
+  CHORD_QUALITIES,
+  DEFAULT_SETTINGS,
+  INVERSIONS,
+  detectPresetForQualities,
+} from './domain/chords';
 import { generatePracticeCard } from './domain/generator';
 import { UI_STRINGS } from './domain/i18n';
-import { PracticeCard, PracticeSettings, SessionStats } from './domain/types';
+import {
+  ChordQualityId,
+  InversionId,
+  PracticeCard,
+  PracticeSettings,
+  SessionStats,
+} from './domain/types';
 
 const SETTINGS_STORAGE_KEY = 'chordair_settings_v1';
 const STATS_STORAGE_KEY = 'chordair_stats_v1';
 
-const INITIAL_STATS: SessionStats = {
+export const INITIAL_STATS: SessionStats = {
   completed: 0,
   correct: 0,
   streak: 0,
   bestStreak: 0,
 };
 
+export function sanitizeSettings(rawInput: unknown): PracticeSettings {
+  if (!rawInput || typeof rawInput !== 'object') return DEFAULT_SETTINGS;
+  const parsed = rawInput as Partial<PracticeSettings>;
+
+  const validQualities = Array.isArray(parsed.enabledQualities)
+    ? parsed.enabledQualities.filter(
+        (q): q is ChordQualityId => typeof q === 'string' && q in CHORD_QUALITIES
+      )
+    : [];
+
+  const validInversions = Array.isArray(parsed.enabledInversions)
+    ? parsed.enabledInversions.filter(
+        (inv): inv is InversionId => typeof inv === 'string' && inv in INVERSIONS
+      )
+    : [];
+
+  if (validQualities.length === 0 || validInversions.length === 0) {
+    return DEFAULT_SETTINGS;
+  }
+
+  return {
+    language: parsed.language === 'lt' ? 'lt' : 'en',
+    preset: detectPresetForQualities(validQualities),
+    enabledQualities: validQualities,
+    enabledInversions: validInversions,
+    showAllKeyLabels: Boolean(parsed.showAllKeyLabels),
+    autoPlayAudio: Boolean(parsed.autoPlayAudio),
+  };
+}
+
+export function sanitizeStats(rawInput: unknown): SessionStats {
+  if (!rawInput || typeof rawInput !== 'object') return INITIAL_STATS;
+  const parsed = rawInput as Partial<SessionStats>;
+
+  const completed =
+    typeof parsed.completed === 'number' && Number.isFinite(parsed.completed) && parsed.completed >= 0
+      ? Math.floor(parsed.completed)
+      : 0;
+  const correct =
+    typeof parsed.correct === 'number' && Number.isFinite(parsed.correct) && parsed.correct >= 0
+      ? Math.min(completed, Math.floor(parsed.correct))
+      : 0;
+  const streak =
+    typeof parsed.streak === 'number' && Number.isFinite(parsed.streak) && parsed.streak >= 0
+      ? Math.floor(parsed.streak)
+      : 0;
+  const bestStreak =
+    typeof parsed.bestStreak === 'number' &&
+    Number.isFinite(parsed.bestStreak) &&
+    parsed.bestStreak >= 0
+      ? Math.max(streak, Math.floor(parsed.bestStreak))
+      : streak;
+
+  return { completed, correct, streak, bestStreak };
+}
+
 function loadSavedSettings(): PracticeSettings {
   try {
     const raw = localStorage.getItem(SETTINGS_STORAGE_KEY);
     if (!raw) return DEFAULT_SETTINGS;
-    const parsed = JSON.parse(raw) as Partial<PracticeSettings>;
-    if (
-      Array.isArray(parsed.enabledQualities) &&
-      parsed.enabledQualities.length > 0 &&
-      Array.isArray(parsed.enabledInversions) &&
-      parsed.enabledInversions.length > 0
-    ) {
-      return {
-        ...DEFAULT_SETTINGS,
-        ...parsed,
-        language: parsed.language === 'lt' ? 'lt' : 'en',
-      };
-    }
+    return sanitizeSettings(JSON.parse(raw));
   } catch {
-    // Ignore storage read issues
+    return DEFAULT_SETTINGS;
   }
-  return DEFAULT_SETTINGS;
 }
 
 function loadSavedStats(): SessionStats {
   try {
     const raw = localStorage.getItem(STATS_STORAGE_KEY);
     if (!raw) return INITIAL_STATS;
-    const parsed = JSON.parse(raw) as Partial<SessionStats>;
-    if (typeof parsed.completed === 'number' && typeof parsed.correct === 'number') {
-      return {
-        completed: parsed.completed,
-        correct: parsed.correct,
-        streak: parsed.streak ?? 0,
-        bestStreak: parsed.bestStreak ?? 0,
-      };
-    }
+    return sanitizeStats(JSON.parse(raw));
   } catch {
-    // Ignore storage read issues
+    return INITIAL_STATS;
   }
-  return INITIAL_STATS;
 }
 
 export const App: React.FC = () => {

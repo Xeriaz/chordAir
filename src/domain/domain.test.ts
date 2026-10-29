@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { INITIAL_STATS, sanitizeSettings, sanitizeStats } from '../App';
 import { CHORD_QUALITIES, DEFAULT_SETTINGS, INVERSIONS, detectPresetForQualities } from './chords';
 import {
   buildAnswerOptions,
@@ -6,7 +7,7 @@ import {
   generatePracticeCard,
   voiceChordOnKeyboard,
 } from './generator';
-import { formatChordReadableName, getInversionText, getQualityText } from './i18n';
+import { UI_STRINGS, formatChordReadableName, getInversionText, getQualityText } from './i18n';
 import { PIANO_END_MIDI, PIANO_START_MIDI } from './notes';
 
 describe('ChordAir domain logic', () => {
@@ -69,11 +70,27 @@ describe('ChordAir domain logic', () => {
     const ids = new Set(options.map((o) => o.id));
     expect(ids.size).toBe(4);
     expect(ids.has('0:major')).toBe(true);
-    // Should also include same-root distractor (0:minor) when both major and minor are enabled
     expect(ids.has('0:minor')).toBe(true);
     for (const opt of options) {
       expect(['major', 'minor']).toContain(opt.qualityId);
     }
+  });
+
+  it('generates 4 distinct options even when only 1 chord quality is enabled', () => {
+    const singleQualityOptions = buildAnswerOptions(5, 'major', ['major'], 4);
+    expect(singleQualityOptions).toHaveLength(4);
+    const ids = new Set(singleQualityOptions.map((o) => o.id));
+    expect(ids.size).toBe(4);
+    expect(ids.has('5:major')).toBe(true);
+  });
+
+  it('safely falls back to root position when 3rd inversion is selected for a 3-note triad', () => {
+    const card = generatePracticeCard({
+      ...DEFAULT_SETTINGS,
+      enabledQualities: ['major'],
+      enabledInversions: ['third'],
+    });
+    expect(card.inversion.id).toBe('root');
   });
 
   it('generates practice cards matching user settings and avoids immediate duplicate cards', () => {
@@ -91,5 +108,40 @@ describe('ChordAir domain logic', () => {
       'moreTriads'
     );
     expect(detectPresetForQualities(['major', 'major7'])).toBe('custom');
+  });
+
+  it('sanitizes corrupted localStorage settings and stats safely without crashing', () => {
+    expect(sanitizeSettings(null)).toEqual(DEFAULT_SETTINGS);
+    expect(
+      sanitizeSettings({
+        enabledQualities: ['nonExistentQuality'],
+        enabledInversions: ['root'],
+      })
+    ).toEqual(DEFAULT_SETTINGS);
+
+    const partialValid = sanitizeSettings({
+      language: 'lt',
+      enabledQualities: ['major', 'invalidQuality'],
+      enabledInversions: ['first', 'invalidInv'],
+      showAllKeyLabels: true,
+    });
+    expect(partialValid.language).toBe('lt');
+    expect(partialValid.enabledQualities).toEqual(['major']);
+    expect(partialValid.enabledInversions).toEqual(['first']);
+    expect(partialValid.preset).toBe('custom');
+
+    expect(sanitizeStats({ completed: -5, correct: 999, streak: NaN })).toEqual(INITIAL_STATS);
+    expect(sanitizeStats({ completed: 10, correct: 15, streak: 4, bestStreak: 2 })).toEqual({
+      completed: 10,
+      correct: 10,
+      streak: 4,
+      bestStreak: 4,
+    });
+  });
+
+  it('maintains identical translation keys between English and Lithuanian UI dictionaries', () => {
+    const enKeys = Object.keys(UI_STRINGS.en).sort();
+    const ltKeys = Object.keys(UI_STRINGS.lt).sort();
+    expect(ltKeys).toEqual(enKeys);
   });
 });

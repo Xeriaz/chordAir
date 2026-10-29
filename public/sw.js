@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chordair-cache-v7';
+const CACHE_NAME = 'chordair-cache-v8';
 const APP_SHELL = [
   './',
   './index.html',
@@ -9,10 +9,31 @@ const APP_SHELL = [
   './icons/icon-512.png',
 ];
 
+/**
+ * Precaches the app shell AND extracts hashed JS/CSS bundle URLs from index.html
+ * so the PWA works 100% offline immediately after its very first load.
+ */
+async function precacheAppShellAndBundles() {
+  const cache = await caches.open(CACHE_NAME);
+  await cache.addAll(APP_SHELL);
+
+  try {
+    const indexResponse = await cache.match('./index.html');
+    if (indexResponse) {
+      const html = await indexResponse.text();
+      const assetMatches = [...html.matchAll(/(?:src|href)=["'](\.\/assets\/[^"']+)["']/g)];
+      const assetUrls = assetMatches.map((m) => m[1]);
+      if (assetUrls.length > 0) {
+        await cache.addAll(assetUrls);
+      }
+    }
+  } catch {
+    // Non-fatal if asset extraction fails
+  }
+}
+
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)).then(() => self.skipWaiting())
-  );
+  event.waitUntil(precacheAppShellAndBundles().then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', (event) => {

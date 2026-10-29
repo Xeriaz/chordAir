@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { playChord, playNote } from '../domain/audio';
 import { CHORD_QUALITIES } from '../domain/chords';
-import { formatChordReadableName } from '../domain/i18n';
-import { ALL_PITCH_CLASSES, NOTES, getRootNoteName, spellNoteForRoot } from '../domain/notes';
+import { UI_STRINGS, formatChordReadableName } from '../domain/i18n';
+import { ALL_PITCH_CLASSES, PIANO_KEYS, getRootNoteName, spellNoteForRoot } from '../domain/notes';
 import { ChordQualityId, Language, PitchClass } from '../domain/types';
 
 interface TheoryGuideProps {
@@ -263,34 +263,22 @@ const LAB_QUALITIES: ChordQualityId[] = [
   'minor7',
 ];
 
-// 13-key mini octave keyboard from C to C for the interactive diagram
-const MINI_OCTAVE_KEYS = Array.from({ length: 20 }, (_, idx) => {
-  const pitchClass = (idx % 12) as PitchClass;
-  const info = NOTES[pitchClass];
-  return {
-    offset: idx,
-    midi: 60 + idx,
-    pitchClass,
-    isBlack: info.isBlack,
-    label: getRootNoteName(pitchClass),
-  };
-});
+const WHITE_KEYS = PIANO_KEYS.filter((k) => !k.noteInfo.isBlack);
+const BLACK_KEYS = PIANO_KEYS.filter((k) => k.noteInfo.isBlack);
 
-const MINI_WHITE_KEYS = MINI_OCTAVE_KEYS.filter((k) => !k.isBlack);
-
-function getMiniBlackLeftPercent(offset: number): number {
-  const whiteBefore = MINI_WHITE_KEYS.filter((wk) => wk.offset < offset).length;
-  return (whiteBefore * 100) / MINI_WHITE_KEYS.length;
+function getBlackLeftPercent(midi: number): number {
+  const whiteBefore = WHITE_KEYS.filter((wk) => wk.midi < midi).length;
+  return (whiteBefore * 100) / WHITE_KEYS.length;
 }
 
 export const TheoryGuide: React.FC<TheoryGuideProps> = ({ language, onStartPractice }) => {
   const g = GUIDE_CONTENT[language];
+  const t = UI_STRINGS[language];
   const [labRoot, setLabRoot] = useState<PitchClass>(0); // C
   const [labQuality, setLabQuality] = useState<ChordQualityId>('major');
 
   const activeQualityDef = CHORD_QUALITIES[labQuality];
-  const activeOffsets = activeQualityDef.intervals.map((semitones) => labRoot + semitones);
-  const activeMidis = activeOffsets.map((offset) => 60 + offset);
+  const activeMidis = activeQualityDef.intervals.map((semitones) => 60 + labRoot + semitones);
   const activeSpelledNotes = activeQualityDef.intervals.map((semitones) =>
     spellNoteForRoot(((labRoot + semitones) % 12) as PitchClass, labRoot)
   );
@@ -353,7 +341,6 @@ export const TheoryGuide: React.FC<TheoryGuideProps> = ({ language, onStartPract
               <span className="mood-pill">{g.majorCardMood}</span>
             </div>
 
-            {/* Visual Step Diagram: 0 --(+4)--> 4 --(+3)--> 7 */}
             <div className="step-diagram" aria-hidden="true">
               <div className="step-node step-node--root">
                 <span className="node-note">C</span>
@@ -393,7 +380,6 @@ export const TheoryGuide: React.FC<TheoryGuideProps> = ({ language, onStartPract
               <span className="mood-pill">{g.minorCardMood}</span>
             </div>
 
-            {/* Visual Step Diagram: 0 --(+3)--> 3 --(+4)--> 7 */}
             <div className="step-diagram" aria-hidden="true">
               <div className="step-node step-node--root">
                 <span className="node-note">C</span>
@@ -428,7 +414,7 @@ export const TheoryGuide: React.FC<TheoryGuideProps> = ({ language, onStartPract
         </div>
       </section>
 
-      {/* Section 3: Interactive Chord Lab */}
+      {/* Section 3: Interactive Chord Lab (Full 24-key C4..B5 range so Bmaj7 fits!) */}
       <section className="guide-card">
         <span className="guide-step-badge">{g.sec3Badge}</span>
         <h3 className="guide-section-title">{g.sec3Title}</h3>
@@ -471,7 +457,7 @@ export const TheoryGuide: React.FC<TheoryGuideProps> = ({ language, onStartPract
           </div>
         </div>
 
-        {/* Interactive Mini Piano Diagram */}
+        {/* Interactive 2-Octave Piano Diagram */}
         <div className="lab-result-bar">
           <div className="lab-chord-summary">
             <strong className="lab-chord-title">
@@ -494,36 +480,44 @@ export const TheoryGuide: React.FC<TheoryGuideProps> = ({ language, onStartPract
         </div>
 
         <div className="mini-piano-wrapper">
-          <div className="mini-piano-bed">
+          <div className="mini-piano-bed" role="group" aria-label={t.twoOctaveGroupAria}>
             <div
               className="mini-white-row"
-              style={{ gridTemplateColumns: `repeat(${MINI_WHITE_KEYS.length}, 1fr)` }}
+              style={{ gridTemplateColumns: `repeat(${WHITE_KEYS.length}, 1fr)` }}
             >
-              {MINI_WHITE_KEYS.map((key) => {
-                const intervalIdx = activeOffsets.indexOf(key.offset);
+              {WHITE_KEYS.map((key) => {
+                const intervalIdx = activeMidis.indexOf(key.midi);
                 const isHighlighted = intervalIdx !== -1;
                 const isRoot = intervalIdx === 0;
-                const semitoneFromRoot = key.offset - labRoot;
+                const semitoneFromRoot = key.midi - (60 + labRoot);
+                const spoken =
+                  language === 'lt' ? key.noteInfo.spokenNameLt : key.noteInfo.spokenName;
 
                 return (
                   <button
-                    key={key.offset}
+                    key={key.midi}
                     type="button"
                     onClick={() => playNote(key.midi)}
+                    aria-pressed={isHighlighted}
+                    aria-label={t.keyAria(spoken, key.octave, isHighlighted, isRoot)}
                     className={`piano-key piano-key--white ${
                       isHighlighted ? 'piano-key--highlighted' : ''
                     } ${isRoot ? 'piano-key--bass' : ''}`}
                   >
                     <span className="key-inner">
                       {isHighlighted && (
-                        <span className={`key-marker ${isRoot ? 'key-marker--bass' : ''}`}>
+                        <span
+                          className={`key-marker ${isRoot ? 'key-marker--bass' : ''}`}
+                          aria-hidden="true"
+                        >
                           +{semitoneFromRoot}
                         </span>
                       )}
                       <span
                         className={`key-label ${isHighlighted ? 'key-label--highlighted' : ''}`}
+                        aria-hidden="true"
                       >
-                        {isHighlighted ? activeSpelledNotes[intervalIdx] : key.label}
+                        {isHighlighted ? activeSpelledNotes[intervalIdx] : getRootNoteName(key.pitchClass)}
                       </span>
                     </span>
                   </button>
@@ -532,31 +526,38 @@ export const TheoryGuide: React.FC<TheoryGuideProps> = ({ language, onStartPract
             </div>
 
             <div className="black-keys-layer">
-              {MINI_OCTAVE_KEYS.filter((k) => k.isBlack).map((key) => {
-                const intervalIdx = activeOffsets.indexOf(key.offset);
+              {BLACK_KEYS.map((key) => {
+                const intervalIdx = activeMidis.indexOf(key.midi);
                 const isHighlighted = intervalIdx !== -1;
                 const isRoot = intervalIdx === 0;
-                const semitoneFromRoot = key.offset - labRoot;
-                const leftPct = getMiniBlackLeftPercent(key.offset);
+                const semitoneFromRoot = key.midi - (60 + labRoot);
+                const leftPct = getBlackLeftPercent(key.midi);
+                const spoken =
+                  language === 'lt' ? key.noteInfo.spokenNameLt : key.noteInfo.spokenName;
 
                 return (
                   <button
-                    key={key.offset}
+                    key={key.midi}
                     type="button"
-                    style={{ left: `${leftPct}%`, width: '5.5%' }}
+                    style={{ left: `${leftPct}%` }}
                     onClick={() => playNote(key.midi)}
+                    aria-pressed={isHighlighted}
+                    aria-label={t.keyAria(spoken, key.octave, isHighlighted, isRoot)}
                     className={`piano-key piano-key--black ${
                       isHighlighted ? 'piano-key--highlighted' : ''
                     } ${isRoot ? 'piano-key--bass' : ''}`}
                   >
                     <span className="key-inner">
                       {isHighlighted && (
-                        <span className={`key-marker ${isRoot ? 'key-marker--bass' : ''}`}>
+                        <span
+                          className={`key-marker ${isRoot ? 'key-marker--bass' : ''}`}
+                          aria-hidden="true"
+                        >
                           +{semitoneFromRoot}
                         </span>
                       )}
                       {isHighlighted && (
-                        <span className="key-label key-label--highlighted">
+                        <span className="key-label key-label--highlighted" aria-hidden="true">
                           {activeSpelledNotes[intervalIdx]}
                         </span>
                       )}
@@ -607,6 +608,7 @@ export const TheoryGuide: React.FC<TheoryGuideProps> = ({ language, onStartPract
                       type="button"
                       className="table-play-btn"
                       onClick={() => playChord(row.midis)}
+                      aria-label={`${g.colAction}: ${row.name}`}
                     >
                       🔊
                     </button>

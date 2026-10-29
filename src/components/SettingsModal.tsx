@@ -32,22 +32,46 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onUpdateSettings,
   onClose,
 }) => {
+  const modalRef = useRef<HTMLDivElement>(null);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const lang: Language = settings.language ?? 'en';
   const t = UI_STRINGS[lang];
 
   useEffect(() => {
     if (!isOpen) return;
+    const previouslyFocused = document.activeElement as HTMLElement | null;
     closeBtnRef.current?.focus();
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         e.preventDefault();
         onClose();
+        return;
+      }
+
+      if (e.key === 'Tab' && modalRef.current) {
+        const focusable = modalRef.current.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
       }
     };
+
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      previouslyFocused?.focus?.();
+    };
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
@@ -117,6 +141,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       }}
     >
       <div
+        ref={modalRef}
         className="settings-modal"
         role="dialog"
         aria-modal="true"
@@ -197,22 +222,16 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 );
               })}
 
-              <div
+              <button
+                type="button"
                 role="radio"
                 aria-checked={settings.preset === 'custom'}
-                tabIndex={0}
                 onClick={() =>
                   onUpdateSettings({
                     ...settings,
                     preset: 'custom',
                   })
                 }
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    onUpdateSettings({ ...settings, preset: 'custom' });
-                  }
-                }}
                 className={`preset-card ${
                   settings.preset === 'custom' ? 'preset-card--active' : ''
                 }`}
@@ -224,7 +243,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   </span>
                 </div>
                 <p className="preset-desc">{t.customPresetDesc}</p>
-              </div>
+              </button>
             </div>
           </section>
 
