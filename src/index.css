@@ -44,6 +44,7 @@ body {
     sans-serif;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: none;
 }
 
 button {
@@ -87,12 +88,15 @@ input:focus-visible,
   top: 12px;
 }
 
-/* App Shell */
+/* App Shell — accounts for iOS Dynamic Island / notch and Home Indicator safe areas */
 .app-shell {
   min-height: 100dvh;
   max-width: 960px;
   margin: 0 auto;
-  padding: 14px 16px 32px;
+  padding-top: calc(env(safe-area-inset-top, 0px) + 14px);
+  padding-right: calc(env(safe-area-inset-right, 0px) + 16px);
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 28px);
+  padding-left: calc(env(safe-area-inset-left, 0px) + 16px);
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -801,7 +805,10 @@ input:focus-visible,
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding-top: calc(env(safe-area-inset-top, 0px) + 14px);
+  padding-right: calc(env(safe-area-inset-right, 0px) + 14px);
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 14px);
+  padding-left: calc(env(safe-area-inset-left, 0px) + 14px);
   z-index: 100;
 }
 
@@ -811,7 +818,7 @@ input:focus-visible,
   border-radius: var(--radius-lg);
   width: 100%;
   max-width: 680px;
-  max-height: 90dvh;
+  max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 28px);
   display: flex;
   flex-direction: column;
   box-shadow: 0 24px 48px rgba(0, 0, 0, 0.65);
@@ -1050,15 +1057,32 @@ input:focus-visible,
   font-size: 0.95rem;
 }
 
-/* Mobile Responsiveness */
+/* Mobile & iPhone Pro Responsiveness */
 @media (max-width: 640px) {
   .app-shell {
-    padding: 10px 10px 24px;
-    gap: 12px;
+    padding-top: calc(env(safe-area-inset-top, 0px) + 10px);
+    padding-right: calc(env(safe-area-inset-right, 0px) + 10px);
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 14px);
+    padding-left: calc(env(safe-area-inset-left, 0px) + 10px);
+    gap: 10px;
+  }
+
+  .practice-main {
+    gap: 10px;
   }
 
   .top-bar {
-    padding: 10px 12px;
+    padding: 8px 10px;
+    gap: 8px;
+  }
+
+  .brand-title {
+    font-size: 1.05rem;
+  }
+
+  .stats-pill {
+    padding: 4px 9px;
+    gap: 10px;
   }
 
   .stat-item--hide-xs {
@@ -1069,22 +1093,77 @@ input:focus-visible,
     display: none;
   }
 
-  .piano-bed {
-    min-width: 100%;
-    height: 186px;
+  .icon-btn,
+  .settings-trigger-btn {
+    height: 36px;
+    padding: 0 10px;
   }
 
-  .answer-grid {
-    grid-template-columns: 1fr;
+  .keyboard-stage {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .piano-bed {
+    min-width: 100%;
+    height: 158px;
+  }
+
+  .answer-section {
+    padding: 12px;
     gap: 10px;
   }
 
+  .prompt-heading {
+    font-size: 0.98rem;
+  }
+
+  .keyboard-hint-text {
+    display: none;
+  }
+
+  .answer-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
   .answer-btn {
-    min-height: 56px;
+    min-height: 52px;
+    padding: 8px 10px;
+    gap: 8px;
+  }
+
+  .answer-shortcut {
+    display: none;
+  }
+
+  .answer-readable-name {
+    font-size: 0.92rem;
+  }
+
+  .answer-symbol-badge {
+    font-size: 0.8rem;
+    padding: 1px 6px;
+  }
+
+  .feedback-panel {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .feedback-details-grid {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    margin-top: 6px;
+  }
+
+  .feedback-detail-chip {
+    padding: 7px 10px;
   }
 
   .next-card-btn {
     width: 100%;
     justify-content: center;
+    padding: 10px 18px;
   }
 }
