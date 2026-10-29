@@ -1,25 +1,37 @@
 /**
- * Acoustic Grand Piano Web Audio API Synthesizer.
+ * Acoustic Grand Piano Audio Engine (Salamander Grand Piano samples + Web Audio fallback).
  *
- * Models the key characteristics of a real classical acoustic piano:
- * 1. Felt-hammer strike transient (bandpass-filtered short noise burst on key attack).
- * 2. Rich harmonic series (1st through 6th partials) with slight piano string
- *    inharmonicity (stiff-string stretching) and unison string pair detuning.
- * 3. Dynamic low-pass filter envelope (bright on hammer strike, mellowing into warm wood sustain).
- * 4. Two-stage piano decay (initial prompt soundboard decay -> longer resonant sustain).
- * 5. Subtle stereo concert-hall room ambience via a generated impulse response convolver.
+ * Uses real studio recordings of a Yamaha C5 Grand Piano (Salamander Grand Piano, CC-BY)
+ * for key centers C4, D#4, F#4, A4, C5, D#5, F#5, A5, pitch-shifted across neighboring
+ * semitones (at most ±1 semitone) via Web Audio API AudioBufferSourceNode.playbackRate.
+ * If offline before samples finish loading, falls back seamlessly to physical-modeling synthesis.
  */
+
+const SALAMANDER_BASE_URL = 'https://tonejs.github.io/audio/salamander/';
+
+/**
+ * Sample anchor points every 3 semitones across our 2-octave keyboard (C4 = 60 to B5 = 83).
+ * Pitch-shifting at most ±1 semitone preserves authentic hammer attack and wooden soundboard timbre.
+ */
+const SAMPLE_ANCHORS: ReadonlyArray<{ midi: number; file: string }> = [
+  { midi: 60, file: 'C4.mp3' },
+  { midi: 63, file: 'Ds4.mp3' },
+  { midi: 66, file: 'Fs4.mp3' },
+  { midi: 69, file: 'A4.mp3' },
+  { midi: 72, file: 'C5.mp3' },
+  { midi: 75, file: 'Ds5.mp3' },
+  { midi: 78, file: 'Fs5.mp3' },
+  { midi: 81, file: 'A5.mp3' },
+];
 
 let audioCtx: AudioContext | null = null;
 let masterCompressor: DynamicsCompressorNode | null = null;
-let reverbNode: ConvolverNode | null = null;
-let hammerNoiseBuffer: AudioBuffer | null = null;
+let preloadStarted = false;
+const sampleBuffers = new Map<number, AudioBuffer>();
 
 function getAudioEngine(): {
   ctx: AudioContext;
   compressor: DynamicsCompressorNode;
-  reverb: ConvolverNode;
-  noiseBuffer: AudioBuffer;
 } | null {
   if (typeof window === 'undefined') return null;
 
@@ -37,73 +49,63 @@ function getAudioEngine(): {
 
   if (!masterCompressor) {
     masterCompressor = audioCtx.createDynamicsCompressor();
-    masterCompressor.threshold.setValueAtTime(-14, audioCtx.currentTime);
-    masterCompressor.knee.setValueAtTime(18, audioCtx.currentTime);
-    masterCompressor.ratio.setValueAtTime(3.5, audioCtx.currentTime);
+    masterCompressor.threshold.setValueAtTime(-12, audioCtx.currentTime);
+    masterCompressor.knee.setValueAtTime(16, audioCtx.currentTime);
+    masterCompressor.ratio.setValueAtTime(3, audioCtx.currentTime);
     masterCompressor.attack.setValueAtTime(0.003, audioCtx.currentTime);
-    masterCompressor.release.setValueAtTime(0.22, audioCtx.currentTime);
+    masterCompressor.release.setValueAtTime(0.2, audioCtx.currentTime);
     masterCompressor.connect(audioCtx.destination);
   }
 
-  if (!reverbNode) {
-    reverbNode = createConcertHallReverb(audioCtx);
-    const reverbGain = audioCtx.createGain();
-    reverbGain.gain.setValueAtTime(0.18, audioCtx.currentTime);
-    reverbNode.connect(reverbGain);
-    reverbGain.connect(masterCompressor);
-  }
-
-  if (!hammerNoiseBuffer) {
-    hammerNoiseBuffer = createHammerNoiseBuffer(audioCtx);
+  if (!preloadStarted) {
+    preloadStarted = true;
+    preloadGrandPianoSamples(audioCtx);
   }
 
   return {
     ctx: audioCtx,
     compressor: masterCompressor,
-    reverb: reverbNode,
-    noiseBuffer: hammerNoiseBuffer,
   };
 }
 
 /**
- * Generates a short noise buffer used to simulate the physical felt hammer hitting the strings.
+ * Asynchronously fetches and decodes real Yamaha C5 Grand Piano samples.
  */
-function createHammerNoiseBuffer(ctx: AudioContext): AudioBuffer {
-  const length = Math.floor(ctx.sampleRate * 0.045);
-  const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
-  const data = buffer.getChannelData(0);
-  for (let i = 0; i < length; i++) {
-    // Exponentially decaying white/pink noise burst
-    const env = Math.pow(1 - i / length, 2.4);
-    data[i] = (Math.random() * 2 - 1) * env;
+function preloadGrandPianoSamples(ctx: AudioContext): void {
+  for (const anchor of SAMPLE_ANCHORS) {
+    fetch(`${SALAMANDER_BASE_URL}${anchor.file}`)
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.arrayBuffer();
+      })
+      .then((arrayBuffer) => ctx.decodeAudioData(arrayBuffer))
+      .then((decoded) => {
+        sampleBuffers.set(anchor.midi, decoded);
+      })
+      .catch(() => {
+        // Fallback synthesizer handles playback if offline or blocked
+      });
   }
-  return buffer;
 }
 
 /**
- * Generates a warm, natural stereo room impulse response for subtle concert-hall resonance.
+ * Finds the closest loaded grand piano sample anchor for a given MIDI note.
  */
-function createConcertHallReverb(ctx: AudioContext): ConvolverNode {
-  const convolver = ctx.createConvolver();
-  const duration = 1.6;
-  const length = Math.floor(ctx.sampleRate * duration);
-  const impulse = ctx.createBuffer(2, length, ctx.sampleRate);
+function findClosestLoadedSample(targetMidi: number): {
+  anchorMidi: number;
+  buffer: AudioBuffer;
+} | null {
+  let bestAnchor: { anchorMidi: number; buffer: AudioBuffer } | null = null;
+  let minDistance = Infinity;
 
-  for (let ch = 0; ch < 2; ch++) {
-    const channelData = impulse.getChannelData(ch);
-    let lastSample = 0;
-    for (let i = 0; i < length; i++) {
-      const t = i / length;
-      const decay = Math.exp(-t * 5.2);
-      const white = Math.random() * 2 - 1;
-      // Simple one-pole lowpass so the room reverb sounds like warm wood rather than metallic hiss
-      lastSample = lastSample * 0.72 + white * 0.28;
-      channelData[i] = lastSample * decay;
+  for (const [anchorMidi, buffer] of sampleBuffers.entries()) {
+    const dist = Math.abs(targetMidi - anchorMidi);
+    if (dist < minDistance) {
+      minDistance = dist;
+      bestAnchor = { anchorMidi, buffer };
     }
   }
-
-  convolver.buffer = impulse;
-  return convolver;
+  return bestAnchor;
 }
 
 export function midiToFrequency(midi: number): number {
@@ -111,122 +113,124 @@ export function midiToFrequency(midi: number): number {
 }
 
 /**
- * Synthesizes a single classical grand piano note using additive partials,
- * unison string detuning, dynamic soundboard filtering, and hammer transient.
+ * Plays a single classical grand piano note.
+ * Uses the real recorded Yamaha C5 Grand Piano sample if loaded, or falls back to
+ * warm acoustic physical modeling if offline before initial sample load.
  */
 export function playNote(
   midi: number,
   startTimeOffset = 0,
-  duration = 2.4,
-  gainScale = 0.26
+  duration = 2.6,
+  gainScale = 0.65
 ): void {
   const engine = getAudioEngine();
   if (!engine) return;
 
-  const { ctx, compressor, reverb, noiseBuffer } = engine;
+  const { ctx, compressor } = engine;
   const now = ctx.currentTime + startTimeOffset;
-  const freq = midiToFrequency(midi);
 
-  // Real piano strings have slight stiffness (inharmonicity coefficient B),
-  // which stretches upper harmonics slightly sharp and gives a piano its bell-like warmth.
+  const closestSample = findClosestLoadedSample(midi);
+  if (closestSample) {
+    const source = ctx.createBufferSource();
+    source.buffer = closestSample.buffer;
+
+    // Pitch-shift by exact semitone difference from the closest recorded sample
+    const semitoneDiff = midi - closestSample.anchorMidi;
+    source.playbackRate.setValueAtTime(Math.pow(2, semitoneDiff / 12), now);
+
+    const noteGain = ctx.createGain();
+    noteGain.gain.setValueAtTime(gainScale, now);
+    // Natural release tail at the end of duration
+    noteGain.gain.setValueAtTime(gainScale, now + Math.max(0.2, duration - 0.35));
+    noteGain.gain.exponentialRampToValueAtTime(0.0008, now + duration);
+
+    source.connect(noteGain);
+    noteGain.connect(compressor);
+
+    source.start(now);
+    source.stop(now + duration + 0.05);
+    return;
+  }
+
+  // Fallback acoustic synthesizer (used only while samples are downloading on first click)
+  playFallbackAcousticNote(ctx, compressor, midi, now, duration, gainScale * 0.38);
+}
+
+function playFallbackAcousticNote(
+  ctx: AudioContext,
+  destination: AudioNode,
+  midi: number,
+  now: number,
+  duration: number,
+  gainScale: number
+): void {
+  const freq = midiToFrequency(midi);
   const inharmonicityB = 0.00018;
 
-  // Voice bus: dynamic soundboard lowpass filter -> note envelope -> dry + reverb
-  const soundboardFilter = ctx.createBiquadFilter();
-  soundboardFilter.type = 'lowpass';
-  // Bright on hammer attack, quickly settling into warm acoustic sustain
-  const attackCutoff = Math.min(12000, freq * 11);
-  const sustainCutoff = Math.min(4800, freq * 3.8);
-  soundboardFilter.frequency.setValueAtTime(attackCutoff, now);
-  soundboardFilter.frequency.exponentialRampToValueAtTime(sustainCutoff, now + 0.22);
-  soundboardFilter.frequency.exponentialRampToValueAtTime(Math.max(400, freq * 1.8), now + duration);
-  soundboardFilter.Q.setValueAtTime(0.7, now);
-
-  // High-pass slightly to prevent muddy sub-bass buildup when playing 4-note chords
-  const bodyHighpass = ctx.createBiquadFilter();
-  bodyHighpass.type = 'highpass';
-  bodyHighpass.frequency.setValueAtTime(Math.max(85, freq * 0.65), now);
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.setValueAtTime(Math.min(10000, freq * 9), now);
+  filter.frequency.exponentialRampToValueAtTime(Math.min(3800, freq * 3.2), now + 0.2);
 
   const voiceGain = ctx.createGain();
-  // Two-stage piano envelope: fast hammer strike -> initial prompt decay -> long singing sustain
   voiceGain.gain.setValueAtTime(0.0001, now);
   voiceGain.gain.linearRampToValueAtTime(gainScale, now + 0.006);
-  voiceGain.gain.exponentialRampToValueAtTime(gainScale * 0.52, now + 0.16);
-  voiceGain.gain.exponentialRampToValueAtTime(gainScale * 0.16, now + 0.95);
+  voiceGain.gain.exponentialRampToValueAtTime(gainScale * 0.48, now + 0.18);
   voiceGain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
 
-  soundboardFilter.connect(bodyHighpass);
-  bodyHighpass.connect(voiceGain);
-  voiceGain.connect(compressor);
-  voiceGain.connect(reverb);
+  filter.connect(voiceGain);
+  voiceGain.connect(destination);
 
-  // 1. Felt Hammer Strike Transient
-  const hammerSource = ctx.createBufferSource();
-  hammerSource.buffer = noiseBuffer;
-
-  const hammerFilter = ctx.createBiquadFilter();
-  hammerFilter.type = 'bandpass';
-  hammerFilter.frequency.setValueAtTime(Math.min(3600, freq * 3.2), now);
-  hammerFilter.Q.setValueAtTime(1.4, now);
-
-  const hammerGain = ctx.createGain();
-  hammerGain.gain.setValueAtTime(gainScale * 0.38, now);
-  hammerGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.035);
-
-  hammerSource.connect(hammerFilter);
-  hammerFilter.connect(hammerGain);
-  hammerGain.connect(compressor);
-  hammerSource.start(now);
-
-  // 2. Acoustic String Partials (Harmonics 1..6)
-  // Higher partials decay much faster than the fundamental, just like real piano strings.
   const partials = [
-    { n: 1, amp: 1.0, decayRatio: 1.0, detuneCents: -1.1 },
-    { n: 1, amp: 0.75, decayRatio: 0.95, detuneCents: 1.2 }, // Unison string pair for chorus warmth
-    { n: 2, amp: 0.46, decayRatio: 0.72, detuneCents: 0.4 },
-    { n: 3, amp: 0.24, decayRatio: 0.52, detuneCents: -0.5 },
-    { n: 4, amp: 0.11, decayRatio: 0.36, detuneCents: 0.8 },
-    { n: 5, amp: 0.055, decayRatio: 0.25, detuneCents: 0 },
-    { n: 6, amp: 0.028, decayRatio: 0.18, detuneCents: 0 },
+    { n: 1, amp: 1.0, decayRatio: 1.0, detune: -1.0 },
+    { n: 1, amp: 0.75, decayRatio: 0.95, detune: 1.1 },
+    { n: 2, amp: 0.45, decayRatio: 0.7, detune: 0.3 },
+    { n: 3, amp: 0.22, decayRatio: 0.5, detune: -0.4 },
+    { n: 4, amp: 0.1, decayRatio: 0.35, detune: 0 },
   ];
 
   for (const p of partials) {
-    // Stiff-string inharmonicity formula: f_n = n * f_0 * sqrt(1 + B * n^2)
     const partialFreq = freq * p.n * Math.sqrt(1 + inharmonicityB * p.n * p.n);
     if (partialFreq > 14000) continue;
 
     const osc = ctx.createOscillator();
-    const partialGain = ctx.createGain();
-
+    const pGain = ctx.createGain();
     osc.type = 'sine';
     osc.frequency.setValueAtTime(partialFreq, now);
-    if (p.detuneCents !== 0) {
-      osc.detune.setValueAtTime(p.detuneCents, now);
-    }
+    osc.detune.setValueAtTime(p.detune, now);
 
-    const partialDuration = Math.max(0.18, duration * p.decayRatio);
-    partialGain.gain.setValueAtTime(p.amp, now);
-    partialGain.gain.exponentialRampToValueAtTime(0.0008, now + partialDuration);
+    const pDur = Math.max(0.18, duration * p.decayRatio);
+    pGain.gain.setValueAtTime(p.amp, now);
+    pGain.gain.exponentialRampToValueAtTime(0.0008, now + pDur);
 
-    osc.connect(partialGain);
-    partialGain.connect(soundboardFilter);
-
+    osc.connect(pGain);
+    pGain.connect(filter);
     osc.start(now);
-    osc.stop(now + partialDuration + 0.04);
+    osc.stop(now + pDur + 0.04);
   }
 }
 
 /**
- * Plays a chord with a subtle, natural two-handed pianist roll and balanced voicing.
+ * Begins preloading the grand piano samples in the background as soon as the app boots.
+ */
+export function warmUpPianoSamples(): void {
+  if (typeof window === 'undefined') return;
+  // Trigger sample fetch into browser HTTP/ServiceWorker cache even before AudioContext is unlocked
+  for (const anchor of SAMPLE_ANCHORS) {
+    fetch(`${SALAMANDER_BASE_URL}${anchor.file}`).catch(() => {});
+  }
+}
+
+/**
+ * Plays a chord with both individual keys and "Hear chord" using the same Grand Piano engine.
  */
 export function playChord(midis: number[]): void {
   if (midis.length === 0) return;
   const sorted = [...midis].sort((a, b) => a - b);
-  const perNoteGain = Math.min(0.25, 0.76 / Math.sqrt(sorted.length));
+  const perNoteGain = Math.min(0.65, 1.15 / Math.sqrt(sorted.length));
 
   sorted.forEach((midi, idx) => {
-    // Subtle 22ms pianist roll from bass to treble, giving the bass note slightly fuller weight
-    const velocityBoost = idx === 0 ? 1.12 : 1.0;
-    playNote(midi, idx * 0.022, 2.5, perNoteGain * velocityBoost);
+    const velocityBoost = idx === 0 ? 1.1 : 1.0;
+    playNote(midi, idx * 0.025, 2.8, perNoteGain * velocityBoost);
   });
 }

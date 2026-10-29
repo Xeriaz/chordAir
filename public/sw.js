@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chordair-cache-v3';
+const CACHE_NAME = 'chordair-cache-v4';
 const APP_SHELL = [
   './',
   './index.html',
@@ -28,6 +28,28 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+
+  const isNavigation =
+    event.request.mode === 'navigate' ||
+    (event.request.headers.get('accept') || '').includes('text/html');
+
+  if (isNavigation) {
+    // Network-first for index.html so new deployments take effect immediately on reload!
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const copy = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Cache-first with background refresh for static assets & piano audio samples
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       const networkFetch = fetch(event.request)
@@ -35,7 +57,7 @@ self.addEventListener('fetch', (event) => {
           if (
             networkResponse &&
             networkResponse.status === 200 &&
-            networkResponse.type === 'basic'
+            (networkResponse.type === 'basic' || networkResponse.type === 'cors')
           ) {
             const copy = networkResponse.clone();
             caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
