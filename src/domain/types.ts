@@ -1,3 +1,5 @@
+export type Language = 'en' | 'lt';
+
 export type PitchClass = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
 
 export type ChordCategory = 'triad' | 'seventh';
@@ -25,8 +27,10 @@ export interface NoteInfo {
   sharpName: string;
   /** Flat spelling (e.g., "Db") */
   flatName: string;
-  /** Accessible spoken name for screen readers (e.g., "E flat") */
+  /** Accessible spoken name for screen readers in English (e.g., "E flat") */
   spokenName: string;
+  /** Accessible spoken name for screen readers in Lithuanian (e.g., "E bemol") */
+  spokenNameLt: string;
   isBlack: boolean;
 }
 
@@ -77,6 +81,7 @@ export interface LevelPresetDefinition {
 }
 
 export interface PracticeSettings {
+  language: Language;
   preset: LevelPresetId;
   enabledQualities: ChordQualityId[];
   enabledInversions: InversionId[];
@@ -91,11 +96,11 @@ export interface ChordAnswerOption {
   id: string;
   rootPitchClass: PitchClass;
   qualityId: ChordQualityId;
-  /** Readable full name, e.g. "C minor" */
+  /** Readable full name in English, e.g. "C minor" */
   readableName: string;
   /** Chord symbol, e.g. "Cm" */
   symbol: string;
-  /** Spoken accessible label, e.g. "C minor (Cm)" */
+  /** Spoken accessible label in English, e.g. "C minor (Cm)" */
   ariaLabel: string;
 }
 
@@ -104,6 +109,7 @@ export interface VoicedNote {
   pitchClass: PitchClass;
   noteName: string;
   spokenName: string;
+  spokenNameLt: string;
   octave: number;
   /** Role in the chord: 'root' | 'third' | 'fifth' | 'seventh' */
   role: 'root' | 'third' | 'fifth' | 'seventh';
@@ -116,7 +122,7 @@ export interface PracticeCard {
   rootPitchClass: PitchClass;
   quality: ChordQualityDefinition;
   inversion: InversionDefinition;
-  /** Readable chord name, e.g. "C minor" */
+  /** Readable chord name in English, e.g. "C minor" */
   readableName: string;
   /** Chord symbol, e.g. "Cm" */
   symbol: string;

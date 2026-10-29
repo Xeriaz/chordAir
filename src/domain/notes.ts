@@ -7,6 +7,7 @@ export const NOTES: Record<PitchClass, NoteInfo> = {
     sharpName: 'C',
     flatName: 'C',
     spokenName: 'C',
+    spokenNameLt: 'C',
     isBlack: false,
   },
   1: {
@@ -15,6 +16,7 @@ export const NOTES: Record<PitchClass, NoteInfo> = {
     sharpName: 'C♯',
     flatName: 'D♭',
     spokenName: 'D flat',
+    spokenNameLt: 'D bemol',
     isBlack: true,
   },
   2: {
@@ -23,6 +25,7 @@ export const NOTES: Record<PitchClass, NoteInfo> = {
     sharpName: 'D',
     flatName: 'D',
     spokenName: 'D',
+    spokenNameLt: 'D',
     isBlack: false,
   },
   3: {
@@ -31,6 +34,7 @@ export const NOTES: Record<PitchClass, NoteInfo> = {
     sharpName: 'D♯',
     flatName: 'E♭',
     spokenName: 'E flat',
+    spokenNameLt: 'E bemol',
     isBlack: true,
   },
   4: {
@@ -39,6 +43,7 @@ export const NOTES: Record<PitchClass, NoteInfo> = {
     sharpName: 'E',
     flatName: 'E',
     spokenName: 'E',
+    spokenNameLt: 'E',
     isBlack: false,
   },
   5: {
@@ -47,6 +52,7 @@ export const NOTES: Record<PitchClass, NoteInfo> = {
     sharpName: 'F',
     flatName: 'F',
     spokenName: 'F',
+    spokenNameLt: 'F',
     isBlack: false,
   },
   6: {
@@ -55,6 +61,7 @@ export const NOTES: Record<PitchClass, NoteInfo> = {
     sharpName: 'F♯',
     flatName: 'G♭',
     spokenName: 'F sharp',
+    spokenNameLt: 'F diez',
     isBlack: true,
   },
   7: {
@@ -63,6 +70,7 @@ export const NOTES: Record<PitchClass, NoteInfo> = {
     sharpName: 'G',
     flatName: 'G',
     spokenName: 'G',
+    spokenNameLt: 'G',
     isBlack: false,
   },
   8: {
@@ -71,6 +79,7 @@ export const NOTES: Record<PitchClass, NoteInfo> = {
     sharpName: 'G♯',
     flatName: 'A♭',
     spokenName: 'A flat',
+    spokenNameLt: 'A bemol',
     isBlack: true,
   },
   9: {
@@ -79,6 +88,7 @@ export const NOTES: Record<PitchClass, NoteInfo> = {
     sharpName: 'A',
     flatName: 'A',
     spokenName: 'A',
+    spokenNameLt: 'A',
     isBlack: false,
   },
   10: {
@@ -87,6 +97,7 @@ export const NOTES: Record<PitchClass, NoteInfo> = {
     sharpName: 'A♯',
     flatName: 'B♭',
     spokenName: 'B flat',
+    spokenNameLt: 'B bemol',
     isBlack: true,
   },
   11: {
@@ -95,6 +106,7 @@ export const NOTES: Record<PitchClass, NoteInfo> = {
     sharpName: 'B',
     flatName: 'B',
     spokenName: 'B',
+    spokenNameLt: 'B',
     isBlack: false,
   },
 };

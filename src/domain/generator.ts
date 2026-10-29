@@ -69,6 +69,7 @@ export function voiceChordOnKeyboard(
       pitchClass,
       noteName: spellNoteForRoot(pitchClass, rootPitchClass),
       spokenName: NOTES[pitchClass].spokenName,
+      spokenNameLt: NOTES[pitchClass].spokenNameLt,
       octave: Math.floor(midi / 12) - 1,
       role: roleMeta.role,
       roleLabel: quality.intervalLabels[idx] ?? roleMeta.label,

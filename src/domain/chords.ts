@@ -198,6 +198,7 @@ export const LEVEL_PRESETS: LevelPresetDefinition[] = [
 ];
 
 export const DEFAULT_SETTINGS: PracticeSettings = {
+  language: 'en',
   preset: 'beginner',
   enabledQualities: ['major', 'minor'],
   enabledInversions: ['root'],

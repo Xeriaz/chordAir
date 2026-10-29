@@ -1,28 +1,52 @@
 import React, { useEffect, useRef } from 'react';
-import { PracticeCard } from '../domain/types';
+import {
+  UI_STRINGS,
+  formatChordReadableName,
+  getInversionText,
+  getQualityText,
+} from '../domain/i18n';
+import { Language, PracticeCard } from '../domain/types';
 
 interface FeedbackPanelProps {
   card: PracticeCard;
   selectedOptionId: string;
+  language: Language;
   onNextCard: () => void;
 }
 
 export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
   card,
   selectedOptionId,
+  language,
   onNextCard,
 }) => {
   const nextBtnRef = useRef<HTMLButtonElement>(null);
+  const t = UI_STRINGS[language];
   const isCorrect = selectedOptionId === card.correctOptionId;
   const selectedOption = card.options.find((o) => o.id === selectedOptionId);
 
   useEffect(() => {
-    // Move keyboard focus to the "Next Card" button for effortless keyboard/screen-reader flow
     nextBtnRef.current?.focus();
   }, [card.id]);
 
   const notesList = card.voicedNotes.map((n) => n.noteName).join(' – ');
   const bassNote = card.voicedNotes[0]?.noteName ?? '';
+
+  const correctReadableName = formatChordReadableName(
+    card.rootPitchClass,
+    card.quality.id,
+    language
+  );
+  const chosenReadableName = selectedOption
+    ? formatChordReadableName(
+        selectedOption.rootPitchClass,
+        selectedOption.qualityId,
+        language
+      )
+    : t.anotherChord;
+
+  const qualityText = getQualityText(card.quality.id, language);
+  const inversionText = getInversionText(card.inversion.id, language);
 
   return (
     <section
@@ -31,7 +55,7 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
       }`}
       role="region"
       aria-live="polite"
-      aria-label="Answer feedback"
+      aria-label={t.answerFeedbackAria}
     >
       <div className="feedback-content">
         <div className="feedback-header">
@@ -42,38 +66,38 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
             <h3 className="feedback-title">
               {isCorrect ? (
                 <>
-                  Spot on! That’s <strong>{card.readableName}</strong>{' '}
+                  {t.correctTitlePrefix} <strong>{correctReadableName}</strong>{' '}
                   <span className="feedback-symbol">({card.symbol})</span>
                 </>
               ) : (
                 <>
-                  Not quite — you chose {selectedOption?.readableName ?? 'another chord'}. The
-                  correct chord is <strong>{card.readableName}</strong>{' '}
+                  {t.incorrectTitlePrefix(chosenReadableName)}{' '}
+                  <strong>{correctReadableName}</strong>{' '}
                   <span className="feedback-symbol">({card.symbol})</span>
                 </>
               )}
             </h3>
-            <p className="feedback-subtitle">{card.quality.description}</p>
+            <p className="feedback-subtitle">{qualityText.description}</p>
           </div>
         </div>
 
         <div className="feedback-details-grid">
           <div className="feedback-detail-chip">
-            <span className="detail-label">Notes played (low → high)</span>
+            <span className="detail-label">{t.notesPlayedLabel}</span>
             <span className="detail-value">{notesList}</span>
           </div>
 
           <div className="feedback-detail-chip">
-            <span className="detail-label">Voicing / Position</span>
+            <span className="detail-label">{t.voicingPositionLabel}</span>
             <span className="detail-value">
-              {card.inversion.name}
-              {card.inversion.id !== 'root' ? ` (${bassNote} on the bottom)` : ' (Root on bottom)'}
+              {inversionText.name}{' '}
+              {card.inversion.id !== 'root' ? t.bassOnBottom(bassNote) : t.rootOnBottom}
             </span>
           </div>
 
           <div className="feedback-detail-chip">
-            <span className="detail-label">Keyboard shape</span>
-            <span className="detail-value">{card.quality.shapeHint}</span>
+            <span className="detail-label">{t.keyboardShapeLabel}</span>
+            <span className="detail-value">{qualityText.shapeHint}</span>
           </div>
         </div>
       </div>
@@ -84,9 +108,9 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
           type="button"
           className="next-card-btn"
           onClick={onNextCard}
-          aria-label="Next practice card (Shortcut: Enter)"
+          aria-label={t.nextCardAria}
         >
-          <span>Next Card</span>
+          <span>{t.nextCardButton}</span>
           <span aria-hidden="true">→</span>
         </button>
       </div>

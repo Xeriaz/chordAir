@@ -7,6 +7,7 @@ import { SettingsModal } from './components/SettingsModal';
 import { playChord } from './domain/audio';
 import { DEFAULT_SETTINGS } from './domain/chords';
 import { generatePracticeCard } from './domain/generator';
+import { UI_STRINGS } from './domain/i18n';
 import { PracticeCard, PracticeSettings, SessionStats } from './domain/types';
 
 const SETTINGS_STORAGE_KEY = 'chordair_settings_v1';
@@ -33,6 +34,7 @@ function loadSavedSettings(): PracticeSettings {
       return {
         ...DEFAULT_SETTINGS,
         ...parsed,
+        language: parsed.language === 'lt' ? 'lt' : 'en',
       };
     }
   } catch {
@@ -66,6 +68,14 @@ export const App: React.FC = () => {
   const [card, setCard] = useState<PracticeCard>(() => generatePracticeCard(loadSavedSettings()));
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  const language = settings.language ?? 'en';
+  const t = UI_STRINGS[language];
+
+  // Sync <html lang="..."> attribute for screen readers and browser tools
+  useEffect(() => {
+    document.documentElement.lang = language;
+  }, [language]);
 
   // Persist settings and stats
   useEffect(() => {
@@ -119,8 +129,6 @@ export const App: React.FC = () => {
   const handleUpdateSettings = useCallback(
     (nextSettings: PracticeSettings) => {
       setSettings(nextSettings);
-      // If the learner hasn't answered the current card yet and the current card's chord type or
-      // inversion is no longer enabled, refresh the current card seamlessly while preserving stats.
       const currentStillValid =
         nextSettings.enabledQualities.includes(card.quality.id) &&
         nextSettings.enabledInversions.includes(card.inversion.id);
@@ -143,11 +151,17 @@ export const App: React.FC = () => {
     }));
   }, []);
 
+  const handleToggleLanguage = useCallback(() => {
+    setSettings((prev) => ({
+      ...prev,
+      language: prev.language === 'lt' ? 'en' : 'lt',
+    }));
+  }, []);
+
   // Global keyboard shortcuts (1-4 to pick option, Enter/ArrowRight for next card, Space to hear chord)
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (isSettingsOpen) return;
-      // Ignore if typing inside an input
       const tag = (e.target as HTMLElement | null)?.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
 
@@ -159,7 +173,6 @@ export const App: React.FC = () => {
           return;
         }
       } else if (e.key === 'Enter' || e.key === 'ArrowRight') {
-        // Avoid double-triggering if the Next Card button itself is already focused and Enter is pressed
         if (
           e.key === 'Enter' &&
           (e.target as HTMLElement | null)?.classList.contains('next-card-btn')
@@ -184,7 +197,7 @@ export const App: React.FC = () => {
   return (
     <div className="app-shell">
       <a href="#main-practice" className="skip-link">
-        Skip to chord practice
+        {t.skipToPractice}
       </a>
 
       <Header
@@ -193,28 +206,29 @@ export const App: React.FC = () => {
         onOpenSettings={() => setIsSettingsOpen(true)}
         onResetStats={handleResetStats}
         onToggleLabels={handleToggleLabels}
+        onToggleLanguage={handleToggleLanguage}
       />
 
       <main id="main-practice" className="practice-main">
         {settings.enabledInversions.length > 1 && (
           <div className="voicing-notice-bar" role="note">
-            <span>
-              Inversions active: chords may have their notes rearranged (root, 1st, or 2nd
-              inversion).
-            </span>
+            <span>{t.inversionsActiveNotice}</span>
           </div>
         )}
 
         <PianoKeyboard
           voicedNotes={card.voicedNotes}
+          qualityId={card.quality.id}
           showAllKeyLabels={settings.showAllKeyLabels}
           isRevealed={selectedOptionId !== null}
+          language={language}
         />
 
         <AnswerGrid
           options={card.options}
           selectedOptionId={selectedOptionId}
           correctOptionId={card.correctOptionId}
+          language={language}
           onSelectOption={handleSelectOption}
         />
 
@@ -222,6 +236,7 @@ export const App: React.FC = () => {
           <FeedbackPanel
             card={card}
             selectedOptionId={selectedOptionId}
+            language={language}
             onNextCard={handleNextCard}
           />
         )}

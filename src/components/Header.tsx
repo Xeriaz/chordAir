@@ -1,5 +1,5 @@
 import React from 'react';
-import { INVERSIONS, LEVEL_PRESETS } from '../domain/chords';
+import { UI_STRINGS, getInversionText, getPresetText } from '../domain/i18n';
 import { PracticeSettings, SessionStats } from '../domain/types';
 
 interface HeaderProps {
@@ -8,6 +8,7 @@ interface HeaderProps {
   onOpenSettings: () => void;
   onResetStats: () => void;
   onToggleLabels: () => void;
+  onToggleLanguage: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -16,14 +17,20 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenSettings,
   onResetStats,
   onToggleLabels,
+  onToggleLanguage,
 }) => {
-  const presetObj = LEVEL_PRESETS.find((p) => p.id === settings.preset);
-  const levelLabel = presetObj ? presetObj.name : 'Custom';
+  const lang = settings.language ?? 'en';
+  const t = UI_STRINGS[lang];
+
+  const levelLabel =
+    settings.preset === 'custom'
+      ? t.customPresetName
+      : getPresetText(settings.preset, lang).name;
 
   const inversionSummary =
     settings.enabledInversions.length === 1
-      ? INVERSIONS[settings.enabledInversions[0]].shortLabel
-      : `${settings.enabledInversions.length} voicings`;
+      ? getInversionText(settings.enabledInversions[0], lang).shortLabel
+      : t.voicingsCount(settings.enabledInversions.length);
 
   const accuracy =
     stats.completed > 0 ? Math.round((stats.correct / stats.completed) * 100) : null;
@@ -42,7 +49,7 @@ export const Header: React.FC<HeaderProps> = ({
             type="button"
             className="level-badge-btn"
             onClick={onOpenSettings}
-            aria-label={`Current level: ${levelLabel}, ${inversionSummary}. Click to change chord settings.`}
+            aria-label={t.currentLevelAria(levelLabel, inversionSummary)}
           >
             <span className="level-dot" aria-hidden="true" />
             <span>{levelLabel}</span>
@@ -59,12 +66,10 @@ export const Header: React.FC<HeaderProps> = ({
           className="stats-pill"
           role="status"
           aria-live="polite"
-          aria-label={`Session progress: ${stats.correct} correct out of ${stats.completed} completed${
-            accuracy !== null ? `, ${accuracy}% accuracy` : ''
-          }, streak ${stats.streak}`}
+          aria-label={t.sessionProgressAria(stats.correct, stats.completed, accuracy, stats.streak)}
         >
           <div className="stat-item">
-            <span className="stat-label">Score</span>
+            <span className="stat-label">{t.score}</span>
             <span className="stat-value">
               {stats.correct}
               <span className="stat-total">/{stats.completed}</span>
@@ -72,12 +77,12 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
           {accuracy !== null && (
             <div className="stat-item stat-item--hide-xs">
-              <span className="stat-label">Accuracy</span>
+              <span className="stat-label">{t.accuracy}</span>
               <span className="stat-value">{accuracy}%</span>
             </div>
           )}
           <div className="stat-item">
-            <span className="stat-label">Streak</span>
+            <span className="stat-label">{t.streak}</span>
             <span className="stat-value">🔥 {stats.streak}</span>
           </div>
           {stats.completed > 0 && (
@@ -85,8 +90,8 @@ export const Header: React.FC<HeaderProps> = ({
               type="button"
               className="reset-stats-btn"
               onClick={onResetStats}
-              title="Reset session progress"
-              aria-label="Reset session progress"
+              title={t.resetProgress}
+              aria-label={t.resetProgress}
             >
               ↺
             </button>
@@ -96,23 +101,37 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="action-buttons">
           <button
             type="button"
+            className="icon-btn lang-toggle-btn"
+            onClick={onToggleLanguage}
+            title={t.switchLanguageTitle}
+            aria-label={t.switchLanguageTitle}
+          >
+            <span className={lang === 'en' ? 'lang-code--active' : 'lang-code--inactive'}>EN</span>
+            <span className="lang-divider" aria-hidden="true">
+              /
+            </span>
+            <span className={lang === 'lt' ? 'lang-code--active' : 'lang-code--inactive'}>LT</span>
+          </button>
+
+          <button
+            type="button"
             className={`icon-btn ${settings.showAllKeyLabels ? 'icon-btn--active' : ''}`}
             onClick={onToggleLabels}
             aria-pressed={settings.showAllKeyLabels}
-            title="Toggle note names on all piano keys"
+            title={t.toggleLabelsTitle}
           >
             <span aria-hidden="true">ABC</span>
-            <span className="sr-only">Show note names on all keys</span>
+            <span className="sr-only">{t.toggleLabelsSr}</span>
           </button>
 
           <button
             type="button"
             className="settings-trigger-btn"
             onClick={onOpenSettings}
-            aria-label="Open chord and practice settings"
+            aria-label={t.openSettingsAria}
           >
             <span aria-hidden="true">⚙</span>
-            <span className="settings-btn-text">Settings</span>
+            <span className="settings-btn-text">{t.settingsButton}</span>
           </button>
         </div>
       </div>

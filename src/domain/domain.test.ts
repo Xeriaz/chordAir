@@ -6,21 +6,28 @@ import {
   generatePracticeCard,
   voiceChordOnKeyboard,
 } from './generator';
+import { formatChordReadableName, getInversionText, getQualityText } from './i18n';
 import { PIANO_END_MIDI, PIANO_START_MIDI } from './notes';
 
 describe('ChordAir domain logic', () => {
-  it('formats readable chord names and symbols cleanly', () => {
+  it('formats readable chord names and symbols cleanly in English and Lithuanian', () => {
     const cMinor = buildChordAnswerOption(0, 'minor');
     expect(cMinor.readableName).toBe('C minor');
     expect(cMinor.symbol).toBe('Cm');
+    expect(formatChordReadableName(0, 'minor', 'lt')).toBe('C minoras');
 
     const ebMaj7 = buildChordAnswerOption(3, 'major7');
     expect(ebMaj7.readableName).toBe('E♭ major 7th');
     expect(ebMaj7.symbol).toBe('E♭maj7');
+    expect(formatChordReadableName(3, 'major7', 'lt')).toBe('E♭ didysis septakordas');
 
     const fSharpDim = buildChordAnswerOption(6, 'diminished');
     expect(fSharpDim.readableName).toBe('F♯ diminished');
     expect(fSharpDim.symbol).toBe('F♯dim');
+    expect(formatChordReadableName(6, 'diminished', 'lt')).toBe('F♯ sumažintas');
+
+    expect(getQualityText('major', 'lt').title).toBe('Mažorinis trigarsis');
+    expect(getInversionText('first', 'lt').name).toBe('1-asis apvertimas (sekstakordas)');
   });
 
   it('voices root-position and inverted chords within the 2-octave keyboard range (C4..B5)', () => {

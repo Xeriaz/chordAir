@@ -1,12 +1,15 @@
 import React from 'react';
 import { playChord, playNote } from '../domain/audio';
+import { UI_STRINGS, getVoicedRoleLabel } from '../domain/i18n';
 import { PIANO_KEYS, getRootNoteName } from '../domain/notes';
-import { PianoKeyData, VoicedNote } from '../domain/types';
+import { ChordQualityId, Language, PianoKeyData, VoicedNote } from '../domain/types';
 
 interface PianoKeyboardProps {
   voicedNotes: VoicedNote[];
+  qualityId: ChordQualityId;
   showAllKeyLabels: boolean;
   isRevealed: boolean;
+  language: Language;
 }
 
 const WHITE_KEYS = PIANO_KEYS.filter((k) => !k.noteInfo.isBlack);
@@ -15,7 +18,6 @@ const WHITE_KEYS = PIANO_KEYS.filter((k) => !k.noteInfo.isBlack);
  * Computes the horizontal percentage position for each black key across the 14 white keys (C4..B5).
  */
 function getBlackKeyLeftPercent(midi: number): number {
-  // Count how many white keys appear before this black key
   const whiteIndexBefore = WHITE_KEYS.filter((wk) => wk.midi < midi).length;
   const whiteKeyWidthPct = 100 / WHITE_KEYS.length;
   return whiteIndexBefore * whiteKeyWidthPct;
@@ -23,19 +25,27 @@ function getBlackKeyLeftPercent(midi: number): number {
 
 export const PianoKeyboard: React.FC<PianoKeyboardProps> = ({
   voicedNotes,
+  qualityId,
   showAllKeyLabels,
   isRevealed,
+  language,
 }) => {
+  const t = UI_STRINGS[language];
   const voicedByMidi = new Map<number, VoicedNote>(voicedNotes.map((n) => [n.midi, n]));
   const blackKeys = PIANO_KEYS.filter((k) => k.noteInfo.isBlack);
 
   const spokenSummary = voicedNotes
-    .map(
-      (n) =>
-        `${n.spokenName} ${n.octave}${
-          isRevealed ? ` (${n.roleLabel})` : n.isBass ? ' (lowest note)' : ''
-        }`
-    )
+    .map((n) => {
+      const spoken = language === 'lt' ? n.spokenNameLt : n.spokenName;
+      const roleLabel = getVoicedRoleLabel(n, qualityId, language);
+      return `${spoken} ${n.octave}${
+        isRevealed
+          ? ` (${roleLabel})`
+          : n.isBass
+          ? ` (${t.lowestNoteLegend.toLowerCase()})`
+          : ''
+      }`;
+    })
     .join(', ');
 
   const renderKeyContent = (key: PianoKeyData, voiced: VoicedNote | undefined) => {
@@ -43,13 +53,24 @@ export const PianoKeyboard: React.FC<PianoKeyboardProps> = ({
     const labelText = voiced ? voiced.noteName : getRootNoteName(key.pitchClass);
     const shouldShowLabel = isHighlighted || showAllKeyLabels || key.pitchClass === 0;
 
+    const shortRoleTag =
+      voiced?.role === 'root'
+        ? language === 'lt'
+          ? '1'
+          : 'R'
+        : voiced?.role === 'third'
+        ? '3'
+        : voiced?.role === 'fifth'
+        ? '5'
+        : '7';
+
     return (
       <span className="key-inner">
         {isHighlighted && (
           <span
             className={`key-marker ${voiced?.isBass ? 'key-marker--bass' : ''}`}
             aria-hidden="true"
-            title={voiced?.isBass ? 'Lowest note (bass)' : 'Chord note'}
+            title={voiced?.isBass ? t.lowestNoteTitle : t.chordNoteTitle}
           >
             {voiced?.isBass ? '★' : '●'}
           </span>
@@ -65,7 +86,7 @@ export const PianoKeyboard: React.FC<PianoKeyboardProps> = ({
         )}
         {isHighlighted && isRevealed && voiced && (
           <span className="key-role-tag" aria-hidden="true">
-            {voiced.role === 'root' ? 'R' : voiced.role === 'third' ? '3' : voiced.role === 'fifth' ? '5' : '7'}
+            {shortRoleTag}
           </span>
         )}
       </span>
@@ -73,14 +94,14 @@ export const PianoKeyboard: React.FC<PianoKeyboardProps> = ({
   };
 
   return (
-    <section className="keyboard-stage" aria-label="Piano keyboard">
+    <section className="keyboard-stage" aria-label={t.pianoKeyboardSectionAria}>
       <div className="keyboard-toolbar">
         <div className="keyboard-legend" aria-hidden="true">
           <span className="legend-item">
-            <span className="legend-swatch legend-swatch--bass">★</span> Lowest note
+            <span className="legend-swatch legend-swatch--bass">★</span> {t.lowestNoteLegend}
           </span>
           <span className="legend-item">
-            <span className="legend-swatch legend-swatch--tone">●</span> Chord note
+            <span className="legend-swatch legend-swatch--tone">●</span> {t.chordNoteLegend}
           </span>
         </div>
 
@@ -88,24 +109,26 @@ export const PianoKeyboard: React.FC<PianoKeyboardProps> = ({
           type="button"
           className="listen-btn"
           onClick={() => playChord(voicedNotes.map((n) => n.midi))}
-          aria-label="Play highlighted chord sound (Shortcut: Space)"
+          aria-label={t.hearChordAria}
         >
-          <span aria-hidden="true">🔊</span> Hear chord
+          <span aria-hidden="true">🔊</span> {t.hearChord}
         </button>
       </div>
 
       {/* Screen reader description of highlighted keys */}
       <p className="sr-only" aria-live="polite">
-        Highlighted piano keys from lowest to highest: {spokenSummary}.
+        {t.highlightedKeysSr(spokenSummary)}
       </p>
 
       <div className="piano-scroll-container">
-        <div className="piano-bed" role="group" aria-label="Two-octave piano keyboard from C4 to B5">
+        <div className="piano-bed" role="group" aria-label={t.twoOctaveGroupAria}>
           {/* White keys layer */}
           <div className="white-keys-row">
             {WHITE_KEYS.map((key) => {
               const voiced = voicedByMidi.get(key.midi);
               const isHighlighted = Boolean(voiced);
+              const spoken =
+                language === 'lt' ? key.noteInfo.spokenNameLt : key.noteInfo.spokenName;
               return (
                 <button
                   key={key.midi}
@@ -115,11 +138,7 @@ export const PianoKeyboard: React.FC<PianoKeyboardProps> = ({
                     isHighlighted ? 'piano-key--highlighted' : ''
                   } ${voiced?.isBass ? 'piano-key--bass' : ''}`}
                   aria-pressed={isHighlighted}
-                  aria-label={`${key.noteInfo.spokenName} ${key.octave}${
-                    isHighlighted
-                      ? `, highlighted chord note${voiced?.isBass ? ', lowest note' : ''}`
-                      : ''
-                  }`}
+                  aria-label={t.keyAria(spoken, key.octave, isHighlighted, Boolean(voiced?.isBass))}
                 >
                   {renderKeyContent(key, voiced)}
                 </button>
@@ -133,6 +152,8 @@ export const PianoKeyboard: React.FC<PianoKeyboardProps> = ({
               const voiced = voicedByMidi.get(key.midi);
               const isHighlighted = Boolean(voiced);
               const leftPct = getBlackKeyLeftPercent(key.midi);
+              const spoken =
+                language === 'lt' ? key.noteInfo.spokenNameLt : key.noteInfo.spokenName;
               return (
                 <button
                   key={key.midi}
@@ -143,11 +164,7 @@ export const PianoKeyboard: React.FC<PianoKeyboardProps> = ({
                     isHighlighted ? 'piano-key--highlighted' : ''
                   } ${voiced?.isBass ? 'piano-key--bass' : ''}`}
                   aria-pressed={isHighlighted}
-                  aria-label={`${key.noteInfo.spokenName} ${key.octave}${
-                    isHighlighted
-                      ? `, highlighted chord note${voiced?.isBass ? ', lowest note' : ''}`
-                      : ''
-                  }`}
+                  aria-label={t.keyAria(spoken, key.octave, isHighlighted, Boolean(voiced?.isBass))}
                 >
                   {renderKeyContent(key, voiced)}
                 </button>
