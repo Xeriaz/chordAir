@@ -1,0 +1,19 @@
+{
+  "name": "ChordAir — Piano Chord Practice",
+  "short_name": "ChordAir",
+  "description": "Learn to recognize piano chords from the shapes of their keys through short, interactive practice.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "./icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

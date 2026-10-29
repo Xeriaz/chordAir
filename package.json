@@ -1,0 +1,26 @@
+{
+  "name": "chord-air",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "test:run": "vitest run",
+    "test": "vitest",
+    "deploy": "npm run test:run && npm run build && bash -c 'set -euo pipefail; TMP_DIR=$(mktemp -d); trap \"git worktree remove --force \\\"$TMP_DIR\\\" 2>/dev/null || rm -rf \\\"$TMP_DIR\\\"\" EXIT; git worktree add --detach \"$TMP_DIR\"; cp -R dist/. \"$TMP_DIR/\"; cd \"$TMP_DIR\"; git add -A; git commit -m \"Deploy update\"; git push origin HEAD:refs/heads/prod --force'"
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "~5.7.2",
+    "vite": "^6.2.0",
+    "vitest": "^3.0.7"
+  }
+}
