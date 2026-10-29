@@ -5,6 +5,8 @@ import { PracticeSettings, SessionStats } from '../domain/types';
 interface HeaderProps {
   settings: PracticeSettings;
   stats: SessionStats;
+  activeView: 'practice' | 'guide';
+  onToggleView: () => void;
   onOpenSettings: () => void;
   onResetStats: () => void;
   onToggleLabels: () => void;
@@ -14,6 +16,8 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   settings,
   stats,
+  activeView,
+  onToggleView,
   onOpenSettings,
   onResetStats,
   onToggleLabels,
@@ -38,7 +42,14 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="top-bar">
       <div className="brand-group">
-        <div className="brand-logo" aria-hidden="true">
+        <div
+          className="brand-logo"
+          aria-hidden="true"
+          onClick={() => {
+            if (activeView === 'guide') onToggleView();
+          }}
+          style={{ cursor: activeView === 'guide' ? 'pointer' : 'default' }}
+        >
           <span className="logo-key logo-key--active" />
           <span className="logo-key" />
           <span className="logo-key logo-key--active" />
@@ -99,6 +110,20 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         <div className="action-buttons">
+          <button
+            type="button"
+            className={`icon-btn guide-toggle-btn ${
+              activeView === 'guide' ? 'icon-btn--active' : ''
+            }`}
+            onClick={onToggleView}
+            aria-pressed={activeView === 'guide'}
+            aria-label={t.openGuideAria}
+            title={t.openGuideAria}
+          >
+            <span aria-hidden="true">📖</span>
+            <span className="guide-btn-text">{t.openGuideBtn}</span>
+          </button>
+
           <button
             type="button"
             className="icon-btn lang-toggle-btn"

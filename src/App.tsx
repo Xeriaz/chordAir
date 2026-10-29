@@ -4,6 +4,7 @@ import { FeedbackPanel } from './components/FeedbackPanel';
 import { Header } from './components/Header';
 import { PianoKeyboard } from './components/PianoKeyboard';
 import { SettingsModal } from './components/SettingsModal';
+import { TheoryGuide } from './components/TheoryGuide';
 import { playChord } from './domain/audio';
 import { DEFAULT_SETTINGS } from './domain/chords';
 import { generatePracticeCard } from './domain/generator';
@@ -68,6 +69,7 @@ export const App: React.FC = () => {
   const [card, setCard] = useState<PracticeCard>(() => generatePracticeCard(loadSavedSettings()));
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [activeView, setActiveView] = useState<'practice' | 'guide'>('practice');
 
   const language = settings.language ?? 'en';
   const t = UI_STRINGS[language];
@@ -161,7 +163,7 @@ export const App: React.FC = () => {
   // Global keyboard shortcuts (1-4 to pick option, Enter/ArrowRight for next card, Space to hear chord)
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      if (isSettingsOpen) return;
+      if (isSettingsOpen || activeView !== 'practice') return;
       const tag = (e.target as HTMLElement | null)?.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
 
@@ -192,7 +194,7 @@ export const App: React.FC = () => {
 
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [isSettingsOpen, selectedOptionId, card, handleSelectOption, handleNextCard]);
+  }, [isSettingsOpen, activeView, selectedOptionId, card, handleSelectOption, handleNextCard]);
 
   return (
     <div className="app-shell">
@@ -203,6 +205,10 @@ export const App: React.FC = () => {
       <Header
         settings={settings}
         stats={stats}
+        activeView={activeView}
+        onToggleView={() =>
+          setActiveView((prev) => (prev === 'practice' ? 'guide' : 'practice'))
+        }
         onOpenSettings={() => setIsSettingsOpen(true)}
         onResetStats={handleResetStats}
         onToggleLabels={handleToggleLabels}
@@ -210,35 +216,47 @@ export const App: React.FC = () => {
       />
 
       <main id="main-practice" className="practice-main">
-        {settings.enabledInversions.length > 1 && (
-          <div className="voicing-notice-bar" role="note">
-            <span>{t.inversionsActiveNotice}</span>
-          </div>
-        )}
-
-        <PianoKeyboard
-          voicedNotes={card.voicedNotes}
-          qualityId={card.quality.id}
-          showAllKeyLabels={settings.showAllKeyLabels}
-          isRevealed={selectedOptionId !== null}
-          language={language}
-        />
-
-        <AnswerGrid
-          options={card.options}
-          selectedOptionId={selectedOptionId}
-          correctOptionId={card.correctOptionId}
-          language={language}
-          onSelectOption={handleSelectOption}
-        />
-
-        {selectedOptionId !== null && (
-          <FeedbackPanel
-            card={card}
-            selectedOptionId={selectedOptionId}
+        {activeView === 'guide' ? (
+          <TheoryGuide
             language={language}
-            onNextCard={handleNextCard}
+            onStartPractice={() => {
+              setActiveView('practice');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
           />
+        ) : (
+          <>
+            {settings.enabledInversions.length > 1 && (
+              <div className="voicing-notice-bar" role="note">
+                <span>{t.inversionsActiveNotice}</span>
+              </div>
+            )}
+
+            <PianoKeyboard
+              voicedNotes={card.voicedNotes}
+              qualityId={card.quality.id}
+              showAllKeyLabels={settings.showAllKeyLabels}
+              isRevealed={selectedOptionId !== null}
+              language={language}
+            />
+
+            <AnswerGrid
+              options={card.options}
+              selectedOptionId={selectedOptionId}
+              correctOptionId={card.correctOptionId}
+              language={language}
+              onSelectOption={handleSelectOption}
+            />
+
+            {selectedOptionId !== null && (
+              <FeedbackPanel
+                card={card}
+                selectedOptionId={selectedOptionId}
+                language={language}
+                onNextCard={handleNextCard}
+              />
+            )}
+          </>
         )}
       </main>
 

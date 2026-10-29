@@ -45,11 +45,10 @@ const LT_QUALITIES: Record<ChordQualityId, QualityTranslation> = {
   minor: {
     name: 'minoras',
     title: 'Minorinis trigarsis',
-    symbolSuffix: 'm',
     intervalLabels: ['Prima (pagrindinis garsas)', 'Mažoji tercija', 'Grynoji kvinta'],
     description: 'Šiltas, jausmingas ir šiek tiek melancholiškas 3 natų akordas.',
     shapeHint: 'Pagrindinis garsas + 3 pustoniai (pažeminta vidurinė nata) + 4 pustoniai (viršutinė nata).',
-  } as QualityTranslation,
+  },
   diminished: {
     name: 'sumažintas',
     title: 'Sumažintas trigarsis',
@@ -259,6 +258,9 @@ export const UI_STRINGS = {
     toggleLabelsTitle: 'Toggle note names on all piano keys',
     toggleLabelsSr: 'Show note names on all keys',
     switchLanguageTitle: 'Switch language to Lithuanian (Lietuvių)',
+    openGuideBtn: 'Theory',
+    openGuideAria: 'Open chord construction and Major vs. Minor theory guide',
+    backToPracticeShort: 'Practice',
     openSettingsAria: 'Open chord and practice settings',
     settingsButton: 'Settings',
     inversionsActiveNotice:
@@ -349,6 +351,9 @@ export const UI_STRINGS = {
     toggleLabelsTitle: 'Rodyti natų pavadinimus ant visų klavišų',
     toggleLabelsSr: 'Rodyti natų pavadinimus ant visų klavišų',
     switchLanguageTitle: 'Perjungti kalbą į anglų (English)',
+    openGuideBtn: 'Teorija',
+    openGuideAria: 'Atidaryti akordų sudarymo ir mažoro bei minoro atskyrimo atmintinę',
+    backToPracticeShort: 'Praktika',
     openSettingsAria: 'Atidaryti akordų ir praktikos nustatymus',
     settingsButton: 'Nustatymai',
     inversionsActiveNotice:
