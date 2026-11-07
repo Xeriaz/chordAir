@@ -48,7 +48,7 @@ const TERMINOLOGY_ITEMS = [
     termEn: 'Half note (2/4)',
     termLt: 'Pusinė nata',
     descEn: 'Lasts 2 beats. Equals 4 units in an 8th-note base, or 8 units in a 16th-note base.',
-    descLt: 'Trunka 2 takto dalis. Atitinka 4 vienetus aštuntinėse arba 8 vienetus šešioliktinėse.',
+    descLt: 'Trunka 2 takto dalis. Atitinka 4 vienetus aštuntinėse arba 8 vienetai šešioliktinėse.',
   },
   {
     termEn: 'Quarter note (1/4)',
@@ -272,24 +272,69 @@ export const SubdivisionGuide: React.FC<SubdivisionGuideProps> = ({
       {/* Hero Header */}
       <header className="theory-header">
         <div className="section-badge">
-          {isLt ? '⏱️ Ritmo technika · Pulso smulkinimas' : '⏱️ Rhythm Technique · Subdivision'}
+          {isLt ? '⏱️ Ritmo pamoka pradedantiesiems · Pulso smulkinimas' : '⏱️ Rhythm Lesson for Beginners · Subdivision'}
         </div>
         <h1 id="subdivision-title" className="theory-title">
           {isLt
-            ? 'Pulso Smulkinimas ir Ritmo Skaičiavimo Variklis'
+            ? 'Pulso Smulkinimas ir Ritmo Skaičiavimo Gidas'
             : 'Subdivided Counting Engine & Practice Guide'}
         </h1>
         <p className="theory-subtitle">
           {isLt
-            ? 'Atsikratykite ritmo spėliojimo ir netikslumų. Paverskite kiekvieną takto natą tikslia sveikųjų skaičių aritmetika!'
-            : 'Eliminate rhythmic guesswork and drift. Convert every musical duration into clean discrete integer multiples of a steady base pulse.'}
+            ? 'Paprastas būdas išmokti groti tiksliai be jokio spėliojimo: kiekviena nata paverčiama aiškiais skaičiais!'
+            : 'The simplest way to play in steady rhythm without guesswork: turn every note duration into clean, countable integers!'}
         </p>
       </header>
+
+      {/* Beginner Quick-Start Card (Paprastas paaiškinimas pradedantiesiems) */}
+      <section className="theory-card beginner-quickstart-card" aria-labelledby="beginner-quickstart-title">
+        <div className="card-badge card-badge--gold">
+          {isLt ? '💡 Pradedančiojo pradžiamokslis' : '💡 Absolute Beginner Guide'}
+        </div>
+        <h2 id="beginner-quickstart-title" className="card-title">
+          {isLt ? 'Kaip tai veikia labai paprastai?' : 'How does it work in plain words?'}
+        </h2>
+        <div className="beginner-steps-container">
+          <div className="beginner-step-pill">
+            <span className="pill-number">1</span>
+            <div className="pill-content">
+              <strong>{isLt ? 'Metronomas taksi smulkiais žingsniais' : 'Metronome ticks in small steps'}</strong>
+              <p>
+                {isLt
+                  ? 'Užuot skaičiavę 1, 2, 3, 4, įjungiame aštuntinių pulsą ir skaičiuojame: 1, 2, 3, 4, 5, 6, 7, 8 (po du dūžius kiekvienai takto daliai).'
+                  : 'Instead of counting 1, 2, 3, 4, we count steady eighth notes: 1, 2, 3, 4, 5, 6, 7, 8 (two clicks per beat).'}
+              </p>
+            </div>
+          </div>
+          <div className="beginner-step-pill">
+            <span className="pill-number">2</span>
+            <div className="pill-content">
+              <strong>{isLt ? 'Kiekviena nata trunka tam tikrą skaičių dūžių' : 'Each note lasts a set number of clicks'}</strong>
+              <p>
+                {isLt
+                  ? 'Aštuntinė nata = 1 dūžis. Ketvirtinė nata = 2 dūžiai. Pusinė nata = 4 dūžiai. Viskas tampa paprastu skaičiavimu!'
+                  : 'Eighth note = 1 click. Quarter note = 2 clicks. Half note = 4 clicks. Everything becomes straightforward counting!'}
+              </p>
+            </div>
+          </div>
+          <div className="beginner-step-pill">
+            <span className="pill-number">3</span>
+            <div className="pill-content">
+              <strong>{isLt ? 'Paspauskite ir laikykite' : 'Press on the start number and hold'}</strong>
+              <p>
+                {isLt
+                  ? 'Nuspauskite klavišą ties pirmu skaičiumi ir laikykite jį skambėti per visus natos vienetus. Taip ritmas bus idealiai tikslus.'
+                  : 'Press the key strictly on the start tick and hold it through all allocated units. Your rhythm will become rock-solid.'}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* 1. Educational Explainer Copy */}
       <section className="theory-card" aria-labelledby="what-is-subdivision-heading">
         <div className="card-badge">
-          {isLt ? '1 Dalis · Teorinis Pagrindas' : 'Part 1 · The Core Concept'}
+          {isLt ? '1 Dalis · Pagrindinis Principas' : 'Part 1 · The Core Concept'}
         </div>
         <h2 id="what-is-subdivision-heading" className="card-title">
           {isLt ? 'Kas yra pulso smulkinimas?' : 'What is Subdivision?'}
@@ -345,8 +390,8 @@ export const SubdivisionGuide: React.FC<SubdivisionGuideProps> = ({
         </h2>
         <p className="section-description">
           {isLt
-            ? 'Pasirinkite kurį nors iš paruoštų scenarijų arba sukurkite savo takto natas. Stebėkite, kaip kiekvienas metronomo dūžis atitinka tikslią natos atkarpą.'
-            : 'Select one of the curriculum scenarios or build your own custom measure. Watch each subdivision tick highlight the exact integer unit.'}
+            ? 'Pasirinkite kurį nors iš paruoštų scenarijų arba sukurkite savo takto natas. Spauskite „Groti pulsą“ ir stebėkite, kaip dūžiai tiksliai rodo kiekvienos natos trukmę.'
+            : 'Select one of the curriculum scenarios or build your own custom measure. Press "Play Pulse" and watch each subdivision tick highlight the exact note duration.'}
         </p>
 
         {/* Preset scenario selection */}
@@ -385,7 +430,7 @@ export const SubdivisionGuide: React.FC<SubdivisionGuideProps> = ({
                 {isLt ? '✏️ Pasirinktinis Taktas' : '✏️ Custom Builder'}
               </span>
               <span className="scenario-btn-badge">
-                {isLt ? 'Kurkite savo ritmą' : 'Add custom notes'}
+                {isLt ? 'Kurkite savo natų derinį' : 'Build custom notes'}
               </span>
             </button>
           </div>
@@ -396,7 +441,7 @@ export const SubdivisionGuide: React.FC<SubdivisionGuideProps> = ({
           <span className="picker-label">
             {isLt ? 'Bazinė vertė (1 vienetas):' : 'Smallest Denomination (Base Unit = 1):'}
           </span>
-          <div className="base-toggle-pills" role="radiogroup" aria-label="Base unit selector">
+          <div className="base-toggle-pills" role="radiogroup" aria-label={isLt ? 'Bazinės vertės pasirinkimas' : 'Base unit selector'}>
             <button
               type="button"
               role="radio"
@@ -429,65 +474,65 @@ export const SubdivisionGuide: React.FC<SubdivisionGuideProps> = ({
                 type="button"
                 className="add-note-chip"
                 onClick={() => handleAddNote('16th')}
-                title="Sixteenth note"
+                title={isLt ? 'Šešioliktinė nata' : 'Sixteenth note'}
               >
-                𝅘𝅥𝅯 {isLt ? '16-tinė' : '16th'} ({getNoteUnits('16th', baseUnit)} vnt)
+                𝅘𝅥𝅯 {isLt ? '16-tinė' : '16th'} ({getNoteUnits('16th', baseUnit)} {isLt ? 'vnt' : 'units'})
               </button>
               <button
                 type="button"
                 className="add-note-chip"
                 onClick={() => handleAddNote('8th')}
-                title="Eighth note"
+                title={isLt ? 'Aštuntinė nata' : 'Eighth note'}
               >
-                ♪ {isLt ? 'Aštuntinė' : '8th'} ({getNoteUnits('8th', baseUnit)} vnt)
+                ♪ {isLt ? 'Aštuntinė' : '8th'} ({getNoteUnits('8th', baseUnit)} {isLt ? 'vnt' : 'units'})
               </button>
               <button
                 type="button"
                 className="add-note-chip"
                 onClick={() => handleAddNote('dotted-8th')}
-                title="Dotted eighth note"
+                title={isLt ? 'Punktuota aštuntinė nata' : 'Dotted eighth note'}
               >
-                ♪. {isLt ? 'Punkt. ašt.' : 'Dot 8th'} ({getNoteUnits('dotted-8th', baseUnit)} vnt)
+                ♪. {isLt ? 'Punkt. ašt.' : 'Dot 8th'} ({getNoteUnits('dotted-8th', baseUnit)} {isLt ? 'vnt' : 'units'})
               </button>
               <button
                 type="button"
                 className="add-note-chip"
                 onClick={() => handleAddNote('quarter')}
-                title="Quarter note"
+                title={isLt ? 'Ketvirtinė nata' : 'Quarter note'}
               >
-                ♩ {isLt ? 'Ketvirtinė' : 'Quarter'} ({getNoteUnits('quarter', baseUnit)} vnt)
+                ♩ {isLt ? 'Ketvirtinė' : 'Quarter'} ({getNoteUnits('quarter', baseUnit)} {isLt ? 'vnt' : 'units'})
               </button>
               <button
                 type="button"
                 className="add-note-chip"
                 onClick={() => handleAddNote('dotted-quarter')}
-                title="Dotted quarter note"
+                title={isLt ? 'Punktuota ketvirtinė nata' : 'Dotted quarter note'}
               >
-                ♩. {isLt ? 'Punkt. ketv.' : 'Dot Qtr'} ({getNoteUnits('dotted-quarter', baseUnit)} vnt)
+                ♩. {isLt ? 'Punkt. ketv.' : 'Dot Qtr'} ({getNoteUnits('dotted-quarter', baseUnit)} {isLt ? 'vnt' : 'units'})
               </button>
               <button
                 type="button"
                 className="add-note-chip"
                 onClick={() => handleAddNote('half')}
-                title="Half note"
+                title={isLt ? 'Pusinė nata' : 'Half note'}
               >
-                𝅗𝅥 {isLt ? 'Pusinė' : 'Half'} ({getNoteUnits('half', baseUnit)} vnt)
+                𝅗𝅥 {isLt ? 'Pusinė' : 'Half'} ({getNoteUnits('half', baseUnit)} {isLt ? 'vnt' : 'units'})
               </button>
               <button
                 type="button"
                 className="add-note-chip"
                 onClick={() => handleAddNote('dotted-half')}
-                title="Dotted half note"
+                title={isLt ? 'Punktuota pusinė nata' : 'Dotted half note'}
               >
-                𝅗𝅥. {isLt ? 'Punkt. pusinė' : 'Dot Half'} ({getNoteUnits('dotted-half', baseUnit)} vnt)
+                𝅗𝅥. {isLt ? 'Punkt. pusinė' : 'Dot Half'} ({getNoteUnits('dotted-half', baseUnit)} {isLt ? 'vnt' : 'units'})
               </button>
               <button
                 type="button"
                 className="add-note-chip"
                 onClick={() => handleAddNote('whole')}
-                title="Whole note"
+                title={isLt ? 'Sveikoji nata' : 'Whole note'}
               >
-                𝅝 {isLt ? 'Sveikoji' : 'Whole'} ({getNoteUnits('whole', baseUnit)} vnt)
+                𝅝 {isLt ? 'Sveikoji' : 'Whole'} ({getNoteUnits('whole', baseUnit)} {isLt ? 'vnt' : 'units'})
               </button>
               <button
                 type="button"
@@ -503,7 +548,7 @@ export const SubdivisionGuide: React.FC<SubdivisionGuideProps> = ({
                 className="chip-action chip-action--clear"
                 onClick={handleClearNotes}
                 disabled={measureNotes.length === 0}
-                title={isLt ? 'Išvalyti' : 'Clear'}
+                title={isLt ? 'Išvalyti viską' : 'Clear all'}
               >
                 ✕ {isLt ? 'Išvalyti' : 'Clear'}
               </button>
@@ -527,7 +572,7 @@ export const SubdivisionGuide: React.FC<SubdivisionGuideProps> = ({
               }`}
             >
               {currentTotalUnits} / {targetTotalUnits} {isLt ? 'vienetų' : 'units'}
-              {currentTotalUnits === targetTotalUnits && ' ✓'}
+              {currentTotalUnits === targetTotalUnits && (isLt ? ' (Pilnas taktas ✓)' : ' (Complete ✓)')}
             </span>
           </div>
 
@@ -537,7 +582,7 @@ export const SubdivisionGuide: React.FC<SubdivisionGuideProps> = ({
             </span>
             <span className="stat-formula">
               {spans.length > 0
-                ? spans.map((s) => `${s.units} vnt`).join(' + ') + ` = ${currentTotalUnits} vnt`
+                ? spans.map((s) => `${s.units} ${isLt ? 'vnt' : 'units'}`).join(' + ') + ` = ${currentTotalUnits} ${isLt ? 'vnt' : 'units'}`
                 : isLt
                 ? 'Nėra natų'
                 : 'No notes'}
@@ -555,7 +600,7 @@ export const SubdivisionGuide: React.FC<SubdivisionGuideProps> = ({
         </div>
 
         {/* RHYTHMIC GRID & VISUAL MEASURE DISPLAY */}
-        <div className="rhythmic-grid-container" aria-label="Rhythmic measure grid">
+        <div className="rhythmic-grid-container" aria-label={isLt ? 'Ritminio takto tinklelis' : 'Rhythmic measure grid'}>
           {/* Tick numbers ruler (1 .. 8 or 1 .. 16) */}
           <div
             className="ticks-ruler"
@@ -579,10 +624,18 @@ export const SubdivisionGuide: React.FC<SubdivisionGuideProps> = ({
                     setCurrentTick(tickNum);
                     triggerTickAudio(tickNum);
                   }}
-                  title={`Tick ${tickNum}${isMainBeat ? ` (Beat ${beatNumber})` : ''}`}
+                  title={
+                    isLt
+                      ? `Pulsas ${tickNum}${isMainBeat ? ` (${beatNumber}-oji takto dalis)` : ''}`
+                      : `Tick ${tickNum}${isMainBeat ? ` (Beat ${beatNumber})` : ''}`
+                  }
                 >
                   <span className="tick-number">{tickNum}</span>
-                  {isMainBeat && <span className="beat-indicator">B{beatNumber}</span>}
+                  {isMainBeat && (
+                    <span className="beat-indicator">
+                      {isLt ? `D${beatNumber}` : `B${beatNumber}`}
+                    </span>
+                  )}
                 </div>
               );
             })}
@@ -647,7 +700,7 @@ export const SubdivisionGuide: React.FC<SubdivisionGuideProps> = ({
           <div className="active-tick-badge">
             <span className="pulse-dot" aria-hidden="true" />
             <span>
-              {isLt ? 'Dabartinis pulsas (Tick):' : 'Current Tick:'} <strong>{currentTick}</strong> /{' '}
+              {isLt ? 'Dabartinis dūžis:' : 'Current Tick:'} <strong>{currentTick}</strong> /{' '}
               {targetTotalUnits}
             </span>
           </div>
@@ -694,7 +747,7 @@ export const SubdivisionGuide: React.FC<SubdivisionGuideProps> = ({
               title={isLt ? '1 žingsnis atgal' : 'Step back 1 tick'}
               aria-label={isLt ? '1 žingsnis atgal' : 'Step back 1 tick'}
             >
-              ◀ {isLt ? '-1 vnt' : '-1 tick'}
+              ◀ {isLt ? '-1 dūžis' : '-1 tick'}
             </button>
 
             <button
@@ -704,7 +757,7 @@ export const SubdivisionGuide: React.FC<SubdivisionGuideProps> = ({
               title={isLt ? '1 žingsnis pirmyn' : 'Step forward 1 tick'}
               aria-label={isLt ? '1 žingsnis pirmyn' : 'Step forward 1 tick'}
             >
-              {isLt ? '+1 vnt' : '+1 tick'} ▶
+              {isLt ? '+1 dūžis' : '+1 tick'} ▶
             </button>
           </div>
 
@@ -729,6 +782,7 @@ export const SubdivisionGuide: React.FC<SubdivisionGuideProps> = ({
                 value={bpm}
                 onChange={(e) => setBpm(Number(e.target.value))}
                 className="bpm-range-slider"
+                aria-label={isLt ? 'Metronomo tempas BPM' : 'Metronome tempo BPM'}
               />
               <span className="tempo-bound">180</span>
             </div>
@@ -760,7 +814,7 @@ export const SubdivisionGuide: React.FC<SubdivisionGuideProps> = ({
           {/* Sound options */}
           <div className="sound-options-group">
             <span className="picker-label">{isLt ? 'Garso režimas:' : 'Audio Mode:'}</span>
-            <div className="sound-toggle-pills" role="radiogroup" aria-label="Audio mode">
+            <div className="sound-toggle-pills" role="radiogroup" aria-label={isLt ? 'Garso režimas' : 'Audio mode'}>
               <button
                 type="button"
                 role="radio"
@@ -777,7 +831,7 @@ export const SubdivisionGuide: React.FC<SubdivisionGuideProps> = ({
                 className={`pill-btn ${soundMode === 'pitch' ? 'pill-btn--active' : ''}`}
                 onClick={() => setSoundMode('pitch')}
               >
-                🎹 {isLt ? 'Natos garsas (Attack tone)' : 'Pitch Tone'}
+                🎹 {isLt ? 'Natos garsas (Ataka)' : 'Pitch Tone'}
               </button>
               <button
                 type="button"
@@ -835,42 +889,42 @@ export const SubdivisionGuide: React.FC<SubdivisionGuideProps> = ({
                 <tr>
                   <td>Eighth note</td>
                   <td><strong>Aštuntinė</strong></td>
-                  <td>0.5 beat</td>
+                  <td>{isLt ? '0,5 dalies' : '0.5 beat'}</td>
                   <td><span className="unit-pill">1</span></td>
                   <td><code>[1]</code></td>
                 </tr>
                 <tr>
                   <td>Quarter note</td>
                   <td><strong>Ketvirtinė</strong></td>
-                  <td>1.0 beat</td>
+                  <td>{isLt ? '1,0 dalis' : '1.0 beat'}</td>
                   <td><span className="unit-pill">2</span></td>
                   <td><code>[1, 2]</code></td>
                 </tr>
                 <tr>
                   <td>Dotted quarter</td>
                   <td><strong>Punktuota ketvirtinė</strong></td>
-                  <td>1.5 beats</td>
+                  <td>{isLt ? '1,5 dalies' : '1.5 beats'}</td>
                   <td><span className="unit-pill">3</span></td>
                   <td><code>[1, 2, 3]</code></td>
                 </tr>
                 <tr>
                   <td>Half note</td>
                   <td><strong>Pusinė</strong></td>
-                  <td>2.0 beats</td>
+                  <td>{isLt ? '2,0 dalys' : '2.0 beats'}</td>
                   <td><span className="unit-pill">4</span></td>
                   <td><code>[1, 2, 3, 4]</code></td>
                 </tr>
                 <tr>
                   <td>Dotted half</td>
                   <td><strong>Punktuota pusinė</strong></td>
-                  <td>3.0 beats</td>
+                  <td>{isLt ? '3,0 dalys' : '3.0 beats'}</td>
                   <td><span className="unit-pill">6</span></td>
                   <td><code>[1, 2, 3, 4, 5, 6]</code></td>
                 </tr>
                 <tr>
                   <td>Whole note</td>
                   <td><strong>Sveikoji</strong></td>
-                  <td>4.0 beats</td>
+                  <td>{isLt ? '4,0 dalys' : '4.0 beats'}</td>
                   <td><span className="unit-pill">8</span></td>
                   <td><code>[1, 2, 3, 4, 5, 6, 7, 8]</code></td>
                 </tr>
@@ -888,11 +942,12 @@ export const SubdivisionGuide: React.FC<SubdivisionGuideProps> = ({
               </h4>
               <ul className="scenario-steps-list">
                 <li>
-                  <strong>{isLt ? 'Natos:' : 'Notes:'}</strong> <code>[Quarter, Eighth, Eighth, Half]</code>
+                  <strong>{isLt ? 'Natos:' : 'Notes:'}</strong>{' '}
+                  <code>{isLt ? '[Ketvirtinė, Aštuntinė, Aštuntinė, Pusinė]' : '[Quarter, Eighth, Eighth, Half]'}</code>
                 </li>
                 <li>
                   <strong>{isLt ? 'Vienetų skaidymas:' : 'Unit breakdown:'}</strong>{' '}
-                  <code>2 units + 1 unit + 1 unit + 4 units = 8 units</code>
+                  <code>{isLt ? '2 vnt + 1 vnt + 1 vnt + 4 vnt = 8 vnt' : '2 units + 1 unit + 1 unit + 4 units = 8 units'}</code>
                 </li>
                 <li>
                   <strong>{isLt ? 'Skaičiavimas:' : 'Visual display count:'}</strong>{' '}
@@ -916,11 +971,12 @@ export const SubdivisionGuide: React.FC<SubdivisionGuideProps> = ({
               </h4>
               <ul className="scenario-steps-list">
                 <li>
-                  <strong>{isLt ? 'Natos:' : 'Notes:'}</strong> <code>[Dotted Quarter, Eighth, Half]</code>
+                  <strong>{isLt ? 'Natos:' : 'Notes:'}</strong>{' '}
+                  <code>{isLt ? '[Punktuota ketvirtinė, Aštuntinė, Pusinė]' : '[Dotted Quarter, Eighth, Half]'}</code>
                 </li>
                 <li>
                   <strong>{isLt ? 'Vienetų skaidymas:' : 'Unit breakdown:'}</strong>{' '}
-                  <code>3 units + 1 unit + 4 units = 8 units</code>
+                  <code>{isLt ? '3 vnt + 1 vnt + 4 vnt = 8 vnt' : '3 units + 1 unit + 4 units = 8 units'}</code>
                 </li>
                 <li>
                   <strong>{isLt ? 'Skaičiavimas:' : 'Visual display count:'}</strong>{' '}
