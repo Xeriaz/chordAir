@@ -8,6 +8,7 @@ import { ChordQualityId, Language, PitchClass } from '../domain/types';
 interface TheoryGuideProps {
   language: Language;
   onStartPractice: () => void;
+  onOpenRhythm?: () => void;
 }
 
 const GUIDE_CONTENT = {
@@ -271,7 +272,7 @@ function getBlackLeftPercent(midi: number): number {
   return (whiteBefore * 100) / WHITE_KEYS.length;
 }
 
-export const TheoryGuide: React.FC<TheoryGuideProps> = ({ language, onStartPractice }) => {
+export const TheoryGuide: React.FC<TheoryGuideProps> = ({ language, onStartPractice, onOpenRhythm }) => {
   const g = GUIDE_CONTENT[language];
   const t = UI_STRINGS[language];
   const [labRoot, setLabRoot] = useState<PitchClass>(0); // C
@@ -633,6 +634,34 @@ export const TheoryGuide: React.FC<TheoryGuideProps> = ({ language, onStartPract
           ))}
         </div>
       </section>
+
+            {onOpenRhythm && (
+        <section className="guide-card" style={{ borderColor: "rgba(56, 189, 248, 0.4)", background: "linear-gradient(135deg, rgba(19, 34, 63, 0.6) 0%, rgba(13, 22, 41, 0.6) 100%)" }}>
+          <span className="guide-step-badge">
+            {language === "lt" ? "⏱️ Ritmo technika" : "⏱️ Rhythm Technique"}
+          </span>
+          <h3 className="guide-section-title">
+            {language === "lt"
+              ? "Pulso smulkinimas (Subdivision) praktika"
+              : "Subdivided Counting & Rhythm Engine"}
+          </h3>
+          <p className="guide-text">
+            {language === "lt"
+              ? "Atraskite pulso smulkinimo metodą: paverskite kiekvieną natą tikslia sveikųjų skaičių aritmetika su interaktyviu metronomu."
+              : "Discover the power of subdivision: eliminate rhythmic drift with discrete integer counting, visual grid analysis, and interactive metronome playback."}
+          </p>
+          <div>
+            <button
+              type="button"
+              className="guide-audio-btn"
+              style={{ color: "var(--accent-primary)", borderColor: "var(--accent-primary)" }}
+              onClick={onOpenRhythm}
+            >
+              ⏱️ {language === "lt" ? "Atidaryti ritmo treniruoklį →" : "Explore Subdivided Counting Guide →"}
+            </button>
+          </div>
+        </section>
+      )}
 
       <div className="guide-bottom-cta">
         <button type="button" className="next-card-btn" onClick={onStartPractice}>

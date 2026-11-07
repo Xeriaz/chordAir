@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { AnswerGrid } from './components/AnswerGrid';
 import { FeedbackPanel } from './components/FeedbackPanel';
-import { Header } from './components/Header';
+import { AppView, Header } from './components/Header';
 import { PianoKeyboard } from './components/PianoKeyboard';
 import { SettingsModal } from './components/SettingsModal';
+import { SubdivisionGuide } from './components/SubdivisionGuide';
 import { TheoryGuide } from './components/TheoryGuide';
 import { playChord } from './domain/audio';
 import {
@@ -114,7 +115,7 @@ export const App: React.FC = () => {
   const [card, setCard] = useState<PracticeCard>(() => generatePracticeCard(loadSavedSettings()));
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [activeView, setActiveView] = useState<'practice' | 'guide'>('practice');
+  const [activeView, setActiveView] = useState<AppView>('practice');
 
   const language = settings.language ?? 'en';
   const t = UI_STRINGS[language];
@@ -251,9 +252,7 @@ export const App: React.FC = () => {
         settings={settings}
         stats={stats}
         activeView={activeView}
-        onToggleView={() =>
-          setActiveView((prev) => (prev === 'practice' ? 'guide' : 'practice'))
-        }
+        onSelectView={setActiveView}
         onOpenSettings={() => setIsSettingsOpen(true)}
         onResetStats={handleResetStats}
         onToggleLabels={handleToggleLabels}
@@ -261,11 +260,28 @@ export const App: React.FC = () => {
       />
 
       <main id="main-practice" className="practice-main">
-        {activeView === 'guide' ? (
+        {activeView === 'rhythm' ? (
+          <SubdivisionGuide
+            language={language}
+            onToggleLanguage={handleToggleLanguage}
+            onBackToPractice={() => {
+              setActiveView('practice');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onOpenChordsGuide={() => {
+              setActiveView('guide');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+          />
+        ) : activeView === 'guide' ? (
           <TheoryGuide
             language={language}
             onStartPractice={() => {
               setActiveView('practice');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onOpenRhythm={() => {
+              setActiveView('rhythm');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
           />

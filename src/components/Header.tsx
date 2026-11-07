@@ -2,11 +2,13 @@ import React from 'react';
 import { UI_STRINGS, getInversionText, getPresetText } from '../domain/i18n';
 import { PracticeSettings, SessionStats } from '../domain/types';
 
+export type AppView = 'practice' | 'guide' | 'rhythm';
+
 interface HeaderProps {
   settings: PracticeSettings;
   stats: SessionStats;
-  activeView: 'practice' | 'guide';
-  onToggleView: () => void;
+  activeView: AppView;
+  onSelectView: (view: AppView) => void;
   onOpenSettings: () => void;
   onResetStats: () => void;
   onToggleLabels: () => void;
@@ -17,7 +19,7 @@ export const Header: React.FC<HeaderProps> = ({
   settings,
   stats,
   activeView,
-  onToggleView,
+  onSelectView,
   onOpenSettings,
   onResetStats,
   onToggleLabels,
@@ -46,9 +48,10 @@ export const Header: React.FC<HeaderProps> = ({
           className="brand-logo"
           aria-hidden="true"
           onClick={() => {
-            if (activeView === 'guide') onToggleView();
+            if (activeView !== 'practice') onSelectView('practice');
           }}
-          style={{ cursor: activeView === 'guide' ? 'pointer' : 'default' }}
+          style={{ cursor: activeView !== 'practice' ? 'pointer' : 'default' }}
+          title={activeView !== 'practice' ? (lang === 'lt' ? 'Grįžti į treniruotę' : 'Back to practice') : undefined}
         >
           <span className="logo-key logo-key--active" />
           <span className="logo-key" />
@@ -115,13 +118,27 @@ export const Header: React.FC<HeaderProps> = ({
             className={`icon-btn guide-toggle-btn ${
               activeView === 'guide' ? 'icon-btn--active' : ''
             }`}
-            onClick={onToggleView}
+            onClick={() => onSelectView(activeView === 'guide' ? 'practice' : 'guide')}
             aria-pressed={activeView === 'guide'}
             aria-label={t.openGuideAria}
             title={t.openGuideAria}
           >
             <span aria-hidden="true">📖</span>
             <span className="guide-btn-text">{t.openGuideBtn}</span>
+          </button>
+
+          <button
+            type="button"
+            className={`icon-btn rhythm-toggle-btn ${
+              activeView === 'rhythm' ? 'icon-btn--active' : ''
+            }`}
+            onClick={() => onSelectView(activeView === 'rhythm' ? 'practice' : 'rhythm')}
+            aria-pressed={activeView === 'rhythm'}
+            aria-label={t.openRhythmAria}
+            title={t.openRhythmAria}
+          >
+            <span aria-hidden="true">⏱️</span>
+            <span className="guide-btn-text">{t.openRhythmBtn}</span>
           </button>
 
           <button
