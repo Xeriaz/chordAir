@@ -7,6 +7,8 @@ import {
   getNearestLandmark,
   getPageImageUrl,
 } from '../domain/bookLandmarks';
+import { playNote } from '../domain/audio';
+import { getPageTranslation } from '../domain/bookTranslations';
 import { Language } from '../domain/types';
 
 export interface BookPageViewerProps {
@@ -43,6 +45,14 @@ export const BookPageViewer: React.FC<BookPageViewerProps> = ({
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+  const [isLtBannerOpen, setIsLtBannerOpen] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem('chordair_book_lt_banner');
+      return saved !== null ? saved === 'true' : true;
+    } catch {
+      return true;
+    }
+  });
 
   const containerRef = useRef<HTMLDivElement>(null);
   const dragStartRef = useRef<{ x: number; y: number; panX: number; panY: number }>({
@@ -145,6 +155,16 @@ export const BookPageViewer: React.FC<BookPageViewerProps> = ({
   const handleResetZoom = () => {
     setZoom(1);
     setPan({ x: 0, y: 0 });
+  };
+
+  const handleToggleLtBanner = () => {
+    setIsLtBannerOpen((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('chordair_book_lt_banner', String(next));
+      } catch {}
+      return next;
+    });
   };
 
   const handleToggleFullscreen = () => {
@@ -320,6 +340,8 @@ export const BookPageViewer: React.FC<BookPageViewerProps> = ({
       } else if (e.key === '0') {
         e.preventDefault();
         handleResetZoom();
+      } else if (e.key === 't' || e.key === 'T') {
+        handleToggleLtBanner();
       } else if (e.key === 'Escape') {
         if (isDrawerOpen) {
           setIsDrawerOpen(false);
@@ -335,6 +357,8 @@ export const BookPageViewer: React.FC<BookPageViewerProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handlePrev, handleNext, handleJump, goToPage, zoom, isDrawerOpen, onClose]);
 
+  const translationResult = getPageTranslation(currentPage);
+  const { entry: pageTranslation, isExact } = translationResult;
   const currentLandmark = findLandmarkForPage(currentPage);
   const nearestLandmark = getNearestLandmark(currentPage);
 
@@ -517,6 +541,110 @@ export const BookPageViewer: React.FC<BookPageViewerProps> = ({
           )}
         </div>
       </header>
+
+      {/* Collapsible Lithuanian Instructional Banner directly above the score */}
+      <section
+        className={`viewer-lt-banner ${
+          isLtBannerOpen ? 'viewer-lt-banner--open' : 'viewer-lt-banner--collapsed'
+        }`}
+        aria-label="Lietuviškas vadovas ir paaiškinimai"
+      >
+        <div
+          className="lt-banner-header"
+          onClick={handleToggleLtBanner}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleToggleLtBanner();
+            }
+          }}
+          title={isLtBannerOpen ? 'Spustelėkite, norėdami suskleisti (T)' : 'Spustelėkite, norėdami išskleisti (T)'}
+        >
+          <div className="lt-banner-left">
+            <span className="lt-flag-badge" aria-hidden="true">🇱🇹 LT</span>
+            <span className="lt-lesson-tag">{pageTranslation.lessonTag}</span>
+            <span className="lt-page-pill">p. {pageTranslation.page}</span>
+            <span className="lt-banner-headline">{pageTranslation.titleLt}</span>
+            {!isExact && (
+              <span className="lt-derived-badge" title="Praktikos tęsinys iš ankstesnės temos">
+                Tęsinys
+              </span>
+            )}
+          </div>
+
+          <div className="lt-banner-actions" onClick={(e) => e.stopPropagation()}>
+            {pageTranslation.audioPreview && (
+              <button
+                type="button"
+                className="lt-audio-btn"
+                onClick={() => {
+                  const midis = pageTranslation.audioPreview?.midis || [];
+                  if (midis.length === 1) {
+                    playNote(midis[0]);
+                  } else {
+                    midis.forEach((m, idx) => {
+                      playNote(m, idx * 0.28, 0.9, 0.7);
+                    });
+                  }
+                }}
+                title={`Klausyti garso pavyzdžio: ${pageTranslation.audioPreview.labelLt}`}
+              >
+                🔊 <span className="lt-audio-label">{pageTranslation.audioPreview.labelLt}</span>
+              </button>
+            )}
+
+            <button
+              type="button"
+              className="lt-toggle-btn"
+              onClick={handleToggleLtBanner}
+              aria-expanded={isLtBannerOpen}
+              aria-label={isLtBannerOpen ? 'Suskleisti vadovo skiltį' : 'Išskleisti vadovo skiltį'}
+            >
+              <span>{isLtBannerOpen ? 'Slėpti vadovą ▲' : 'Rodyti paaiškinimą ▼'}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Expandable Body */}
+        {isLtBannerOpen && (
+          <div className="lt-banner-body">
+            <p className="lt-banner-summary">{pageTranslation.summaryLt}</p>
+
+            <div className="lt-banner-grid">
+              <div className="lt-banner-col">
+                <h4 className="lt-col-title">👉 Kaip atlikti ir groti:</h4>
+                <ul className="lt-list">
+                  {pageTranslation.instructionsLt.map((inst, i) => (
+                    <li key={i}>{inst}</li>
+                  ))}
+                </ul>
+              </div>
+
+              {pageTranslation.theoryNotesLt && pageTranslation.theoryNotesLt.length > 0 && (
+                <div className="lt-banner-col">
+                  <h4 className="lt-col-title">🎼 Natų raštas ir teorija:</h4>
+                  <ul className="lt-list">
+                    {pageTranslation.theoryNotesLt.map((note, i) => (
+                      <li key={i}>{note}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+
+            {pageTranslation.tipLt && (
+              <div className="lt-banner-tip">
+                <span className="tip-icon" aria-hidden="true">💡</span>
+                <span>
+                  <strong>Mokytojo patarimas:</strong> {pageTranslation.tipLt}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+      </section>
 
       {/* Main Sheet Music Canvas Area */}
       <main
