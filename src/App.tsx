@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { AnswerGrid } from './components/AnswerGrid';
+import { BookTheoryGuide } from './components/BookTheoryGuide';
 import { FeedbackPanel } from './components/FeedbackPanel';
 import { AppView, Header } from './components/Header';
 import { PianoKeyboard } from './components/PianoKeyboard';
@@ -260,7 +261,24 @@ export const App: React.FC = () => {
       />
 
       <main id="main-practice" className="practice-main">
-        {activeView === 'rhythm' ? (
+        {activeView === 'book-theory' ? (
+          <BookTheoryGuide
+            language={language}
+            onToggleLanguage={handleToggleLanguage}
+            onBackToPractice={() => {
+              setActiveView('practice');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onOpenChordsGuide={() => {
+              setActiveView('guide');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onOpenRhythmGuide={() => {
+              setActiveView('rhythm');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+          />
+        ) : activeView === 'rhythm' ? (
           <SubdivisionGuide
             language={language}
             onToggleLanguage={handleToggleLanguage}
@@ -270,6 +288,10 @@ export const App: React.FC = () => {
             }}
             onOpenChordsGuide={() => {
               setActiveView('guide');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onOpenBookGuide={() => {
+              setActiveView('book-theory');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
           />
@@ -282,6 +304,10 @@ export const App: React.FC = () => {
             }}
             onOpenRhythm={() => {
               setActiveView('rhythm');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onOpenBookGuide={() => {
+              setActiveView('book-theory');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
           />

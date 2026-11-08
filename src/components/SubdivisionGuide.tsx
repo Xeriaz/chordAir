@@ -19,6 +19,7 @@ interface SubdivisionGuideProps {
   onToggleLanguage: () => void;
   onBackToPractice: () => void;
   onOpenChordsGuide?: () => void;
+  onOpenBookGuide?: () => void;
 }
 
 const TERMINOLOGY_ITEMS = [
@@ -65,7 +66,7 @@ const TERMINOLOGY_ITEMS = [
   {
     termEn: 'Sixteenth note (1/16)',
     termLt: 'Šešioliktinė nata',
-    descEn: 'One-quarter of a beat. Equals 1 unit when the subdivision base is set to sixteenth notes.',
+    descEn: 'One-quarter of a beat. Equals 1 unit when the subdivision base is set to𝅘𝅥𝅯 notes.',
     descLt: 'Ketvirtis dalies (0,25). Prilyginama 1 vienetui, kai bazinė vertė yra šešioliktinė.',
   },
   {
@@ -99,6 +100,7 @@ export const SubdivisionGuide: React.FC<SubdivisionGuideProps> = ({
   onToggleLanguage,
   onBackToPractice,
   onOpenChordsGuide,
+  onOpenBookGuide,
 }) => {
   const isLt = language === 'lt';
 
@@ -255,18 +257,29 @@ export const SubdivisionGuide: React.FC<SubdivisionGuideProps> = ({
           {isLt ? '← Grįžti į akordų treniruotę' : '← Back to Chord Practice'}
         </button>
 
-        <button
-          type="button"
-          className="icon-btn lang-toggle-btn"
-          onClick={onToggleLanguage}
-          aria-label={isLt ? 'Switch language to English' : 'Perjungti kalbą į lietuvių'}
-        >
-          <span className={!isLt ? 'lang-code--active' : 'lang-code--inactive'}>EN</span>
-          <span className="lang-divider" aria-hidden="true">
-            /
-          </span>
-          <span className={isLt ? 'lang-code--active' : 'lang-code--inactive'}>LT</span>
-        </button>
+        <div className="book-quick-nav-group">
+          {onOpenBookGuide && (
+            <button
+              type="button"
+              className="icon-btn"
+              onClick={onOpenBookGuide}
+            >
+              📚 {isLt ? 'Vadovėlio gidas' : 'Book Guide'}
+            </button>
+          )}
+          <button
+            type="button"
+            className="icon-btn lang-toggle-btn"
+            onClick={onToggleLanguage}
+            aria-label={isLt ? 'Switch language to English' : 'Perjungti kalbą į lietuvių'}
+          >
+            <span className={!isLt ? 'lang-code--active' : 'lang-code--inactive'}>EN</span>
+            <span className="lang-divider" aria-hidden="true">
+              /
+            </span>
+            <span className={isLt ? 'lang-code--active' : 'lang-code--inactive'}>LT</span>
+          </button>
+        </div>
       </div>
 
       {/* Hero Header */}
@@ -1133,7 +1146,7 @@ export const SubdivisionGuide: React.FC<SubdivisionGuideProps> = ({
           </div>
         </div>
 
-        <div className="ready-cta-container" style={{ display: "flex", flexWrap: "wrap", gap: "12px", justifyContent: "center" }}>
+        <div className="ready-cta-container" style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'center' }}>
           <button
             type="button"
             className="ready-practice-cta"
@@ -1148,6 +1161,15 @@ export const SubdivisionGuide: React.FC<SubdivisionGuideProps> = ({
               onClick={onOpenChordsGuide}
             >
               📖 {isLt ? 'Akordų Teorijos Atmintinė →' : 'Chord Construction Guide →'}
+            </button>
+          )}
+          {onOpenBookGuide && (
+            <button
+              type="button"
+              className="ctrl-btn"
+              onClick={onOpenBookGuide}
+            >
+              📚 {isLt ? 'Pilnas Vadovėlio Kursas (46 pamokos) →' : 'Complete Book Manual Guide →'}
             </button>
           )}
         </div>

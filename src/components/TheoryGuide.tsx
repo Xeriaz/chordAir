@@ -9,6 +9,7 @@ interface TheoryGuideProps {
   language: Language;
   onStartPractice: () => void;
   onOpenRhythm?: () => void;
+  onOpenBookGuide?: () => void;
 }
 
 const GUIDE_CONTENT = {
@@ -272,7 +273,12 @@ function getBlackLeftPercent(midi: number): number {
   return (whiteBefore * 100) / WHITE_KEYS.length;
 }
 
-export const TheoryGuide: React.FC<TheoryGuideProps> = ({ language, onStartPractice, onOpenRhythm }) => {
+export const TheoryGuide: React.FC<TheoryGuideProps> = ({
+  language,
+  onStartPractice,
+  onOpenRhythm,
+  onOpenBookGuide,
+}) => {
   const g = GUIDE_CONTENT[language];
   const t = UI_STRINGS[language];
   const [labRoot, setLabRoot] = useState<PitchClass>(0); // C
@@ -305,6 +311,18 @@ export const TheoryGuide: React.FC<TheoryGuideProps> = ({ language, onStartPract
           <button type="button" className="back-practice-btn" onClick={onStartPractice}>
             {g.backToPracticeBtn}
           </button>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            {onOpenBookGuide && (
+              <button type="button" className="icon-btn" onClick={onOpenBookGuide}>
+                📚 {language === 'lt' ? 'Vadovėlio kursas' : 'Book Manual'}
+              </button>
+            )}
+            {onOpenRhythm && (
+              <button type="button" className="icon-btn" onClick={onOpenRhythm}>
+                ⏱️ {language === 'lt' ? 'Ritmo gidas' : 'Rhythm Guide'}
+              </button>
+            )}
+          </div>
         </div>
         <h2 id="guide-main-title" className="guide-title">
           {g.pageTitle}
@@ -635,30 +653,48 @@ export const TheoryGuide: React.FC<TheoryGuideProps> = ({ language, onStartPract
         </div>
       </section>
 
-            {onOpenRhythm && (
-        <section className="guide-card" style={{ borderColor: "rgba(56, 189, 248, 0.4)", background: "linear-gradient(135deg, rgba(19, 34, 63, 0.6) 0%, rgba(13, 22, 41, 0.6) 100%)" }}>
+      {(onOpenRhythm || onOpenBookGuide) && (
+        <section
+          className="guide-card"
+          style={{
+            borderColor: 'rgba(56, 189, 248, 0.4)',
+            background: 'linear-gradient(135deg, rgba(19, 34, 63, 0.6) 0%, rgba(13, 22, 41, 0.6) 100%)',
+          }}
+        >
           <span className="guide-step-badge">
-            {language === "lt" ? "⏱️ Ritmo technika" : "⏱️ Rhythm Technique"}
+            {language === 'lt' ? '📚 Tęskite mokymąsi' : '📚 Continue Learning'}
           </span>
           <h3 className="guide-section-title">
-            {language === "lt"
-              ? "Pulso smulkinimas (Subdivision) praktika"
-              : "Subdivided Counting & Rhythm Engine"}
+            {language === 'lt'
+              ? 'Pilnas vadovėlio kursas ir Ritmo smulkinimo praktika'
+              : 'Complete Keyboard Manual & Subdivided Rhythm Engine'}
           </h3>
           <p className="guide-text">
-            {language === "lt"
-              ? "Atraskite pulso smulkinimo metodą: paverskite kiekvieną natą tikslia sveikųjų skaičių aritmetika su interaktyviu metronomu."
-              : "Discover the power of subdivision: eliminate rhythmic drift with discrete integer counting, visual grid analysis, and interactive metronome playback."}
+            {language === 'lt'
+              ? 'Atraskite visas 46 vadovėlio pamokas (penklinę, gamas, dermes, septakordus ir bliuzą) arba treniruokite ritmą su interaktyviu metronomu.'
+              : 'Explore all 46 lessons from the Progressive Keyboard Manual (staff reading, scales, modes, 7th & altered chords) or master rhythm with subdivided counting.'}
           </p>
-          <div>
-            <button
-              type="button"
-              className="guide-audio-btn"
-              style={{ color: "var(--accent-primary)", borderColor: "var(--accent-primary)" }}
-              onClick={onOpenRhythm}
-            >
-              ⏱️ {language === "lt" ? "Atidaryti ritmo treniruoklį →" : "Explore Subdivided Counting Guide →"}
-            </button>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+            {onOpenBookGuide && (
+              <button
+                type="button"
+                className="guide-audio-btn"
+                style={{ color: '#6ee7b7', borderColor: 'rgba(16, 185, 129, 0.5)' }}
+                onClick={onOpenBookGuide}
+              >
+                📚 {language === 'lt' ? 'Atidaryti Vadovėlio Gidą (46 pamokos) →' : 'Open Complete Book Manual Guide →'}
+              </button>
+            )}
+            {onOpenRhythm && (
+              <button
+                type="button"
+                className="guide-audio-btn"
+                style={{ color: 'var(--accent-primary)', borderColor: 'var(--accent-primary)' }}
+                onClick={onOpenRhythm}
+              >
+                ⏱️ {language === 'lt' ? 'Atidaryti ritmo treniruoklį →' : 'Explore Subdivided Counting Guide →'}
+              </button>
+            )}
           </div>
         </section>
       )}

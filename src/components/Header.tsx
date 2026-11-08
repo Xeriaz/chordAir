@@ -2,7 +2,7 @@ import React from 'react';
 import { UI_STRINGS, getInversionText, getPresetText } from '../domain/i18n';
 import { PracticeSettings, SessionStats } from '../domain/types';
 
-export type AppView = 'practice' | 'guide' | 'rhythm';
+export type AppView = 'practice' | 'guide' | 'rhythm' | 'book-theory';
 
 interface HeaderProps {
   settings: PracticeSettings;
@@ -194,6 +194,21 @@ export const Header: React.FC<HeaderProps> = ({
         >
           <span className="view-nav-icon" aria-hidden="true">⏱️</span>
           <span className="view-nav-text">{t.rhythmTab}</span>
+        </button>
+
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeView === 'book-theory'}
+          className={`view-nav-btn view-nav-btn--book ${
+            activeView === 'book-theory' ? 'view-nav-btn--active' : ''
+          }`}
+          onClick={() => onSelectView('book-theory')}
+          aria-label={t.bookTabAria}
+        >
+          <span className="view-nav-icon" aria-hidden="true">📚</span>
+          <span className="view-nav-text">{t.bookTab}</span>
+          <span className="view-nav-badge view-nav-badge--book">46</span>
         </button>
       </nav>
     </header>
