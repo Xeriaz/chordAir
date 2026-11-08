@@ -4,13 +4,14 @@ import {
   formatChordAriaLabel,
   formatChordReadableName,
 } from '../domain/i18n';
-import { ChordAnswerOption, Language } from '../domain/types';
+import { ChordAnswerOption, Language, PracticeSettings } from '../domain/types';
 
 interface AnswerGridProps {
   options: ChordAnswerOption[];
   selectedOptionId: string | null;
   correctOptionId: string;
   language: Language;
+  preset?: PracticeSettings['preset'];
   onSelectOption: (optionId: string) => void;
 }
 
@@ -19,10 +20,12 @@ export const AnswerGrid: React.FC<AnswerGridProps> = ({
   selectedOptionId,
   correctOptionId,
   language,
+  preset = 'beginner',
   onSelectOption,
 }) => {
   const t = UI_STRINGS[language];
   const isAnswered = selectedOptionId !== null;
+  const isBeginner = preset === 'beginner';
 
   return (
     <section className="answer-section" aria-labelledby="prompt-heading">
@@ -30,9 +33,11 @@ export const AnswerGrid: React.FC<AnswerGridProps> = ({
         <h2 id="prompt-heading" className="prompt-heading">
           {t.promptHeading}
         </h2>
-        <span className="keyboard-hint-text" aria-hidden="true">
-          {t.keysHint(options.length)}
-        </span>
+        {!isBeginner && (
+          <span className="keyboard-hint-text" aria-hidden="true">
+            {t.keysHint(options.length)}
+          </span>
+        )}
       </div>
 
       <div className="answer-grid" role="group" aria-label={t.answerChoicesGroupAria}>
@@ -40,17 +45,40 @@ export const AnswerGrid: React.FC<AnswerGridProps> = ({
           const isSelected = selectedOptionId === option.id;
           const isCorrect = option.id === correctOptionId;
 
-          const localizedReadableName = formatChordReadableName(
+          const baseReadableName = formatChordReadableName(
             option.rootPitchClass,
             option.qualityId,
             language
           );
+
+          // For the beginner preset, replace confusing digits with musical/emotional cues in Lithuanian / English
+          const emotionCue =
+            option.qualityId === 'major'
+              ? (language === 'lt' ? 'šviesus · džiugus' : 'bright · happy')
+              : option.qualityId === 'minor'
+              ? (language === 'lt' ? 'švelnus · liūdnas' : 'warm · sad')
+              : null;
+
+          const localizedReadableName =
+            isBeginner && emotionCue
+              ? `${baseReadableName} (${emotionCue})`
+              : baseReadableName;
+
           const localizedAriaLabel = formatChordAriaLabel(
             option.rootPitchClass,
             option.qualityId,
             option.symbol,
             language
           );
+
+          // Confusing digits 1-4 are replaced by musical icons in beginner preset to prevent fingering confusion
+          const shortcutDisplay = isBeginner
+            ? option.qualityId === 'major'
+              ? '☀️'
+              : option.qualityId === 'minor'
+              ? '🌙'
+              : '♪'
+            : index + 1;
 
           let stateClass = '';
           let statusIndicator = null;
@@ -87,8 +115,11 @@ export const AnswerGrid: React.FC<AnswerGridProps> = ({
               className={`answer-btn ${stateClass}`}
               aria-label={t.optionAria(index + 1, localizedAriaLabel, ariaStatus)}
             >
-              <span className="answer-shortcut" aria-hidden="true">
-                {index + 1}
+              <span
+                className={`answer-shortcut ${isBeginner ? 'answer-shortcut--icon' : ''}`}
+                aria-hidden="true"
+              >
+                {shortcutDisplay}
               </span>
 
               <span className="answer-main-text">

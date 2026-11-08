@@ -56,11 +56,11 @@ export function sanitizeSettings(rawInput: unknown): PracticeSettings {
   }
 
   return {
-    language: parsed.language === 'lt' ? 'lt' : 'en',
+    language: parsed.language === 'en' ? 'en' : 'lt',
     preset: detectPresetForQualities(validQualities),
     enabledQualities: validQualities,
     enabledInversions: validInversions,
-    showAllKeyLabels: Boolean(parsed.showAllKeyLabels),
+    showAllKeyLabels: parsed.showAllKeyLabels !== undefined ? Boolean(parsed.showAllKeyLabels) : true,
     autoPlayAudio: Boolean(parsed.autoPlayAudio),
   };
 }
@@ -120,7 +120,7 @@ export const App: React.FC = () => {
   const [activeView, setActiveView] = useState<AppView>('practice');
   const [sheetMusicPage, setSheetMusicPage] = useState<number>(1);
 
-  const language = settings.language ?? 'en';
+  const language = settings.language ?? 'lt';
   const t = UI_STRINGS[language];
 
   // Sync <html lang="..."> attribute for screen readers and browser tools
@@ -355,6 +355,7 @@ export const App: React.FC = () => {
               selectedOptionId={selectedOptionId}
               correctOptionId={card.correctOptionId}
               language={language}
+              preset={settings.preset}
               onSelectOption={handleSelectOption}
             />
 
@@ -366,6 +367,47 @@ export const App: React.FC = () => {
                 onNextCard={handleNextCard}
               />
             )}
+
+            {/* Quick links to Chord Theory & Rhythm Drills */}
+            <nav className="practice-quick-links" aria-label={language === 'lt' ? 'Papildomi gidai' : 'Extra guides'}>
+              <button
+                type="button"
+                className="quick-link-btn"
+                onClick={() => {
+                  setActiveView('guide');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+              >
+                <span className="quick-link-icon" aria-hidden="true">📖</span>
+                <span className="quick-link-text">
+                  <span className="quick-link-title">
+                    {language === 'lt' ? 'Akordų teorija' : 'Chord Theory'}
+                  </span>
+                  <span className="quick-link-sub">
+                    {language === 'lt' ? 'Mažorų ir minorų sandara' : 'Triad construction rules'}
+                  </span>
+                </span>
+              </button>
+
+              <button
+                type="button"
+                className="quick-link-btn"
+                onClick={() => {
+                  setActiveView('rhythm');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+              >
+                <span className="quick-link-icon" aria-hidden="true">⏱️</span>
+                <span className="quick-link-text">
+                  <span className="quick-link-title">
+                    {language === 'lt' ? 'Ritmo pratimai' : 'Rhythm Drills'}
+                  </span>
+                  <span className="quick-link-sub">
+                    {language === 'lt' ? 'Pulso smulkinimas ir metronomas' : 'Pulse & subdivisions'}
+                  </span>
+                </span>
+              </button>
+            </nav>
           </>
         )}
       </main>

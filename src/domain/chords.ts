@@ -198,11 +198,11 @@ export const LEVEL_PRESETS: LevelPresetDefinition[] = [
 ];
 
 export const DEFAULT_SETTINGS: PracticeSettings = {
-  language: 'en',
+  language: 'lt',
   preset: 'beginner',
   enabledQualities: ['major', 'minor'],
   enabledInversions: ['root'],
-  showAllKeyLabels: false,
+  showAllKeyLabels: true,
   autoPlayAudio: false,
 };
 

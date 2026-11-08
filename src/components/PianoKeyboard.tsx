@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { playChord, playNote } from '../domain/audio';
 import { UI_STRINGS, getVoicedRoleLabel } from '../domain/i18n';
 import { PIANO_KEYS, getRootNoteName } from '../domain/notes';
@@ -30,9 +30,33 @@ export const PianoKeyboard: React.FC<PianoKeyboardProps> = ({
   isRevealed,
   language,
 }) => {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const t = UI_STRINGS[language];
   const voicedByMidi = new Map<number, VoicedNote>(voicedNotes.map((n) => [n.midi, n]));
   const blackKeys = PIANO_KEYS.filter((k) => k.noteInfo.isBlack);
+
+  // Smoothly center the active chord's octave / voiced notes whenever voicedNotes changes
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const timer = window.setTimeout(() => {
+      const highlightedKeys = container.querySelectorAll<HTMLElement>('.piano-key--highlighted');
+      if (highlightedKeys.length > 0) {
+        let minLeft = Infinity;
+        let maxRight = 0;
+        highlightedKeys.forEach((el) => {
+          minLeft = Math.min(minLeft, el.offsetLeft);
+          maxRight = Math.max(maxRight, el.offsetLeft + el.offsetWidth);
+        });
+        const chordCenter = (minLeft + maxRight) / 2;
+        const targetScroll = Math.max(0, chordCenter - container.clientWidth / 2);
+        container.scrollTo({ left: targetScroll, behavior: 'smooth' });
+      }
+    }, 40);
+
+    return () => window.clearTimeout(timer);
+  }, [voicedNotes]);
 
   const spokenSummary = voicedNotes
     .map((n) => {
@@ -111,7 +135,8 @@ export const PianoKeyboard: React.FC<PianoKeyboardProps> = ({
           onClick={() => playChord(voicedNotes.map((n) => n.midi))}
           aria-label={t.hearChordAria}
         >
-          <span aria-hidden="true">🔊</span> {t.hearChord}
+          <span aria-hidden="true" className="listen-btn-icon">🔊</span>
+          <span className="listen-btn-text">{t.hearChord}</span>
         </button>
       </div>
 
@@ -120,7 +145,7 @@ export const PianoKeyboard: React.FC<PianoKeyboardProps> = ({
         {t.highlightedKeysSr(spokenSummary)}
       </p>
 
-      <div className="piano-scroll-container">
+      <div className="piano-scroll-container" ref={scrollContainerRef}>
         <div className="piano-bed" role="group" aria-label={t.twoOctaveGroupAria}>
           {/* White keys layer */}
           <div className="white-keys-row">

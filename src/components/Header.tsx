@@ -25,7 +25,7 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleLabels,
   onToggleLanguage,
 }) => {
-  const lang = settings.language ?? 'en';
+  const lang = settings.language ?? 'lt';
   const t = UI_STRINGS[lang];
 
   const levelLabel =
@@ -40,6 +40,9 @@ export const Header: React.FC<HeaderProps> = ({
 
   const accuracy =
     stats.completed > 0 ? Math.round((stats.correct / stats.completed) * 100) : null;
+
+  const isPracticeActive = activeView === 'practice';
+  const isBookActive = activeView === 'book-theory' || activeView === 'sheet-music';
 
   return (
     <header className="top-header-area">
@@ -77,29 +80,28 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         <div className="top-bar-right">
+          {/* De-emphasized, non-punitive compact session stats */}
           <div
             className="stats-pill"
             role="status"
             aria-live="polite"
             aria-label={t.sessionProgressAria(stats.correct, stats.completed, accuracy, stats.streak)}
           >
-            <div className="stat-item">
-              <span className="stat-label">{t.score}</span>
+            <div className="stat-item stat-item--friendly">
+              <span className="stat-friendly-icon" aria-hidden="true">✓</span>
               <span className="stat-value">
                 {stats.correct}
-                <span className="stat-total">/{stats.completed}</span>
+                {stats.completed > 0 && <span className="stat-total">/{stats.completed}</span>}
               </span>
             </div>
-            {accuracy !== null && (
-              <div className="stat-item stat-item--hide-xs">
-                <span className="stat-label">{t.accuracy}</span>
-                <span className="stat-value">{accuracy}%</span>
+
+            {stats.streak >= 2 && (
+              <div className="stat-item stat-item--streak" title={t.streakCelebration(stats.streak)}>
+                <span className="stat-streak-flame" aria-hidden="true">🔥</span>
+                <span className="stat-streak-num">{stats.streak}</span>
               </div>
             )}
-            <div className="stat-item">
-              <span className="stat-label">{t.streak}</span>
-              <span className="stat-value">🔥 {stats.streak}</span>
-            </div>
+
             {stats.completed > 0 && (
               <button
                 type="button"
@@ -152,13 +154,14 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      <nav className="view-nav-bar" aria-label={t.mainNavAria} role="tablist">
+      {/* Primary consolidated 2-mode navigation (desktop top bar & mobile thumb-friendly bottom bar) */}
+      <nav className="view-nav-bar bottom-nav-bar" aria-label={t.mainNavAria} role="tablist">
         <button
           type="button"
           role="tab"
-          aria-selected={activeView === 'practice'}
+          aria-selected={isPracticeActive}
           className={`view-nav-btn view-nav-btn--practice ${
-            activeView === 'practice' ? 'view-nav-btn--active' : ''
+            isPracticeActive ? 'view-nav-btn--active' : ''
           }`}
           onClick={() => onSelectView('practice')}
           aria-label={t.practiceTabAria}
@@ -170,60 +173,20 @@ export const Header: React.FC<HeaderProps> = ({
         <button
           type="button"
           role="tab"
-          aria-selected={activeView === 'guide'}
-          className={`view-nav-btn view-nav-btn--theory ${
-            activeView === 'guide' ? 'view-nav-btn--active' : ''
+          aria-selected={isBookActive}
+          className={`view-nav-btn view-nav-btn--book ${
+            isBookActive ? 'view-nav-btn--active' : ''
           }`}
-          onClick={() => onSelectView('guide')}
-          aria-label={t.theoryTabAria}
+          onClick={() => {
+            if (!isBookActive) {
+              onSelectView('book-theory');
+            }
+          }}
+          aria-label={t.bookAndSheetTabAria}
         >
           <span className="view-nav-icon" aria-hidden="true">📖</span>
-          <span className="view-nav-text">{t.theoryTab}</span>
-          <span className="view-nav-badge">{lang === 'lt' ? 'Gidas' : 'Guide'}</span>
-        </button>
-
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeView === 'rhythm'}
-          className={`view-nav-btn view-nav-btn--rhythm ${
-            activeView === 'rhythm' ? 'view-nav-btn--active' : ''
-          }`}
-          onClick={() => onSelectView('rhythm')}
-          aria-label={t.rhythmTabAria}
-        >
-          <span className="view-nav-icon" aria-hidden="true">⏱️</span>
-          <span className="view-nav-text">{t.rhythmTab}</span>
-        </button>
-
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeView === 'book-theory'}
-          className={`view-nav-btn view-nav-btn--book ${
-            activeView === 'book-theory' ? 'view-nav-btn--active' : ''
-          }`}
-          onClick={() => onSelectView('book-theory')}
-          aria-label={t.bookTabAria}
-        >
-          <span className="view-nav-icon" aria-hidden="true">📚</span>
-          <span className="view-nav-text">{t.bookTab}</span>
-          <span className="view-nav-badge view-nav-badge--book">46</span>
-        </button>
-
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeView === 'sheet-music'}
-          className={`view-nav-btn view-nav-btn--sheet ${
-            activeView === 'sheet-music' ? 'view-nav-btn--active' : ''
-          }`}
-          onClick={() => onSelectView('sheet-music')}
-          aria-label={t.sheetMusicTabAria}
-        >
-          <span className="view-nav-icon" aria-hidden="true">🎼</span>
-          <span className="view-nav-text">{t.sheetMusicTab}</span>
-          <span className="view-nav-badge view-nav-badge--gold">216</span>
+          <span className="view-nav-text">{t.bookAndSheetTab}</span>
+          <span className="view-nav-badge view-nav-badge--gold">216 p.</span>
         </button>
       </nav>
     </header>

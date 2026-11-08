@@ -62,7 +62,7 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
           <span className="feedback-icon" aria-hidden="true">
             {isCorrect ? '✓' : '✗'}
           </span>
-          <div>
+          <div className="feedback-header-text">
             <h3 className="feedback-title">
               {isCorrect ? (
                 <>
@@ -77,29 +77,38 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                 </>
               )}
             </h3>
-            <p className="feedback-subtitle">{qualityText.description}</p>
+            <p className="feedback-notes-highlight">
+              <span className="notes-highlight-label">{t.notesLabel}</span>{' '}
+              <strong className="notes-highlight-val">{notesList}</strong>
+            </p>
           </div>
         </div>
 
-        <div className="feedback-details-grid">
-          <div className="feedback-detail-chip">
-            <span className="detail-label">{t.notesPlayedLabel}</span>
-            <span className="detail-value">{notesList}</span>
-          </div>
+        {/* Collapsible theoretical explanation so beginners are not overwhelmed */}
+        <details className="feedback-theory-details">
+          <summary className="feedback-theory-summary">
+            {t.chordStructureToggle}
+          </summary>
+          <div className="feedback-details-grid">
+            <div className="feedback-detail-chip">
+              <span className="detail-label">{t.voicingPositionLabel}</span>
+              <span className="detail-value">
+                {inversionText.name}{' '}
+                {card.inversion.id !== 'root' ? t.bassOnBottom(bassNote) : t.rootOnBottom}
+              </span>
+            </div>
 
-          <div className="feedback-detail-chip">
-            <span className="detail-label">{t.voicingPositionLabel}</span>
-            <span className="detail-value">
-              {inversionText.name}{' '}
-              {card.inversion.id !== 'root' ? t.bassOnBottom(bassNote) : t.rootOnBottom}
-            </span>
-          </div>
+            <div className="feedback-detail-chip">
+              <span className="detail-label">{t.keyboardShapeLabel}</span>
+              <span className="detail-value">{qualityText.shapeHint}</span>
+            </div>
 
-          <div className="feedback-detail-chip">
-            <span className="detail-label">{t.keyboardShapeLabel}</span>
-            <span className="detail-value">{qualityText.shapeHint}</span>
+            <div className="feedback-detail-chip">
+              <span className="detail-label">{qualityText.title}</span>
+              <span className="detail-value">{qualityText.description}</span>
+            </div>
           </div>
-        </div>
+        </details>
       </div>
 
       <div className="feedback-actions">

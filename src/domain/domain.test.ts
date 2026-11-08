@@ -111,6 +111,9 @@ describe('ChordAir domain logic', () => {
   });
 
   it('sanitizes corrupted localStorage settings and stats safely without crashing', () => {
+    expect(DEFAULT_SETTINGS.language).toBe('lt');
+    expect(DEFAULT_SETTINGS.showAllKeyLabels).toBe(true);
+
     expect(sanitizeSettings(null)).toEqual(DEFAULT_SETTINGS);
     expect(
       sanitizeSettings({
