@@ -9,6 +9,7 @@ interface BookTheoryGuideProps {
   onBackToPractice: () => void;
   onOpenChordsGuide?: () => void;
   onOpenRhythmGuide?: () => void;
+  onOpenSheetMusic?: (page?: number) => void;
 }
 
 type ChapterId =
@@ -359,12 +360,36 @@ function getBlackLeftPercent(midi: number): number {
   return (whiteBefore * 100) / WHITE_KEYS.length;
 }
 
+
+export const SCALE_BOOK_PAGES: Record<string, number> = {
+  'c-major': 20,
+  'g-major': 54,
+  'f-major': 58,
+  'd-major': 142,
+  'a-natural-minor': 104,
+  'a-harmonic-minor': 108,
+  'a-melodic-minor': 108,
+  'a-minor-pentatonic': 112,
+  'c-blues': 120,
+  'd-dorian': 185,
+  'g-mixolydian': 185,
+};
+
+export const EXERCISE_BOOK_PAGES: Record<string, number> = {
+  'ode-to-joy': 16,
+  'when-the-saints': 18,
+  'brahms-lullaby': 23,
+  'house-rising-sun': 108,
+  'blues-riff-c': 116,
+};
+
 export const BookTheoryGuide: React.FC<BookTheoryGuideProps> = ({
   language,
   onToggleLanguage,
   onBackToPractice,
   onOpenChordsGuide,
   onOpenRhythmGuide,
+  onOpenSheetMusic,
 }) => {
   const isLt = language === 'lt';
   const [activeChapter, setActiveChapter] = useState<ChapterId>('all');
@@ -466,6 +491,16 @@ export const BookTheoryGuide: React.FC<BookTheoryGuideProps> = ({
         </button>
 
         <div className="book-quick-nav-group">
+          {onOpenSheetMusic && (
+            <button
+              type="button"
+              className="icon-btn book-sheet-nav-btn"
+              onClick={() => onOpenSheetMusic(1)}
+              title={isLt ? 'Atidaryti visų 216 psl. natų peržiūrą' : 'Open 216-page sheet music viewer'}
+            >
+              🎼 {isLt ? 'Natos (216 psl.)' : 'Sheet Music (216 p.)'}
+            </button>
+          )}
           {onOpenChordsGuide && (
             <button
               type="button"
@@ -538,6 +573,41 @@ export const BookTheoryGuide: React.FC<BookTheoryGuideProps> = ({
             </button>
           ))}
         </nav>
+
+        {/* Prominent Action Banner for Sheet Music Viewer */}
+        {onOpenSheetMusic && (
+          <section
+            className="book-sheet-banner"
+            aria-label={isLt ? 'Vadovėlio natų peržiūra' : 'Book Sheet Music Viewer'}
+          >
+            <div className="book-sheet-banner__content">
+              <div className="book-sheet-banner__badge">
+                <span className="book-sheet-banner__badge-icon">📖</span>
+                <span>{isLt ? 'Originalios vadovėlio natos' : 'Original Manual Sheet Music'}</span>
+                <span className="book-sheet-banner__tag">216 {isLt ? 'Puslapių' : 'Pages'}</span>
+              </div>
+              <h2 className="book-sheet-banner__title">
+                {isLt
+                  ? 'Žiūrėti visą Peter Gelling vadovėlio natų leidinį'
+                  : 'Browse Complete 216-Page Manual Sheet Music'}
+              </h2>
+              <p className="book-sheet-banner__desc">
+                {isLt
+                  ? 'Mokykitės tiesiai iš originalių vadovėlio puslapių: aiški penklinė, pirštuotė (1–5), pratimai ir visi kūriniai su greitu mastelio keitimu (zoom), klaviatūros valdymu ir pamokų rodykle.'
+                  : 'Study directly from the complete 216-page manual with razor-sharp sheet music notation, fingering numbers (1–5), repertoire pieces, zoom/pan, keyboard flipping, and curriculum landmarks.'}
+              </p>
+            </div>
+            <button
+              type="button"
+              className="book-sheet-banner__btn"
+              onClick={() => onOpenSheetMusic(1)}
+            >
+              <span className="banner-btn-icon">📖</span>
+              <span>{isLt ? 'Atidaryti vadovėlio natų peržiūrą' : 'Open Book Sheet Music Viewer'}</span>
+              <span className="banner-btn-badge">216 P.</span>
+            </button>
+          </section>
+        )}
       </header>
 
       {/* =====================================================================
@@ -1317,13 +1387,29 @@ export const BookTheoryGuide: React.FC<BookTheoryGuideProps> = ({
               </span>
             </div>
 
-            <button
-              type="button"
-              className="play-btn"
-              onClick={() => handlePlayScale(selectedScale)}
-            >
-              🔊 {isLt ? 'Groti gamą' : 'Play Scale'}
-            </button>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                className="play-btn"
+                onClick={() => handlePlayScale(selectedScale)}
+              >
+                🔊 {isLt ? 'Groti gamą' : 'Play Scale'}
+              </button>
+              {onOpenSheetMusic && (
+                <button
+                  type="button"
+                  className="sheet-music-pill-btn"
+                  onClick={() => onOpenSheetMusic(SCALE_BOOK_PAGES[selectedScale.id] ?? 20)}
+                  title={
+                    isLt
+                      ? `Atidaryti ${SCALE_BOOK_PAGES[selectedScale.id] ?? 20} puslapio natas vadovėlyje`
+                      : `View Sheet Music on Page ${SCALE_BOOK_PAGES[selectedScale.id] ?? 20}`
+                  }
+                >
+                  📄 {isLt ? `Žiūrėti natas (p. ${SCALE_BOOK_PAGES[selectedScale.id] ?? 20})` : `View Sheet Music (p. ${SCALE_BOOK_PAGES[selectedScale.id] ?? 20})`}
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Mini 2-Octave Piano showing the selected scale */}
@@ -2211,21 +2297,37 @@ export const BookTheoryGuide: React.FC<BookTheoryGuideProps> = ({
                         {isLt ? ex.focusLt : ex.focusEn}
                       </li>
                     </ul>
-                    <button
-                      type="button"
-                      className={`guide-audio-btn ${
-                        isThisPlaying ? 'play-btn--active' : ''
-                      }`}
-                      onClick={() => handlePlayExercise(ex)}
-                    >
-                      {isThisPlaying
-                        ? isLt
-                          ? '⏹ Sustabdyti perklausą'
-                          : '⏹ Stop Preview'
-                        : isLt
-                        ? '▶ Klausyti pratimo ištraukos'
-                        : '▶ Hear Exercise Preview'}
-                    </button>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '10px' }}>
+                      <button
+                        type="button"
+                        className={`guide-audio-btn ${
+                          isThisPlaying ? 'play-btn--active' : ''
+                        }`}
+                        onClick={() => handlePlayExercise(ex)}
+                      >
+                        {isThisPlaying
+                          ? isLt
+                            ? '⏹ Sustabdyti perklausą'
+                            : '⏹ Stop Preview'
+                          : isLt
+                          ? '▶ Klausyti pratimo ištraukos'
+                          : '▶ Hear Exercise Preview'}
+                      </button>
+                      {onOpenSheetMusic && (
+                        <button
+                          type="button"
+                          className="sheet-music-pill-btn"
+                          onClick={() => onOpenSheetMusic(EXERCISE_BOOK_PAGES[ex.id] ?? 16)}
+                          title={
+                            isLt
+                              ? `Atidaryti ${EXERCISE_BOOK_PAGES[ex.id] ?? 16} puslapio natas vadovėlyje`
+                              : `View Sheet Music on Page ${EXERCISE_BOOK_PAGES[ex.id] ?? 16}`
+                          }
+                        >
+                          📄 {isLt ? `Žiūrėti natas (p. ${EXERCISE_BOOK_PAGES[ex.id] ?? 16})` : `View Sheet Music (p. ${EXERCISE_BOOK_PAGES[ex.id] ?? 16})`}
+                        </button>
+                      )}
+                    </div>
                   </div>
                 );
               })}

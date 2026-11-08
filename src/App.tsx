@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { AnswerGrid } from './components/AnswerGrid';
+import { BookPageViewer } from './components/BookPageViewer';
 import { BookTheoryGuide } from './components/BookTheoryGuide';
 import { FeedbackPanel } from './components/FeedbackPanel';
 import { AppView, Header } from './components/Header';
@@ -117,6 +118,7 @@ export const App: React.FC = () => {
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [activeView, setActiveView] = useState<AppView>('practice');
+  const [sheetMusicPage, setSheetMusicPage] = useState<number>(1);
 
   const language = settings.language ?? 'en';
   const t = UI_STRINGS[language];
@@ -200,6 +202,12 @@ export const App: React.FC = () => {
     }));
   }, []);
 
+  const handleOpenSheetMusic = useCallback((page: number = 1) => {
+    setSheetMusicPage(page);
+    setActiveView('sheet-music');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
   const handleToggleLanguage = useCallback(() => {
     setSettings((prev) => ({
       ...prev,
@@ -261,10 +269,25 @@ export const App: React.FC = () => {
       />
 
       <main id="main-practice" className="practice-main">
-        {activeView === 'book-theory' ? (
+        {activeView === 'sheet-music' ? (
+          <BookPageViewer
+            initialPage={sheetMusicPage}
+            language={language}
+            onToggleLanguage={handleToggleLanguage}
+            onBackToPractice={() => {
+              setActiveView('practice');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onOpenBookGuide={() => {
+              setActiveView('book-theory');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+          />
+        ) : activeView === 'book-theory' ? (
           <BookTheoryGuide
             language={language}
             onToggleLanguage={handleToggleLanguage}
+            onOpenSheetMusic={handleOpenSheetMusic}
             onBackToPractice={() => {
               setActiveView('practice');
               window.scrollTo({ top: 0, behavior: 'smooth' });
