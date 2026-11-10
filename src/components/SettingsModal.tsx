@@ -1,6 +1,5 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
-  LEVEL_PRESETS,
   ORDERED_CHORD_QUALITIES,
   ORDERED_INVERSIONS,
   detectPresetForQualities,
@@ -8,14 +7,12 @@ import {
 import {
   UI_STRINGS,
   getInversionText,
-  getPresetText,
   getQualityText,
 } from '../domain/i18n';
 import {
   ChordQualityId,
   InversionId,
   Language,
-  LevelPresetId,
   PracticeSettings,
 } from '../domain/types';
 
@@ -34,6 +31,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
+  const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
   const lang: Language = settings.language ?? 'lt';
   const t = UI_STRINGS[lang];
 
@@ -78,7 +76,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     (q) => ORDERED_CHORD_QUALITIES.find((def) => def.id === q)?.category === 'seventh'
   );
 
-  const isBeginnerProfile =
+  const isEasyProfile =
     settings.enabledQualities.length === 2 &&
     settings.enabledQualities.includes('major') &&
     settings.enabledQualities.includes('minor') &&
@@ -86,11 +84,23 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     settings.enabledInversions[0] === 'root' &&
     settings.showAllKeyLabels;
 
-  const isAdvancedProfile =
+  const isMediumProfile =
+    settings.enabledQualities.length === 4 &&
+    settings.enabledQualities.includes('major') &&
+    settings.enabledQualities.includes('minor') &&
+    settings.enabledQualities.includes('diminished') &&
+    settings.enabledQualities.includes('augmented') &&
+    settings.enabledInversions.length === 3 &&
+    !settings.enabledInversions.includes('third');
+
+  const isHardProfile =
     settings.enabledQualities.length === ORDERED_CHORD_QUALITIES.length &&
     settings.enabledInversions.length === ORDERED_INVERSIONS.length;
 
-  const handleApplyBeginnerProfile = () => {
+  const isCustomProfile =
+    settings.preset === 'custom' || (!isEasyProfile && !isMediumProfile && !isHardProfile);
+
+  const handleApplyEasyProfile = () => {
     onUpdateSettings({
       ...settings,
       preset: 'beginner',
@@ -100,7 +110,16 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     });
   };
 
-  const handleApplyAdvancedProfile = () => {
+  const handleApplyMediumProfile = () => {
+    onUpdateSettings({
+      ...settings,
+      preset: 'moreTriads',
+      enabledQualities: ['major', 'minor', 'diminished', 'augmented'],
+      enabledInversions: ['root', 'first', 'second'],
+    });
+  };
+
+  const handleApplyHardProfile = () => {
     onUpdateSettings({
       ...settings,
       preset: 'seventhChords',
@@ -109,20 +128,18 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     });
   };
 
+  const handleApplyCustomProfile = () => {
+    onUpdateSettings({
+      ...settings,
+      preset: 'custom',
+    });
+    setIsAdvancedOpen(true);
+  };
+
   const handleSelectLanguage = (nextLang: Language) => {
     onUpdateSettings({
       ...settings,
       language: nextLang,
-    });
-  };
-
-  const handleSelectPreset = (presetId: Exclude<LevelPresetId, 'custom'>) => {
-    const found = LEVEL_PRESETS.find((p) => p.id === presetId);
-    if (!found) return;
-    onUpdateSettings({
-      ...settings,
-      preset: presetId,
-      enabledQualities: [...found.qualities],
     });
   };
 
@@ -155,6 +172,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
     onUpdateSettings({
       ...settings,
+      preset: 'custom',
       enabledInversions: nextInversions,
     });
   };
@@ -195,7 +213,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         </div>
 
         <div className="modal-body">
-          {/* Top Learner Profile Switcher */}
+          {/* Difficulty / Learner Profile Switcher */}
           <section className="settings-section profile-section" aria-labelledby="profile-heading">
             <h3 id="profile-heading" className="settings-section-title">
               {t.learnerProfileTitle}
@@ -204,33 +222,65 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <button
                 type="button"
                 className={`learner-profile-btn ${
-                  isBeginnerProfile ? 'learner-profile-btn--active' : ''
+                  isEasyProfile ? 'learner-profile-btn--active' : ''
                 }`}
-                onClick={handleApplyBeginnerProfile}
+                onClick={handleApplyEasyProfile}
               >
                 <div className="learner-profile-top">
-                  <span className="learner-profile-title">{t.beginnerProfileName}</span>
-                  {isBeginnerProfile && (
-                    <span className="learner-profile-active-tag">✓ Aktyvus</span>
+                  <span className="learner-profile-title">{t.easyProfileName}</span>
+                  {isEasyProfile && (
+                    <span className="learner-profile-active-tag">{t.activeProfileTag}</span>
                   )}
                 </div>
-                <p className="learner-profile-desc">{t.beginnerProfileDesc}</p>
+                <p className="learner-profile-desc">{t.easyProfileDesc}</p>
               </button>
 
               <button
                 type="button"
                 className={`learner-profile-btn ${
-                  isAdvancedProfile ? 'learner-profile-btn--active' : ''
+                  isMediumProfile ? 'learner-profile-btn--active' : ''
                 }`}
-                onClick={handleApplyAdvancedProfile}
+                onClick={handleApplyMediumProfile}
               >
                 <div className="learner-profile-top">
-                  <span className="learner-profile-title">{t.advancedProfileName}</span>
-                  {isAdvancedProfile && (
-                    <span className="learner-profile-active-tag">✓ Aktyvus</span>
+                  <span className="learner-profile-title">{t.mediumProfileName}</span>
+                  {isMediumProfile && (
+                    <span className="learner-profile-active-tag">{t.activeProfileTag}</span>
                   )}
                 </div>
-                <p className="learner-profile-desc">{t.advancedProfileDesc}</p>
+                <p className="learner-profile-desc">{t.mediumProfileDesc}</p>
+              </button>
+
+              <button
+                type="button"
+                className={`learner-profile-btn ${
+                  isHardProfile ? 'learner-profile-btn--active' : ''
+                }`}
+                onClick={handleApplyHardProfile}
+              >
+                <div className="learner-profile-top">
+                  <span className="learner-profile-title">{t.hardProfileName}</span>
+                  {isHardProfile && (
+                    <span className="learner-profile-active-tag">{t.activeProfileTag}</span>
+                  )}
+                </div>
+                <p className="learner-profile-desc">{t.hardProfileDesc}</p>
+              </button>
+
+              <button
+                type="button"
+                className={`learner-profile-btn ${
+                  isCustomProfile ? 'learner-profile-btn--active' : ''
+                }`}
+                onClick={handleApplyCustomProfile}
+              >
+                <div className="learner-profile-top">
+                  <span className="learner-profile-title">{t.customProfileName}</span>
+                  {isCustomProfile && (
+                    <span className="learner-profile-active-tag">{t.activeProfileTag}</span>
+                  )}
+                </div>
+                <p className="learner-profile-desc">{t.customProfileDesc}</p>
               </button>
             </div>
           </section>
@@ -314,65 +364,17 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
           </section>
 
-          {/* Collapsible Advanced Chord Settings */}
-          <details className="advanced-settings">
+          {/* Collapsible Custom Chord & Inversion Settings */}
+          <details
+            className="advanced-settings"
+            open={isAdvancedOpen}
+            onToggle={(e) => setIsAdvancedOpen(e.currentTarget.open)}
+          >
             <summary className="advanced-settings-summary">
               {t.advancedSettingsSummary}
             </summary>
 
             <div className="advanced-settings-body">
-              {/* Level Presets */}
-              <section className="settings-section" aria-labelledby="preset-heading">
-                <h4 id="preset-heading" className="settings-section-subtitle">
-                  {t.practiceLevelTitle}
-                </h4>
-                <div className="preset-grid" role="radiogroup" aria-labelledby="preset-heading">
-                  {LEVEL_PRESETS.map((preset) => {
-                    const isActive = settings.preset === preset.id;
-                    const pText = getPresetText(preset.id, lang);
-                    return (
-                      <button
-                        key={preset.id}
-                        type="button"
-                        role="radio"
-                        aria-checked={isActive}
-                        onClick={() => handleSelectPreset(preset.id)}
-                        className={`preset-card ${isActive ? 'preset-card--active' : ''}`}
-                      >
-                        <div className="preset-card-top">
-                          <span className="preset-name">{pText.name}</span>
-                          <span className="preset-badge">{pText.badge}</span>
-                        </div>
-                        <p className="preset-desc">{pText.description}</p>
-                      </button>
-                    );
-                  })}
-
-                  <button
-                    type="button"
-                    role="radio"
-                    aria-checked={settings.preset === 'custom'}
-                    onClick={() =>
-                      onUpdateSettings({
-                        ...settings,
-                        preset: 'custom',
-                      })
-                    }
-                    className={`preset-card ${
-                      settings.preset === 'custom' ? 'preset-card--active' : ''
-                    }`}
-                  >
-                    <div className="preset-card-top">
-                      <span className="preset-name">{t.customPresetName}</span>
-                      <span className="preset-badge">
-                        {t.selectedCountBadge(settings.enabledQualities.length)}
-                      </span>
-                    </div>
-                    <p className="preset-desc">{t.customPresetDesc}</p>
-                  </button>
-                </div>
-              </section>
-
               {/* Individual Chord Types */}
               <section className="settings-section" aria-labelledby="chord-types-heading">
                 <div className="section-header-inline">

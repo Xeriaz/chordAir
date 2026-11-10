@@ -166,23 +166,23 @@ export const ORDERED_INVERSIONS: InversionDefinition[] = [
 export const LEVEL_PRESETS: LevelPresetDefinition[] = [
   {
     id: 'beginner',
-    name: 'Beginner',
-    badge: 'Beginner',
-    description: 'Major and minor triads — the two foundational 3-note chords.',
+    name: 'Easy',
+    badge: 'Easy',
+    description: 'Major and minor triads in root position — foundational 3-note chords.',
     qualities: ['major', 'minor'],
   },
   {
     id: 'moreTriads',
-    name: 'More triads',
-    badge: 'All Triads',
-    description: 'Major, minor, diminished, and augmented 3-note chords.',
+    name: 'Medium',
+    badge: 'Medium',
+    description: 'All 4 triads (major, minor, diminished, augmented) with inversions.',
     qualities: ['major', 'minor', 'diminished', 'augmented'],
   },
   {
     id: 'seventhChords',
-    name: 'Seventh chords',
-    badge: 'Triads & 7ths',
-    description: 'Includes common 4-note seventh chords alongside triads.',
+    name: 'Hard',
+    badge: 'Hard',
+    description: 'All triads and seventh chords with all inversions.',
     qualities: [
       'major',
       'minor',
