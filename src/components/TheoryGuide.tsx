@@ -314,7 +314,7 @@ export const TheoryGuide: React.FC<TheoryGuideProps> = ({
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             {onOpenBookGuide && (
               <button type="button" className="icon-btn" onClick={onOpenBookGuide}>
-                📚 {language === 'lt' ? 'Vadovėlio kursas' : 'Book Manual'}
+                📖 {language === 'lt' ? 'Vadovėlis (216 p.)' : 'Book (216 p.)'}
               </button>
             )}
             {onOpenRhythm && (
@@ -671,8 +671,8 @@ export const TheoryGuide: React.FC<TheoryGuideProps> = ({
           </h3>
           <p className="guide-text">
             {language === 'lt'
-              ? 'Atraskite visas 46 vadovėlio pamokas (penklinę, gamas, dermes, septakordus ir bliuzą) arba treniruokite ritmą su interaktyviu metronomu.'
-              : 'Explore all 46 lessons from the Progressive Keyboard Manual (staff reading, scales, modes, 7th & altered chords) or master rhythm with subdivided counting.'}
+              ? 'Atraskite visus 216 vadovėlio puslapių natų su lietuvišku gidu (penklinę, gamas, dermes, septakordus ir bliuzą) arba treniruokite ritmą su interaktyviu metronomu.'
+              : 'Explore all 216 pages of sheet music from the Keyboard Manual (staff reading, scales, modes, 7th chords) or master rhythm with subdivided counting.'}
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
             {onOpenBookGuide && (
@@ -682,7 +682,7 @@ export const TheoryGuide: React.FC<TheoryGuideProps> = ({
                 style={{ color: '#6ee7b7', borderColor: 'rgba(16, 185, 129, 0.5)' }}
                 onClick={onOpenBookGuide}
               >
-                📚 {language === 'lt' ? 'Atidaryti Vadovėlio Gidą (46 pamokos) →' : 'Open Complete Book Manual Guide →'}
+                📖 {language === 'lt' ? 'Atidaryti Vadovėlį (216 psl.) →' : 'Open Keyboard Manual (216 p.) →'}
               </button>
             )}
             {onOpenRhythm && (

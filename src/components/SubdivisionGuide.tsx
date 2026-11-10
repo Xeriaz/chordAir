@@ -264,7 +264,7 @@ export const SubdivisionGuide: React.FC<SubdivisionGuideProps> = ({
               className="icon-btn"
               onClick={onOpenBookGuide}
             >
-              📚 {isLt ? 'Vadovėlio gidas' : 'Book Guide'}
+              📖 {isLt ? 'Vadovėlis (216 p.)' : 'Book (216 p.)'}
             </button>
           )}
           <button

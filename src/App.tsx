@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { AnswerGrid } from './components/AnswerGrid';
 import { BookPageViewer } from './components/BookPageViewer';
-import { BookTheoryGuide } from './components/BookTheoryGuide';
 import { FeedbackPanel } from './components/FeedbackPanel';
 import { AppView, Header } from './components/Header';
 import { PianoKeyboard } from './components/PianoKeyboard';
@@ -278,28 +277,6 @@ export const App: React.FC = () => {
               setActiveView('practice');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            onOpenBookGuide={() => {
-              setActiveView('book-theory');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-          />
-        ) : activeView === 'book-theory' ? (
-          <BookTheoryGuide
-            language={language}
-            onToggleLanguage={handleToggleLanguage}
-            onOpenSheetMusic={handleOpenSheetMusic}
-            onBackToPractice={() => {
-              setActiveView('practice');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            onOpenChordsGuide={() => {
-              setActiveView('guide');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            onOpenRhythmGuide={() => {
-              setActiveView('rhythm');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
           />
         ) : activeView === 'rhythm' ? (
           <SubdivisionGuide
@@ -314,8 +291,7 @@ export const App: React.FC = () => {
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             onOpenBookGuide={() => {
-              setActiveView('book-theory');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
+              handleOpenSheetMusic(1);
             }}
           />
         ) : activeView === 'guide' ? (
@@ -330,8 +306,7 @@ export const App: React.FC = () => {
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             onOpenBookGuide={() => {
-              setActiveView('book-theory');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
+              handleOpenSheetMusic(1);
             }}
           />
         ) : (

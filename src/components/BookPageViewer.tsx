@@ -16,7 +16,6 @@ export interface BookPageViewerProps {
   language: Language;
   onClose?: () => void;
   onBackToPractice?: () => void;
-  onOpenBookGuide?: () => void;
   onToggleLanguage?: () => void;
   isModal?: boolean;
 }
@@ -26,7 +25,6 @@ export const BookPageViewer: React.FC<BookPageViewerProps> = ({
   language,
   onClose,
   onBackToPractice,
-  onOpenBookGuide,
   onToggleLanguage,
   isModal = false,
 }) => {
@@ -415,17 +413,6 @@ export const BookPageViewer: React.FC<BookPageViewerProps> = ({
               title={isLt ? 'Grįžti į treniruotę' : 'Back to practice'}
             >
               ← {isLt ? 'Praktika' : 'Practice'}
-            </button>
-          )}
-
-          {onOpenBookGuide && (
-            <button
-              type="button"
-              className="viewer-action-btn"
-              onClick={onOpenBookGuide}
-              title={isLt ? 'Atidaryti teorijos konspektą' : 'Open book theory guide'}
-            >
-              📖 {isLt ? 'Teorijos konspektas' : 'Theory Guide'}
             </button>
           )}
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { UI_STRINGS, getInversionText, getPresetText } from '../domain/i18n';
 import { PracticeSettings, SessionStats } from '../domain/types';
 
-export type AppView = 'practice' | 'guide' | 'rhythm' | 'book-theory' | 'sheet-music';
+export type AppView = 'practice' | 'guide' | 'rhythm' | 'sheet-music';
 
 interface HeaderProps {
   settings: PracticeSettings;
@@ -42,7 +42,7 @@ export const Header: React.FC<HeaderProps> = ({
     stats.completed > 0 ? Math.round((stats.correct / stats.completed) * 100) : null;
 
   const isPracticeActive = activeView === 'practice';
-  const isBookActive = activeView === 'book-theory' || activeView === 'sheet-music';
+  const isBookActive = activeView === 'sheet-music';
 
   return (
     <header className="top-header-area">
@@ -179,7 +179,7 @@ export const Header: React.FC<HeaderProps> = ({
           }`}
           onClick={() => {
             if (!isBookActive) {
-              onSelectView('book-theory');
+              onSelectView('sheet-music');
             }
           }}
           aria-label={t.bookAndSheetTabAria}
