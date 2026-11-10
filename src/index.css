@@ -1032,6 +1032,10 @@ input:focus-visible,
   gap: 24px;
 }
 
+.modal-body > * {
+  flex-shrink: 0;
+}
+
 .settings-section {
   display: flex;
   flex-direction: column;
@@ -4143,9 +4147,15 @@ input:focus-visible,
   background: rgba(13, 20, 36, 0.5);
   margin-top: 14px;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
+.advanced-settings-toggle,
 .advanced-settings-summary {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 12px 16px;
   font-size: 0.92rem;
   font-weight: 700;
@@ -4153,11 +4163,24 @@ input:focus-visible,
   cursor: pointer;
   user-select: none;
   background: var(--bg-surface-elevated);
+  border: none;
+  border-bottom: 1px solid var(--border-subtle);
   transition: background 0.15s ease;
+  text-align: left;
 }
 
+.advanced-settings-toggle:hover,
 .advanced-settings-summary:hover {
   background: var(--bg-surface-hover);
+}
+
+.advanced-settings-toggle .toggle-chevron {
+  font-size: 0.85rem;
+  transition: transform 0.2s ease;
+}
+
+.advanced-settings-toggle .toggle-chevron--open {
+  transform: rotate(180deg);
 }
 
 .advanced-settings-body {

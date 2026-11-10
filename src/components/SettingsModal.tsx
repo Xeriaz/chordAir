@@ -31,7 +31,31 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
-  const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
+  const isEasyProfile =
+    settings.enabledQualities.length === 2 &&
+    settings.enabledQualities.includes("major") &&
+    settings.enabledQualities.includes("minor") &&
+    settings.enabledInversions.length === 1 &&
+    settings.enabledInversions[0] === "root" &&
+    settings.showAllKeyLabels;
+
+  const isMediumProfile =
+    settings.enabledQualities.length === 4 &&
+    settings.enabledQualities.includes("major") &&
+    settings.enabledQualities.includes("minor") &&
+    settings.enabledQualities.includes("diminished") &&
+    settings.enabledQualities.includes("augmented") &&
+    settings.enabledInversions.length === 3 &&
+    !settings.enabledInversions.includes("third");
+
+  const isHardProfile =
+    settings.enabledQualities.length === ORDERED_CHORD_QUALITIES.length &&
+    settings.enabledInversions.length === ORDERED_INVERSIONS.length;
+
+  const isCustomProfile =
+    settings.preset === "custom" || (!isEasyProfile && !isMediumProfile && !isHardProfile);
+
+  const [isAdvancedOpen, setIsAdvancedOpen] = useState(() => isCustomProfile);
   const lang: Language = settings.language ?? 'lt';
   const t = UI_STRINGS[lang];
 
@@ -75,30 +99,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const hasSeventhSelected = settings.enabledQualities.some(
     (q) => ORDERED_CHORD_QUALITIES.find((def) => def.id === q)?.category === 'seventh'
   );
-
-  const isEasyProfile =
-    settings.enabledQualities.length === 2 &&
-    settings.enabledQualities.includes('major') &&
-    settings.enabledQualities.includes('minor') &&
-    settings.enabledInversions.length === 1 &&
-    settings.enabledInversions[0] === 'root' &&
-    settings.showAllKeyLabels;
-
-  const isMediumProfile =
-    settings.enabledQualities.length === 4 &&
-    settings.enabledQualities.includes('major') &&
-    settings.enabledQualities.includes('minor') &&
-    settings.enabledQualities.includes('diminished') &&
-    settings.enabledQualities.includes('augmented') &&
-    settings.enabledInversions.length === 3 &&
-    !settings.enabledInversions.includes('third');
-
-  const isHardProfile =
-    settings.enabledQualities.length === ORDERED_CHORD_QUALITIES.length &&
-    settings.enabledInversions.length === ORDERED_INVERSIONS.length;
-
-  const isCustomProfile =
-    settings.preset === 'custom' || (!isEasyProfile && !isMediumProfile && !isHardProfile);
 
   const handleApplyEasyProfile = () => {
     onUpdateSettings({
@@ -364,17 +364,25 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
           </section>
 
-          {/* Collapsible Custom Chord & Inversion Settings */}
-          <details
-            className="advanced-settings"
-            open={isAdvancedOpen}
-            onToggle={(e) => setIsAdvancedOpen(e.currentTarget.open)}
-          >
-            <summary className="advanced-settings-summary">
-              {t.advancedSettingsSummary}
-            </summary>
+          {/* Custom Chord & Inversion Settings */}
+          <div className="advanced-settings">
+            <button
+              type="button"
+              className="advanced-settings-toggle"
+              onClick={() => setIsAdvancedOpen((prev) => !prev)}
+              aria-expanded={isAdvancedOpen}
+            >
+              <span>{t.advancedSettingsSummary}</span>
+              <span
+                className={`toggle-chevron ${isAdvancedOpen ? "toggle-chevron--open" : ""}`}
+                aria-hidden="true"
+              >
+                ▾
+              </span>
+            </button>
 
-            <div className="advanced-settings-body">
+            {isAdvancedOpen && (
+              <div className="advanced-settings-body">
               {/* Individual Chord Types */}
               <section className="settings-section" aria-labelledby="chord-types-heading">
                 <div className="section-header-inline">
@@ -501,7 +509,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 </div>
               </section>
             </div>
-          </details>
+            )}
+          </div>
         </div>
 
         <div className="modal-footer">
