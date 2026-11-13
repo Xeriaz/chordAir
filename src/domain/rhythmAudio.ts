@@ -1,108 +1,76 @@
 /**
- * Web Audio Metronome & Rhythm Audio Engine
+ * Classical Grand Piano Metronome & Rhythm Audio Engine
  *
- * Provides ultra-accurate, zero-latency scheduling for rhythmic subdivision ticks.
- * Supports:
- * - Downbeat ticks (high accent)
- * - Main beat ticks (medium accent)
- * - Subdivision sub-ticks (light accent)
- * - Optional pitched note attack tones
+ * All rhythmic pulses and notes sound using the authentic Yamaha C5 Grand Piano
+ * engine matching the piano board on the main page.
+ *
+ * Replaces synthetic oscillator sweeps/beeps with classical piano strokes:
+ * - Downbeat (Beat 1): High, crisp accented staccato piano note (C6 / MIDI 84)
+ * - Main beat: Medium-high staccato piano note (G5 / MIDI 79)
+ * - Subtick: Gentle, quiet staccato piano tap (E5 / MIDI 76)
+ * - Pitch note attack: Authentic rich acoustic grand piano note (e.g. Middle C / MIDI 60)
  */
 
-let rhythmAudioCtx: AudioContext | null = null;
-
-function getRhythmAudioContext(): AudioContext | null {
-  if (typeof window === 'undefined') return null;
-
-  if (!rhythmAudioCtx) {
-    const AudioContextClass =
-      window.AudioContext ||
-      (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-    if (!AudioContextClass) return null;
-    rhythmAudioCtx = new AudioContextClass();
-  }
-
-  if (rhythmAudioCtx.state === 'suspended') {
-    rhythmAudioCtx.resume().catch(() => {});
-  }
-
-  return rhythmAudioCtx;
-}
+import { getAudioEngine, playNote, warmUpPianoSamples } from './audio';
 
 export type TickType = 'downbeat' | 'mainbeat' | 'subtick';
 
 /**
- * Plays a discrete synthesized metronome tick immediately or scheduled at audioTime.
+ * Plays an authentic classical piano metronome tick.
+ * Downbeat: High accented piano note (C6 = 84, crisp staccato velocity)
+ * Mainbeat: Mid-high piano note (G5 = 79, staccato)
+ * Subtick: Light piano subdivision tap (E5 = 76, quiet staccato)
  */
 export function playMetronomeTick(type: TickType = 'subtick', scheduledTime?: number): void {
-  const ctx = getRhythmAudioContext();
-  if (!ctx) return;
+  warmUpPianoSamples();
 
-  const startTime = scheduledTime ?? ctx.currentTime;
-
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-
-  let startFreq = 600;
-  let endFreq = 250;
-  let peakGain = 0.35;
-  let duration = 0.025;
+  let midi: number;
+  let duration: number;
+  let gainScale: number;
 
   if (type === 'downbeat') {
-    startFreq = 1400;
-    endFreq = 400;
-    peakGain = 0.7;
-    duration = 0.045;
+    midi = 84; // C6 - clear bell-like high piano stroke for beat 1
+    duration = 0.12;
+    gainScale = 0.58;
   } else if (type === 'mainbeat') {
-    startFreq = 950;
-    endFreq = 320;
-    peakGain = 0.5;
-    duration = 0.035;
+    midi = 79; // G5 - medium-high piano strike for main beats
+    duration = 0.09;
+    gainScale = 0.40;
   } else {
-    startFreq = 650;
-    endFreq = 220;
-    peakGain = 0.28;
-    duration = 0.02;
+    midi = 76; // E5 - soft staccato piano tap for subdivisions
+    duration = 0.06;
+    gainScale = 0.20;
   }
 
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime(startFreq, startTime);
-  osc.frequency.exponentialRampToValueAtTime(endFreq, startTime + duration);
+  let offset = 0;
+  if (typeof scheduledTime === 'number') {
+    const engine = getAudioEngine();
+    if (engine) {
+      offset = Math.max(0, scheduledTime - engine.ctx.currentTime);
+    }
+  }
 
-  gain.gain.setValueAtTime(0.0001, startTime);
-  gain.gain.linearRampToValueAtTime(peakGain, startTime + 0.002);
-  gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
-
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-
-  osc.start(startTime);
-  osc.stop(startTime + duration + 0.01);
+  playNote(midi, offset, duration, gainScale);
 }
 
 /**
- * Plays a melodic pitched note tone (e.g. for note attacks on the rhythmic grid).
+ * Plays an authentic acoustic grand piano note for rhythmic attacks.
+ * Default is Middle C (MIDI 60), perfectly matching the main page piano board.
  */
-export function playNoteAttackTone(midiNote = 60, duration = 0.2, scheduledTime?: number): void {
-  const ctx = getRhythmAudioContext();
-  if (!ctx) return;
+export function playNoteAttackTone(
+  midiNote = 60,
+  duration = 0.4,
+  scheduledTime?: number
+): void {
+  warmUpPianoSamples();
 
-  const startTime = scheduledTime ?? ctx.currentTime;
-  const freq = 440 * Math.pow(2, (midiNote - 69) / 12);
+  let offset = 0;
+  if (typeof scheduledTime === 'number') {
+    const engine = getAudioEngine();
+    if (engine) {
+      offset = Math.max(0, scheduledTime - engine.ctx.currentTime);
+    }
+  }
 
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-
-  osc.type = 'triangle';
-  osc.frequency.setValueAtTime(freq, startTime);
-
-  gain.gain.setValueAtTime(0.0001, startTime);
-  gain.gain.linearRampToValueAtTime(0.3, startTime + 0.005);
-  gain.gain.exponentialRampToValueAtTime(0.0001, startTime + Math.max(0.05, duration * 0.85));
-
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-
-  osc.start(startTime);
-  osc.stop(startTime + duration);
+  playNote(midiNote, offset, duration, 0.70);
 }

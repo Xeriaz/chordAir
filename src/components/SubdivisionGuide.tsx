@@ -113,7 +113,7 @@ export const SubdivisionGuide: React.FC<SubdivisionGuideProps> = ({
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [bpm, setBpm] = useState<number>(72);
   const [currentTick, setCurrentTick] = useState<number>(1);
-  const [soundMode, setSoundMode] = useState<'click' | 'pitch' | 'mute'>('click');
+  const [soundMode, setSoundMode] = useState<'pitch' | 'click' | 'mute'>('pitch');
 
   const playbackTimerRef = useRef<number | null>(null);
 
@@ -139,16 +139,27 @@ export const SubdivisionGuide: React.FC<SubdivisionGuideProps> = ({
       // Check if this tick is the attack (start) of a note
       const noteAtTick = spans.find((s) => s.span[0] === tick);
 
-      if (soundMode === 'pitch' && noteAtTick) {
-        // Melodic attack tone + light click
-        playNoteAttackTone(60, 0.18);
-        playMetronomeTick('subtick');
+      if (soundMode === 'pitch') {
+        if (noteAtTick) {
+          // Calculate musical duration in seconds for this note value
+          const tickDurationSec = 60 / bpm / ticksPerBeat;
+          const noteDurationSec = Math.max(0.2, noteAtTick.units * tickDurationSec * 0.95);
+
+          // Authentic Yamaha C5 grand piano note (Middle C = 60)
+          playNoteAttackTone(60, noteDurationSec);
+          // Light subtick piano tap to mark the pulse
+          playMetronomeTick('subtick');
+        } else {
+          // Ongoing note sustain: keep the metronome pulse ticking lightly with piano taps
+          const tickType = isDownbeat ? 'downbeat' : isMainBeat ? 'mainbeat' : 'subtick';
+          playMetronomeTick(tickType);
+        }
       } else {
         const tickType = isDownbeat ? 'downbeat' : isMainBeat ? 'mainbeat' : 'subtick';
         playMetronomeTick(tickType);
       }
     },
-    [baseUnit, soundMode, spans]
+    [baseUnit, bpm, soundMode, spans]
   );
 
   // Handle switching scenario preset
@@ -164,6 +175,9 @@ export const SubdivisionGuide: React.FC<SubdivisionGuideProps> = ({
   const handleAddNote = (note: NoteType) => {
     setActiveScenarioId('custom');
     setMeasureNotes((prev) => [...prev, note]);
+    if (soundMode !== 'mute') {
+      playNoteAttackTone(60, 0.35);
+    }
   };
 
   const handleRemoveLastNote = () => {
@@ -831,20 +845,20 @@ export const SubdivisionGuide: React.FC<SubdivisionGuideProps> = ({
               <button
                 type="button"
                 role="radio"
-                aria-checked={soundMode === 'click'}
-                className={`pill-btn ${soundMode === 'click' ? 'pill-btn--active' : ''}`}
-                onClick={() => setSoundMode('click')}
-              >
-                🔔 {isLt ? 'Metronomo dūžiai' : 'Metronome Ticks'}
-              </button>
-              <button
-                type="button"
-                role="radio"
                 aria-checked={soundMode === 'pitch'}
                 className={`pill-btn ${soundMode === 'pitch' ? 'pill-btn--active' : ''}`}
                 onClick={() => setSoundMode('pitch')}
               >
-                🎹 {isLt ? 'Natos garsas (Ataka)' : 'Pitch Tone'}
+                🎹 {isLt ? 'Fortepijono natos' : 'Piano Notes'}
+              </button>
+              <button
+                type="button"
+                role="radio"
+                aria-checked={soundMode === 'click'}
+                className={`pill-btn ${soundMode === 'click' ? 'pill-btn--active' : ''}`}
+                onClick={() => setSoundMode('click')}
+              >
+                🔔 {isLt ? 'Metronomo pulsas' : 'Metronome Pulse'}
               </button>
               <button
                 type="button"

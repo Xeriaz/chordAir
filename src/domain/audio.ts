@@ -2,16 +2,16 @@
  * Acoustic Grand Piano Audio Engine (Salamander Grand Piano samples + Web Audio fallback).
  *
  * Uses real studio recordings of a Yamaha C5 Grand Piano (Salamander Grand Piano, CC-BY)
- * for key centers C4, D#4, F#4, A4, C5, D#5, F#5, A5, pitch-shifted across neighboring
- * semitones (at most ±2 semitones) via Web Audio API AudioBufferSourceNode.playbackRate.
+ * for key centers C4, D#4, F#4, A4, C5, D#5, F#5, A5, C6, pitch-shifted across neighboring
+ * semitones via Web Audio API AudioBufferSourceNode.playbackRate.
  * If offline before samples finish loading, falls back seamlessly to physical-modeling synthesis.
  */
 
 const SALAMANDER_BASE_URL = 'https://tonejs.github.io/audio/salamander/';
 
 /**
- * Sample anchor points every 3 semitones across our 2-octave keyboard (C4 = 60 to B5 = 83).
- * Pitch-shifting at most ±2 semitones preserves authentic hammer attack and wooden soundboard timbre.
+ * Sample anchor points across keyboard (C4 = 60 to C6 = 84).
+ * Pitch-shifting preserves authentic hammer attack and wooden soundboard timbre.
  */
 const SAMPLE_ANCHORS: ReadonlyArray<{ midi: number; file: string }> = [
   { midi: 60, file: 'C4.mp3' },
@@ -22,6 +22,7 @@ const SAMPLE_ANCHORS: ReadonlyArray<{ midi: number; file: string }> = [
   { midi: 75, file: 'Ds5.mp3' },
   { midi: 78, file: 'Fs5.mp3' },
   { midi: 81, file: 'A5.mp3' },
+  { midi: 84, file: 'C6.mp3' },
 ];
 
 let audioCtx: AudioContext | null = null;
@@ -67,7 +68,7 @@ export function warmUpPianoSamples(): void {
   }
 }
 
-function getAudioEngine(): {
+export function getAudioEngine(): {
   ctx: AudioContext;
   compressor: DynamicsCompressorNode;
 } | null {
@@ -126,8 +127,7 @@ function getAudioEngine(): {
 
 /**
  * Finds the closest loaded grand piano sample anchor for a given MIDI note,
- * enforcing a maximum distance of 2 semitones so partially loaded sample sets
- * never pitch-shift a note across octaves.
+ * with maximum distance of 4 semitones to keep authentic piano acoustic timbre.
  */
 function findClosestLoadedSample(targetMidi: number): {
   anchorMidi: number;
@@ -138,12 +138,15 @@ function findClosestLoadedSample(targetMidi: number): {
 
   for (const [anchorMidi, buffer] of sampleBuffers.entries()) {
     const dist = Math.abs(targetMidi - anchorMidi);
-    if (dist <= 2 && dist < minDistance) {
+    if (dist < minDistance) {
       minDistance = dist;
       bestAnchor = { anchorMidi, buffer };
     }
   }
-  return bestAnchor;
+  if (bestAnchor && minDistance <= 4) {
+    return bestAnchor;
+  }
+  return null;
 }
 
 export function midiToFrequency(midi: number): number {
@@ -165,7 +168,7 @@ export function playNote(
   if (!engine) return;
 
   const { ctx, compressor } = engine;
-  const now = ctx.currentTime + startTimeOffset;
+  const now = ctx.currentTime + Math.max(0, startTimeOffset);
 
   const closestSample = findClosestLoadedSample(midi);
   if (closestSample) {
@@ -176,9 +179,13 @@ export function playNote(
     source.playbackRate.setValueAtTime(Math.pow(2, semitoneDiff / 12), now);
 
     const noteGain = ctx.createGain();
+    const sustainTime = duration > 0.4 ? Math.max(0.04, duration - 0.35) : duration * 0.6;
+    const holdEnd = now + sustainTime;
+    const fadeEnd = now + duration;
+
     noteGain.gain.setValueAtTime(gainScale, now);
-    noteGain.gain.setValueAtTime(gainScale, now + Math.max(0.2, duration - 0.35));
-    noteGain.gain.exponentialRampToValueAtTime(0.0008, now + duration);
+    noteGain.gain.setValueAtTime(gainScale, holdEnd);
+    noteGain.gain.exponentialRampToValueAtTime(0.0008, fadeEnd);
 
     source.connect(noteGain);
     noteGain.connect(compressor);
@@ -187,7 +194,7 @@ export function playNote(
     };
 
     source.start(now);
-    source.stop(now + duration + 0.05);
+    source.stop(fadeEnd + 0.05);
     return;
   }
 
@@ -208,13 +215,21 @@ function playFallbackAcousticNote(
   const filter = ctx.createBiquadFilter();
   filter.type = 'lowpass';
   filter.frequency.setValueAtTime(Math.min(10000, freq * 9), now);
-  filter.frequency.exponentialRampToValueAtTime(Math.min(3800, freq * 3.2), now + 0.2);
+  filter.frequency.exponentialRampToValueAtTime(
+    Math.min(3800, freq * 3.2),
+    now + Math.min(0.2, duration * 0.5)
+  );
 
   const voiceGain = ctx.createGain();
+  const attackEnd = now + Math.min(0.006, duration * 0.1);
+  const decayEnd = now + Math.min(0.18, duration * 0.5);
+
   voiceGain.gain.setValueAtTime(0.0001, now);
-  voiceGain.gain.linearRampToValueAtTime(gainScale, now + 0.006);
-  voiceGain.gain.exponentialRampToValueAtTime(gainScale * 0.48, now + 0.18);
-  voiceGain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+  voiceGain.gain.linearRampToValueAtTime(gainScale, attackEnd);
+  if (decayEnd > attackEnd && decayEnd < now + duration) {
+    voiceGain.gain.exponentialRampToValueAtTime(gainScale * 0.48, decayEnd);
+  }
+  voiceGain.gain.exponentialRampToValueAtTime(0.0008, now + duration);
 
   filter.connect(voiceGain);
   voiceGain.connect(destination);
@@ -237,7 +252,7 @@ function playFallbackAcousticNote(
     osc.frequency.setValueAtTime(partialFreq, now);
     osc.detune.setValueAtTime(p.detune, now);
 
-    const pDur = Math.max(0.18, duration * p.decayRatio);
+    const pDur = Math.max(0.08, duration * p.decayRatio);
     pGain.gain.setValueAtTime(p.amp, now);
     pGain.gain.exponentialRampToValueAtTime(0.0008, now + pDur);
 
