@@ -321,47 +321,6 @@ export const App: React.FC = () => {
                 onNextCard={handleNextCard}
               />
             )}
-
-            {/* Quick links to Chord Theory & Rhythm Drills */}
-            <nav className="practice-quick-links" aria-label={language === 'lt' ? 'Papildomi gidai' : 'Extra guides'}>
-              <button
-                type="button"
-                className="quick-link-btn"
-                onClick={() => {
-                  setActiveView('guide');
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-              >
-                <span className="quick-link-icon" aria-hidden="true">📖</span>
-                <span className="quick-link-text">
-                  <span className="quick-link-title">
-                    {language === 'lt' ? 'Akordų teorija' : 'Chord Theory'}
-                  </span>
-                  <span className="quick-link-sub">
-                    {language === 'lt' ? 'Mažorų ir minorų sandara' : 'Triad construction rules'}
-                  </span>
-                </span>
-              </button>
-
-              <button
-                type="button"
-                className="quick-link-btn"
-                onClick={() => {
-                  setActiveView('rhythm');
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-              >
-                <span className="quick-link-icon" aria-hidden="true">⏱️</span>
-                <span className="quick-link-text">
-                  <span className="quick-link-title">
-                    {language === 'lt' ? 'Ritmo pratimai' : 'Rhythm Drills'}
-                  </span>
-                  <span className="quick-link-sub">
-                    {language === 'lt' ? 'Pulso smulkinimas ir metronomas' : 'Pulse & subdivisions'}
-                  </span>
-                </span>
-              </button>
-            </nav>
           </>
         )}
       </main>
