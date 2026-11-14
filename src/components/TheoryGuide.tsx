@@ -8,8 +8,6 @@ import { ChordQualityId, Language, PitchClass } from '../domain/types';
 interface TheoryGuideProps {
   language: Language;
   onStartPractice: () => void;
-  onOpenRhythm?: () => void;
-  onOpenBookGuide?: () => void;
 }
 
 const GUIDE_CONTENT = {
@@ -276,8 +274,6 @@ function getBlackLeftPercent(midi: number): number {
 export const TheoryGuide: React.FC<TheoryGuideProps> = ({
   language,
   onStartPractice,
-  onOpenRhythm,
-  onOpenBookGuide,
 }) => {
   const g = GUIDE_CONTENT[language];
   const t = UI_STRINGS[language];
@@ -640,58 +636,6 @@ export const TheoryGuide: React.FC<TheoryGuideProps> = ({
           ))}
         </div>
       </section>
-
-      {(onOpenRhythm || onOpenBookGuide) && (
-        <section
-          className="guide-card"
-          style={{
-            borderColor: 'rgba(56, 189, 248, 0.4)',
-            background: 'linear-gradient(135deg, rgba(19, 34, 63, 0.6) 0%, rgba(13, 22, 41, 0.6) 100%)',
-          }}
-        >
-          <span className="guide-step-badge">
-            {language === 'lt' ? '📚 Tęskite mokymąsi' : '📚 Continue Learning'}
-          </span>
-          <h3 className="guide-section-title">
-            {language === 'lt'
-              ? 'Pilnas vadovėlio kursas ir Ritmo smulkinimo praktika'
-              : 'Complete Keyboard Manual & Subdivided Rhythm Engine'}
-          </h3>
-          <p className="guide-text">
-            {language === 'lt'
-              ? 'Atraskite visus 216 vadovėlio puslapių natų su lietuvišku gidu (penklinę, gamas, dermes, septakordus ir bliuzą) arba treniruokite ritmą su interaktyviu metronomu.'
-              : 'Explore all 216 pages of sheet music from the Keyboard Manual (staff reading, scales, modes, 7th chords) or master rhythm with subdivided counting.'}
-          </p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-            {onOpenBookGuide && (
-              <button
-                type="button"
-                className="guide-audio-btn"
-                style={{ color: '#6ee7b7', borderColor: 'rgba(16, 185, 129, 0.5)' }}
-                onClick={onOpenBookGuide}
-              >
-                📖 {language === 'lt' ? 'Atidaryti Vadovėlį (216 psl.) →' : 'Open Keyboard Manual (216 p.) →'}
-              </button>
-            )}
-            {onOpenRhythm && (
-              <button
-                type="button"
-                className="guide-audio-btn"
-                style={{ color: 'var(--accent-primary)', borderColor: 'var(--accent-primary)' }}
-                onClick={onOpenRhythm}
-              >
-                ⏱️ {language === 'lt' ? 'Atidaryti ritmo treniruoklį →' : 'Explore Subdivided Counting Guide →'}
-              </button>
-            )}
-          </div>
-        </section>
-      )}
-
-      <div className="guide-bottom-cta">
-        <button type="button" className="next-card-btn" onClick={onStartPractice}>
-          {g.startPracticeCta}
-        </button>
-      </div>
     </article>
   );
 };

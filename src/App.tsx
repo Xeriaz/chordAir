@@ -117,7 +117,6 @@ export const App: React.FC = () => {
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [activeView, setActiveView] = useState<AppView>('practice');
-  const [sheetMusicPage, setSheetMusicPage] = useState<number>(1);
 
   const language = settings.language ?? 'lt';
   const t = UI_STRINGS[language];
@@ -201,12 +200,6 @@ export const App: React.FC = () => {
     }));
   }, []);
 
-  const handleOpenSheetMusic = useCallback((page: number = 1) => {
-    setSheetMusicPage(page);
-    setActiveView('sheet-music');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, []);
-
   const handleToggleLanguage = useCallback(() => {
     setSettings((prev) => ({
       ...prev,
@@ -270,7 +263,7 @@ export const App: React.FC = () => {
       <main id="main-practice" className="practice-main">
         {activeView === 'sheet-music' ? (
           <BookPageViewer
-            initialPage={sheetMusicPage}
+            initialPage={1}
             language={language}
             onToggleLanguage={handleToggleLanguage}
             onBackToPractice={() => {
@@ -286,13 +279,6 @@ export const App: React.FC = () => {
               setActiveView('practice');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            onOpenChordsGuide={() => {
-              setActiveView('guide');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            onOpenBookGuide={() => {
-              handleOpenSheetMusic(1);
-            }}
           />
         ) : activeView === 'guide' ? (
           <TheoryGuide
@@ -300,13 +286,6 @@ export const App: React.FC = () => {
             onStartPractice={() => {
               setActiveView('practice');
               window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            onOpenRhythm={() => {
-              setActiveView('rhythm');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            onOpenBookGuide={() => {
-              handleOpenSheetMusic(1);
             }}
           />
         ) : (

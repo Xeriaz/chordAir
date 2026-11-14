@@ -18,8 +18,6 @@ interface SubdivisionGuideProps {
   language: Language;
   onToggleLanguage?: () => void;
   onBackToPractice: () => void;
-  onOpenChordsGuide?: () => void;
-  onOpenBookGuide?: () => void;
 }
 
 const TERMINOLOGY_ITEMS = [
@@ -98,8 +96,6 @@ const TERMINOLOGY_ITEMS = [
 export const SubdivisionGuide: React.FC<SubdivisionGuideProps> = ({
   language,
   onBackToPractice,
-  onOpenChordsGuide,
-  onOpenBookGuide,
 }) => {
   const isLt = language === 'lt';
 
@@ -1133,34 +1129,6 @@ export const SubdivisionGuide: React.FC<SubdivisionGuideProps> = ({
                 : 'Switch metronome back to regular quarter-note clicks (1, 2, 3, 4). Because proportions are ingrained in muscle memory, your playing feels fluid, musical, and rock-solid.'}
             </p>
           </div>
-        </div>
-
-        <div className="ready-cta-container" style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'center' }}>
-          <button
-            type="button"
-            className="ready-practice-cta"
-            onClick={onBackToPractice}
-          >
-            {isLt ? 'Pasiruošę? Išbandykite Akordų Praktiką →' : 'Ready? Test Yourself in Chord Practice →'}
-          </button>
-          {onOpenChordsGuide && (
-            <button
-              type="button"
-              className="ctrl-btn"
-              onClick={onOpenChordsGuide}
-            >
-              📖 {isLt ? 'Akordų Teorijos Atmintinė →' : 'Chord Construction Guide →'}
-            </button>
-          )}
-          {onOpenBookGuide && (
-            <button
-              type="button"
-              className="ctrl-btn"
-              onClick={onOpenBookGuide}
-            >
-              📚 {isLt ? 'Pilnas Vadovėlio Kursas (46 pamokos) →' : 'Complete Book Manual Guide →'}
-            </button>
-          )}
         </div>
       </section>
     </article>
