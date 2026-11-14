@@ -311,18 +311,6 @@ export const TheoryGuide: React.FC<TheoryGuideProps> = ({
           <button type="button" className="back-practice-btn" onClick={onStartPractice}>
             {g.backToPracticeBtn}
           </button>
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            {onOpenBookGuide && (
-              <button type="button" className="icon-btn" onClick={onOpenBookGuide}>
-                📖 {language === 'lt' ? 'Vadovėlis (216 p.)' : 'Book (216 p.)'}
-              </button>
-            )}
-            {onOpenRhythm && (
-              <button type="button" className="icon-btn" onClick={onOpenRhythm}>
-                ⏱️ {language === 'lt' ? 'Ritmo gidas' : 'Rhythm Guide'}
-              </button>
-            )}
-          </div>
         </div>
         <h2 id="guide-main-title" className="guide-title">
           {g.pageTitle}

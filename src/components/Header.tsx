@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { UI_STRINGS, getInversionText, getPresetText } from '../domain/i18n';
 import { PracticeSettings, SessionStats } from '../domain/types';
 
@@ -25,8 +25,38 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleLabels,
   onToggleLanguage,
 }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
   const lang = settings.language ?? 'lt';
   const t = UI_STRINGS[lang];
+
+  // Close dropdown menu when clicking outside or pressing Escape
+  useEffect(() => {
+    if (!isMenuOpen) return;
+
+    const handlePointerDown = (e: MouseEvent | TouchEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+    document.addEventListener('touchstart', handlePointerDown);
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener('touchstart', handlePointerDown);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isMenuOpen]);
 
   const levelLabel =
     settings.preset === 'custom'
@@ -43,6 +73,14 @@ export const Header: React.FC<HeaderProps> = ({
 
   const isPracticeActive = activeView === 'practice';
   const isBookActive = activeView === 'sheet-music';
+  const isTheoryActive = activeView === 'guide';
+  const isRhythmActive = activeView === 'rhythm';
+
+  const handleSelectNavView = (view: AppView) => {
+    onSelectView(view);
+    setIsMenuOpen(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <header className="top-header-area">
@@ -52,7 +90,7 @@ export const Header: React.FC<HeaderProps> = ({
             className="brand-logo"
             aria-hidden="true"
             onClick={() => {
-              if (activeView !== 'practice') onSelectView('practice');
+              if (activeView !== 'practice') handleSelectNavView('practice');
             }}
             style={{ cursor: activeView !== 'practice' ? 'pointer' : 'default' }}
             title={activeView !== 'practice' ? (lang === 'lt' ? 'Grįžti į treniruotę' : 'Back to practice') : undefined}
@@ -116,6 +154,117 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           <div className="action-buttons">
+            {/* Unified Lessons & Navigation Dropdown Menu */}
+            <div className="nav-menu-wrapper" ref={menuRef}>
+              <button
+                type="button"
+                className={`icon-btn menu-trigger-btn ${isMenuOpen ? 'icon-btn--active' : ''}`}
+                onClick={() => setIsMenuOpen((prev) => !prev)}
+                aria-expanded={isMenuOpen}
+                aria-haspopup="true"
+                title={t.lessonsMenuTitle}
+                aria-label={t.lessonsMenuAria}
+              >
+                <span aria-hidden="true" className="menu-trigger-icon">☰</span>
+                <span className="menu-btn-text">{t.lessonsMenuButton}</span>
+              </button>
+
+              {isMenuOpen && (
+                <div className="nav-dropdown-menu" role="menu" aria-label={t.lessonsMenuTitle}>
+                  <div className="nav-dropdown-header">
+                    <span className="nav-dropdown-title">{t.lessonsMenuTitle}</span>
+                    <button
+                      type="button"
+                      className="nav-dropdown-close-btn"
+                      onClick={() => setIsMenuOpen(false)}
+                      aria-label={t.closeMenuAria}
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  <div className="nav-dropdown-items">
+                    <button
+                      type="button"
+                      role="menuitem"
+                      className={`nav-dropdown-item ${isPracticeActive ? 'nav-dropdown-item--active' : ''}`}
+                      onClick={() => handleSelectNavView('practice')}
+                    >
+                      <span className="nav-dropdown-item-icon" aria-hidden="true">🎹</span>
+                      <div className="nav-dropdown-item-info">
+                        <span className="nav-dropdown-item-title">{t.practiceTab}</span>
+                        <span className="nav-dropdown-item-desc">{t.navPracticeSubtitle}</span>
+                      </div>
+                      {isPracticeActive && <span className="nav-dropdown-active-dot" aria-hidden="true" />}
+                    </button>
+
+                    <button
+                      type="button"
+                      role="menuitem"
+                      className={`nav-dropdown-item ${isBookActive ? 'nav-dropdown-item--active' : ''}`}
+                      onClick={() => handleSelectNavView('sheet-music')}
+                    >
+                      <span className="nav-dropdown-item-icon" aria-hidden="true">📖</span>
+                      <div className="nav-dropdown-item-info">
+                        <div className="nav-dropdown-item-title-row">
+                          <span className="nav-dropdown-item-title">{t.bookAndSheetTab}</span>
+                          <span className="view-nav-badge view-nav-badge--gold">216 p.</span>
+                        </div>
+                        <span className="nav-dropdown-item-desc">{t.navBookSubtitle}</span>
+                      </div>
+                      {isBookActive && <span className="nav-dropdown-active-dot" aria-hidden="true" />}
+                    </button>
+
+                    <button
+                      type="button"
+                      role="menuitem"
+                      className={`nav-dropdown-item ${isTheoryActive ? 'nav-dropdown-item--active' : ''}`}
+                      onClick={() => handleSelectNavView('guide')}
+                    >
+                      <span className="nav-dropdown-item-icon" aria-hidden="true">🎼</span>
+                      <div className="nav-dropdown-item-info">
+                        <span className="nav-dropdown-item-title">{t.theoryTab}</span>
+                        <span className="nav-dropdown-item-desc">{t.navTheorySubtitle}</span>
+                      </div>
+                      {isTheoryActive && <span className="nav-dropdown-active-dot" aria-hidden="true" />}
+                    </button>
+
+                    <button
+                      type="button"
+                      role="menuitem"
+                      className={`nav-dropdown-item ${isRhythmActive ? 'nav-dropdown-item--active' : ''}`}
+                      onClick={() => handleSelectNavView('rhythm')}
+                    >
+                      <span className="nav-dropdown-item-icon" aria-hidden="true">🥁</span>
+                      <div className="nav-dropdown-item-info">
+                        <span className="nav-dropdown-item-title">{t.rhythmTab}</span>
+                        <span className="nav-dropdown-item-desc">{t.navRhythmSubtitle}</span>
+                      </div>
+                      {isRhythmActive && <span className="nav-dropdown-active-dot" aria-hidden="true" />}
+                    </button>
+
+                    <div className="nav-dropdown-divider" role="separator" />
+
+                    <button
+                      type="button"
+                      role="menuitem"
+                      className="nav-dropdown-item nav-dropdown-item--settings"
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        onOpenSettings();
+                      }}
+                    >
+                      <span className="nav-dropdown-item-icon" aria-hidden="true">⚙️</span>
+                      <div className="nav-dropdown-item-info">
+                        <span className="nav-dropdown-item-title">{t.settingsButton}</span>
+                        <span className="nav-dropdown-item-desc">{levelLabel} · {inversionSummary}</span>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
             <button
               type="button"
               className="icon-btn lang-toggle-btn"
@@ -154,7 +303,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* Primary consolidated 2-mode navigation (desktop top bar & mobile thumb-friendly bottom bar) */}
+      {/* Primary consolidated 4-view navigation bar (desktop top bar & mobile thumb-friendly bar) */}
       <nav className="view-nav-bar bottom-nav-bar" aria-label={t.mainNavAria} role="tablist">
         <button
           type="button"
@@ -163,7 +312,7 @@ export const Header: React.FC<HeaderProps> = ({
           className={`view-nav-btn view-nav-btn--practice ${
             isPracticeActive ? 'view-nav-btn--active' : ''
           }`}
-          onClick={() => onSelectView('practice')}
+          onClick={() => handleSelectNavView('practice')}
           aria-label={t.practiceTabAria}
         >
           <span className="view-nav-icon" aria-hidden="true">🎹</span>
@@ -177,16 +326,40 @@ export const Header: React.FC<HeaderProps> = ({
           className={`view-nav-btn view-nav-btn--book ${
             isBookActive ? 'view-nav-btn--active' : ''
           }`}
-          onClick={() => {
-            if (!isBookActive) {
-              onSelectView('sheet-music');
-            }
-          }}
+          onClick={() => handleSelectNavView('sheet-music')}
           aria-label={t.bookAndSheetTabAria}
         >
           <span className="view-nav-icon" aria-hidden="true">📖</span>
           <span className="view-nav-text">{t.bookAndSheetTab}</span>
           <span className="view-nav-badge view-nav-badge--gold">216 p.</span>
+        </button>
+
+        <button
+          type="button"
+          role="tab"
+          aria-selected={isTheoryActive}
+          className={`view-nav-btn view-nav-btn--theory ${
+            isTheoryActive ? 'view-nav-btn--active' : ''
+          }`}
+          onClick={() => handleSelectNavView('guide')}
+          aria-label={t.theoryTabAria}
+        >
+          <span className="view-nav-icon" aria-hidden="true">🎼</span>
+          <span className="view-nav-text">{t.theoryTab}</span>
+        </button>
+
+        <button
+          type="button"
+          role="tab"
+          aria-selected={isRhythmActive}
+          className={`view-nav-btn view-nav-btn--rhythm ${
+            isRhythmActive ? 'view-nav-btn--active' : ''
+          }`}
+          onClick={() => handleSelectNavView('rhythm')}
+          aria-label={t.rhythmTabAria}
+        >
+          <span className="view-nav-icon" aria-hidden="true">🥁</span>
+          <span className="view-nav-text">{t.rhythmTab}</span>
         </button>
       </nav>
     </header>

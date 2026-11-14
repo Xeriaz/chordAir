@@ -16,7 +16,7 @@ import { Language } from '../domain/types';
 
 interface SubdivisionGuideProps {
   language: Language;
-  onToggleLanguage: () => void;
+  onToggleLanguage?: () => void;
   onBackToPractice: () => void;
   onOpenChordsGuide?: () => void;
   onOpenBookGuide?: () => void;
@@ -97,7 +97,6 @@ const TERMINOLOGY_ITEMS = [
 
 export const SubdivisionGuide: React.FC<SubdivisionGuideProps> = ({
   language,
-  onToggleLanguage,
   onBackToPractice,
   onOpenChordsGuide,
   onOpenBookGuide,
@@ -260,7 +259,7 @@ export const SubdivisionGuide: React.FC<SubdivisionGuideProps> = ({
 
   return (
     <article className="theory-guide-container subdivision-guide" aria-labelledby="subdivision-title">
-      {/* Top Banner Navigation & Language Switcher */}
+      {/* Top Banner Navigation */}
       <div className="theory-nav-bar">
         <button
           type="button"
@@ -270,30 +269,6 @@ export const SubdivisionGuide: React.FC<SubdivisionGuideProps> = ({
         >
           {isLt ? '← Grįžti į akordų treniruotę' : '← Back to Chord Practice'}
         </button>
-
-        <div className="book-quick-nav-group">
-          {onOpenBookGuide && (
-            <button
-              type="button"
-              className="icon-btn"
-              onClick={onOpenBookGuide}
-            >
-              📖 {isLt ? 'Vadovėlis (216 p.)' : 'Book (216 p.)'}
-            </button>
-          )}
-          <button
-            type="button"
-            className="icon-btn lang-toggle-btn"
-            onClick={onToggleLanguage}
-            aria-label={isLt ? 'Switch language to English' : 'Perjungti kalbą į lietuvių'}
-          >
-            <span className={!isLt ? 'lang-code--active' : 'lang-code--inactive'}>EN</span>
-            <span className="lang-divider" aria-hidden="true">
-              /
-            </span>
-            <span className={isLt ? 'lang-code--active' : 'lang-code--inactive'}>LT</span>
-          </button>
-        </div>
       </div>
 
       {/* Hero Header */}
