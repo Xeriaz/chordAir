@@ -16,7 +16,6 @@ import { Language } from '../domain/types';
 
 interface SubdivisionGuideProps {
   language: Language;
-  onToggleLanguage?: () => void;
   onBackToPractice: () => void;
 }
 

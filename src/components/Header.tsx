@@ -11,8 +11,6 @@ interface HeaderProps {
   onSelectView: (view: AppView) => void;
   onOpenSettings: () => void;
   onResetStats: () => void;
-  onToggleLabels: () => void;
-  onToggleLanguage: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -22,8 +20,6 @@ export const Header: React.FC<HeaderProps> = ({
   onSelectView,
   onOpenSettings,
   onResetStats,
-  onToggleLabels,
-  onToggleLanguage,
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -267,31 +263,6 @@ export const Header: React.FC<HeaderProps> = ({
 
             <button
               type="button"
-              className="icon-btn lang-toggle-btn"
-              onClick={onToggleLanguage}
-              title={t.switchLanguageTitle}
-              aria-label={t.switchLanguageTitle}
-            >
-              <span className={lang === 'en' ? 'lang-code--active' : 'lang-code--inactive'}>EN</span>
-              <span className="lang-divider" aria-hidden="true">
-                /
-              </span>
-              <span className={lang === 'lt' ? 'lang-code--active' : 'lang-code--inactive'}>LT</span>
-            </button>
-
-            <button
-              type="button"
-              className={`icon-btn ${settings.showAllKeyLabels ? 'icon-btn--active' : ''}`}
-              onClick={onToggleLabels}
-              aria-pressed={settings.showAllKeyLabels}
-              title={t.toggleLabelsTitle}
-            >
-              <span aria-hidden="true">ABC</span>
-              <span className="sr-only">{t.toggleLabelsSr}</span>
-            </button>
-
-            <button
-              type="button"
               className="settings-trigger-btn"
               onClick={onOpenSettings}
               aria-label={t.openSettingsAria}
@@ -302,66 +273,6 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
       </div>
-
-      {/* Primary consolidated 4-view navigation bar (desktop top bar & mobile thumb-friendly bar) */}
-      <nav className="view-nav-bar bottom-nav-bar" aria-label={t.mainNavAria} role="tablist">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={isPracticeActive}
-          className={`view-nav-btn view-nav-btn--practice ${
-            isPracticeActive ? 'view-nav-btn--active' : ''
-          }`}
-          onClick={() => handleSelectNavView('practice')}
-          aria-label={t.practiceTabAria}
-        >
-          <span className="view-nav-icon" aria-hidden="true">🎹</span>
-          <span className="view-nav-text">{t.practiceTab}</span>
-        </button>
-
-        <button
-          type="button"
-          role="tab"
-          aria-selected={isBookActive}
-          className={`view-nav-btn view-nav-btn--book ${
-            isBookActive ? 'view-nav-btn--active' : ''
-          }`}
-          onClick={() => handleSelectNavView('sheet-music')}
-          aria-label={t.bookAndSheetTabAria}
-        >
-          <span className="view-nav-icon" aria-hidden="true">📖</span>
-          <span className="view-nav-text">{t.bookAndSheetTab}</span>
-          <span className="view-nav-badge view-nav-badge--gold">216 p.</span>
-        </button>
-
-        <button
-          type="button"
-          role="tab"
-          aria-selected={isTheoryActive}
-          className={`view-nav-btn view-nav-btn--theory ${
-            isTheoryActive ? 'view-nav-btn--active' : ''
-          }`}
-          onClick={() => handleSelectNavView('guide')}
-          aria-label={t.theoryTabAria}
-        >
-          <span className="view-nav-icon" aria-hidden="true">🎼</span>
-          <span className="view-nav-text">{t.theoryTab}</span>
-        </button>
-
-        <button
-          type="button"
-          role="tab"
-          aria-selected={isRhythmActive}
-          className={`view-nav-btn view-nav-btn--rhythm ${
-            isRhythmActive ? 'view-nav-btn--active' : ''
-          }`}
-          onClick={() => handleSelectNavView('rhythm')}
-          aria-label={t.rhythmTabAria}
-        >
-          <span className="view-nav-icon" aria-hidden="true">🥁</span>
-          <span className="view-nav-text">{t.rhythmTab}</span>
-        </button>
-      </nav>
     </header>
   );
 };

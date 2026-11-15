@@ -16,7 +16,6 @@ export interface BookPageViewerProps {
   language: Language;
   onClose?: () => void;
   onBackToPractice?: () => void;
-  onToggleLanguage?: () => void;
   isModal?: boolean;
 }
 
@@ -25,7 +24,6 @@ export const BookPageViewer: React.FC<BookPageViewerProps> = ({
   language,
   onClose,
   onBackToPractice,
-  onToggleLanguage,
   isModal = false,
 }) => {
   const isLt = language === 'lt';
@@ -492,21 +490,6 @@ export const BookPageViewer: React.FC<BookPageViewerProps> = ({
               {isFullscreen ? '✕' : '⛶'}
             </button>
           </div>
-
-          {onToggleLanguage && (
-            <button
-              type="button"
-              className="icon-btn lang-toggle-btn viewer-lang-btn"
-              onClick={onToggleLanguage}
-              aria-label={isLt ? 'Switch to English' : 'Perjungti į lietuvių kalbą'}
-            >
-              <span className={!isLt ? 'lang-code--active' : 'lang-code--inactive'}>EN</span>
-              <span className="lang-divider" aria-hidden="true">
-                /
-              </span>
-              <span className={isLt ? 'lang-code--active' : 'lang-code--inactive'}>LT</span>
-            </button>
-          )}
         </div>
       </header>
 

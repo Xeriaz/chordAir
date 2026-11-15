@@ -193,20 +193,6 @@ export const App: React.FC = () => {
     setStats(INITIAL_STATS);
   }, []);
 
-  const handleToggleLabels = useCallback(() => {
-    setSettings((prev) => ({
-      ...prev,
-      showAllKeyLabels: !prev.showAllKeyLabels,
-    }));
-  }, []);
-
-  const handleToggleLanguage = useCallback(() => {
-    setSettings((prev) => ({
-      ...prev,
-      language: prev.language === 'lt' ? 'en' : 'lt',
-    }));
-  }, []);
-
   // Global keyboard shortcuts (1-4 to pick option, Enter/ArrowRight for next card, Space to hear chord)
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -256,8 +242,6 @@ export const App: React.FC = () => {
         onSelectView={setActiveView}
         onOpenSettings={() => setIsSettingsOpen(true)}
         onResetStats={handleResetStats}
-        onToggleLabels={handleToggleLabels}
-        onToggleLanguage={handleToggleLanguage}
       />
 
       <main id="main-practice" className="practice-main">
@@ -265,7 +249,6 @@ export const App: React.FC = () => {
           <BookPageViewer
             initialPage={1}
             language={language}
-            onToggleLanguage={handleToggleLanguage}
             onBackToPractice={() => {
               setActiveView('practice');
               window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -274,7 +257,6 @@ export const App: React.FC = () => {
         ) : activeView === 'rhythm' ? (
           <SubdivisionGuide
             language={language}
-            onToggleLanguage={handleToggleLanguage}
             onBackToPractice={() => {
               setActiveView('practice');
               window.scrollTo({ top: 0, behavior: 'smooth' });

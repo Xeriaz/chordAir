@@ -102,22 +102,11 @@ input:focus-visible,
   gap: 18px;
 }
 
-/* Top Header Area & Navigation Bar */
+/* Top Header Area */
 .top-header-area {
   display: flex;
   flex-direction: column;
   gap: 10px;
-}
-
-.view-nav-bar {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  padding: 6px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
 }
 
 /* Navigation Menu Dropdown */
@@ -1460,43 +1449,6 @@ input:focus-visible,
     gap: 8px;
   }
 
-  /* Thumb-friendly fixed bottom bar */
-  .bottom-nav-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 100;
-    background: rgba(11, 17, 32, 0.96);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border: none;
-    border-top: 1px solid var(--border-strong);
-    border-radius: 0;
-    padding: 6px 6px calc(6px + env(safe-area-inset-bottom, 0px));
-    grid-template-columns: repeat(4, 1fr);
-    gap: 4px;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
-  }
-
-  .bottom-nav-bar .view-nav-btn {
-    min-height: 46px;
-    padding: 5px 2px;
-    font-size: 0.72rem;
-    font-weight: 700;
-    border-radius: var(--radius-md);
-    flex-direction: column;
-    gap: 3px;
-  }
-
-  .bottom-nav-bar .view-nav-icon {
-    font-size: 1.15rem;
-  }
-
-  .bottom-nav-bar .view-nav-badge {
-    display: none;
-  }
-
   .nav-dropdown-menu {
     width: min(calc(100vw - 24px), 320px);
     right: -4px;
@@ -1509,7 +1461,7 @@ input:focus-visible,
   .app-shell {
     padding-top: calc(env(safe-area-inset-top, 0px) + 10px);
     padding-right: calc(env(safe-area-inset-right, 0px) + 10px);
-    padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
     padding-left: calc(env(safe-area-inset-left, 0px) + 10px);
     gap: 10px;
   }
@@ -3976,18 +3928,12 @@ input:focus-visible,
 
 /* Mobile responsiveness adjustments */
 @media (max-width: 860px) {
-  .view-nav-bar {
-    grid-template-columns: repeat(4, 1fr);
-  }
   .viewer-stage {
     height: 65vh;
   }
 }
 
 @media (max-width: 640px) {
-  .view-nav-bar {
-    grid-template-columns: repeat(4, 1fr);
-  }
   .viewer-top-bar {
     padding: 8px 12px;
   }
