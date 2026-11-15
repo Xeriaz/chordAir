@@ -10,6 +10,8 @@ interface PianoKeyboardProps {
   showAllKeyLabels: boolean;
   isRevealed: boolean;
   language: Language;
+  blindMode?: boolean;
+  showFingering?: boolean;
 }
 
 const WHITE_KEYS = PIANO_KEYS.filter((k) => !k.noteInfo.isBlack);
@@ -29,9 +31,12 @@ export const PianoKeyboard: React.FC<PianoKeyboardProps> = ({
   showAllKeyLabels,
   isRevealed,
   language,
+  blindMode = false,
+  showFingering = true,
 }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const t = UI_STRINGS[language];
+  const isVisuallyMasked = blindMode && !isRevealed;
   const voicedByMidi = new Map<number, VoicedNote>(voicedNotes.map((n) => [n.midi, n]));
   const blackKeys = PIANO_KEYS.filter((k) => k.noteInfo.isBlack);
 
@@ -73,8 +78,8 @@ export const PianoKeyboard: React.FC<PianoKeyboardProps> = ({
     .join(', ');
 
   const renderKeyContent = (key: PianoKeyData, voiced: VoicedNote | undefined) => {
-    const isHighlighted = Boolean(voiced);
-    const labelText = voiced ? voiced.noteName : getRootNoteName(key.pitchClass);
+    const isHighlighted = Boolean(voiced) && !isVisuallyMasked;
+    const labelText = voiced && !isVisuallyMasked ? voiced.noteName : getRootNoteName(key.pitchClass);
     const shouldShowLabel = isHighlighted || showAllKeyLabels || key.pitchClass === 0;
 
     const shortRoleTag =
@@ -92,11 +97,23 @@ export const PianoKeyboard: React.FC<PianoKeyboardProps> = ({
       <span className="key-inner">
         {isHighlighted && (
           <span
-            className={`key-marker ${voiced?.isBass ? 'key-marker--bass' : ''}`}
+            className={`key-marker ${
+              voiced?.isAnchor
+                ? 'key-marker--anchor'
+                : voiced?.isBass
+                ? 'key-marker--bass'
+                : ''
+            }`}
             aria-hidden="true"
-            title={voiced?.isBass ? t.lowestNoteTitle : t.chordNoteTitle}
+            title={
+              voiced?.isAnchor
+                ? t.commonToneAnchorLabel
+                : voiced?.isBass
+                ? t.lowestNoteTitle
+                : t.chordNoteTitle
+            }
           >
-            {voiced?.isBass ? '★' : '●'}
+            {voiced?.isAnchor ? '⚓' : voiced?.isBass ? '★' : '●'}
           </span>
         )}
         {shouldShowLabel && (
@@ -113,12 +130,31 @@ export const PianoKeyboard: React.FC<PianoKeyboardProps> = ({
             {shortRoleTag}
           </span>
         )}
+        {isHighlighted && showFingering && voiced?.fingering && (
+          <span
+            className="key-fingering-pill"
+            aria-hidden="true"
+            title={`${t.fingeringLegend}: ${voiced.fingering}`}
+          >
+            {voiced.fingering}
+          </span>
+        )}
       </span>
     );
   };
 
   return (
     <section className="keyboard-stage" aria-label={t.pianoKeyboardSectionAria}>
+      {isVisuallyMasked && (
+        <div className="blind-veil-banner" role="status" aria-live="polite">
+          <span className="blind-veil-icon" aria-hidden="true">🎧</span>
+          <div className="blind-veil-text-col">
+            <span className="blind-veil-main">{t.blindModeVeilText}</span>
+            <span className="blind-veil-sub">{t.pedagogyAuditTooltip}</span>
+          </div>
+        </div>
+      )}
+
       <div className="keyboard-toolbar">
         <div className="keyboard-legend" aria-hidden="true">
           <span className="legend-item">
@@ -127,6 +163,16 @@ export const PianoKeyboard: React.FC<PianoKeyboardProps> = ({
           <span className="legend-item">
             <span className="legend-swatch legend-swatch--tone">●</span> {t.chordNoteLegend}
           </span>
+          {showFingering && (
+            <span className="legend-item">
+              <span className="legend-swatch legend-swatch--fingering">1</span> {t.fingeringLegend}
+            </span>
+          )}
+          {blindMode && (
+            <span className="pedagogy-audit-tag" title={t.pedagogyAuditTooltip}>
+              {t.blindModeActiveLabel}
+            </span>
+          )}
         </div>
 
         <button
@@ -151,7 +197,7 @@ export const PianoKeyboard: React.FC<PianoKeyboardProps> = ({
           <div className="white-keys-row">
             {WHITE_KEYS.map((key) => {
               const voiced = voicedByMidi.get(key.midi);
-              const isHighlighted = Boolean(voiced);
+              const isHighlighted = Boolean(voiced) && !isVisuallyMasked;
               const spoken =
                 language === 'lt' ? key.noteInfo.spokenNameLt : key.noteInfo.spokenName;
               return (
@@ -161,9 +207,9 @@ export const PianoKeyboard: React.FC<PianoKeyboardProps> = ({
                   onClick={() => playNote(key.midi)}
                   className={`piano-key piano-key--white ${
                     isHighlighted ? 'piano-key--highlighted' : ''
-                  } ${voiced?.isBass ? 'piano-key--bass' : ''}`}
+                  } ${voiced?.isBass && !isVisuallyMasked ? 'piano-key--bass' : ''}`}
                   aria-pressed={isHighlighted}
-                  aria-label={t.keyAria(spoken, key.octave, isHighlighted, Boolean(voiced?.isBass))}
+                  aria-label={t.keyAria(spoken, key.octave, isHighlighted, Boolean(voiced?.isBass && !isVisuallyMasked))}
                 >
                   {renderKeyContent(key, voiced)}
                 </button>
@@ -175,7 +221,7 @@ export const PianoKeyboard: React.FC<PianoKeyboardProps> = ({
           <div className="black-keys-layer">
             {blackKeys.map((key) => {
               const voiced = voicedByMidi.get(key.midi);
-              const isHighlighted = Boolean(voiced);
+              const isHighlighted = Boolean(voiced) && !isVisuallyMasked;
               const leftPct = getBlackKeyLeftPercent(key.midi);
               const spoken =
                 language === 'lt' ? key.noteInfo.spokenNameLt : key.noteInfo.spokenName;
@@ -187,9 +233,9 @@ export const PianoKeyboard: React.FC<PianoKeyboardProps> = ({
                   onClick={() => playNote(key.midi)}
                   className={`piano-key piano-key--black ${
                     isHighlighted ? 'piano-key--highlighted' : ''
-                  } ${voiced?.isBass ? 'piano-key--bass' : ''}`}
+                  } ${voiced?.isBass && !isVisuallyMasked ? 'piano-key--bass' : ''}`}
                   aria-pressed={isHighlighted}
-                  aria-label={t.keyAria(spoken, key.octave, isHighlighted, Boolean(voiced?.isBass))}
+                  aria-label={t.keyAria(spoken, key.octave, isHighlighted, Boolean(voiced?.isBass && !isVisuallyMasked))}
                 >
                   {renderKeyContent(key, voiced)}
                 </button>

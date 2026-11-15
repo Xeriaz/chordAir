@@ -89,6 +89,12 @@ export interface PracticeSettings {
   showAllKeyLabels: boolean;
   /** Play chord audio automatically when a new card is shown */
   autoPlayAudio: boolean;
+  /** Pedagogy Audit feature: Blind / Ear-First audiation mode */
+  blindMode?: boolean;
+  /** Pedagogy Audit feature: Show anatomical fingerings (1-3-5, etc.) */
+  showFingering?: boolean;
+  /** Pedagogy Audit feature: Guide tone / Shell voicing mode (focus on 3rd & 7th) */
+  shellVoicings?: boolean;
 }
 
 export interface ChordAnswerOption {
@@ -115,6 +121,10 @@ export interface VoicedNote {
   role: 'root' | 'third' | 'fifth' | 'seventh';
   roleLabel: string;
   isBass: boolean;
+  /** Standard anatomical right-hand fingering: '1' | '2' | '3' | '4' | '5' */
+  fingering?: string;
+  /** True if this note acts as a common-tone anchor in a cadence progression */
+  isAnchor?: boolean;
 }
 
 export interface PracticeCard {

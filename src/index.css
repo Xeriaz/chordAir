@@ -4367,3 +4367,578 @@ input:focus-visible,
   text-decoration: underline;
 }
 
+/* ==========================================================================
+   PEDAGOGY AUDIT (MASTERCLASS) SHARED STYLES & BADGES
+   ========================================================================== */
+
+.pedagogy-audit-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.22) 0%, rgba(245, 158, 11, 0.16) 100%);
+  color: #e9d5ff;
+  border: 1px solid rgba(168, 85, 247, 0.45);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 3px 9px;
+  border-radius: 999px;
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.18);
+  white-space: nowrap;
+}
+
+.pedagogy-audit-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(168, 85, 247, 0.2);
+  color: #d8b4fe;
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-left: 6px;
+}
+
+.view-nav-badge--audit {
+  background: rgba(168, 85, 247, 0.25);
+  color: #e9d5ff;
+  border: 1px solid rgba(168, 85, 247, 0.5);
+}
+
+.cadence-audit-footnote {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Audiation (Blind Mode) Quick Button & Veil */
+.audiation-quick-btn {
+  background: rgba(168, 85, 247, 0.12);
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  color: #d8b4fe;
+  gap: 6px;
+  padding: 6px 12px;
+}
+
+.audiation-quick-btn:hover {
+  background: rgba(168, 85, 247, 0.24);
+  border-color: #c084fc;
+  color: #f3e8ff;
+}
+
+.audiation-quick-btn--active {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.35) 0%, rgba(99, 102, 241, 0.35) 100%);
+  border-color: #a855f7 !important;
+  color: #f3e8ff !important;
+  box-shadow: 0 0 14px rgba(168, 85, 247, 0.35);
+}
+
+.blind-veil-banner {
+  background: linear-gradient(135deg, rgba(24, 17, 44, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
+  border: 1px solid rgba(168, 85, 247, 0.5);
+  border-radius: var(--radius-md);
+  padding: 12px 18px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), inset 0 0 16px rgba(168, 85, 247, 0.1);
+  animation: veil-pulse 2.5s infinite ease-in-out;
+}
+
+@keyframes veil-pulse {
+  0%, 100% {
+    border-color: rgba(168, 85, 247, 0.5);
+  }
+  50% {
+    border-color: rgba(245, 158, 11, 0.65);
+  }
+}
+
+.blind-veil-icon {
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+
+.blind-veil-text-col {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.blind-veil-main {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #f3e8ff;
+}
+
+.blind-veil-sub {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+/* Fingering Badges on Keys */
+.key-fingering-pill {
+  font-size: 0.62rem;
+  font-weight: 800;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: #3b82f6;
+  color: #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  line-height: 1.1;
+}
+
+.legend-swatch--fingering {
+  background: #3b82f6;
+  color: #ffffff;
+  border-radius: 3px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.key-marker--anchor {
+  background: #b45309 !important;
+  color: #fef3c7 !important;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.6);
+  border: 1.5px solid #fbbf24;
+}
+
+/* ==========================================================================
+   CADENCE GUIDE & VOICE LEADING COMPONENT STYLES
+   ========================================================================== */
+
+.cadence-guide-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.cadence-guide-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cadence-audit-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.cadence-main-title {
+  margin: 0;
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.cadence-main-subtitle {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.cadence-selector-pills {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.cadence-pill-btn {
+  background: var(--bg-surface-elevated);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+
+.cadence-pill-btn:hover {
+  background: var(--bg-surface-hover);
+  border-color: var(--border-strong);
+}
+
+.cadence-pill-btn--active {
+  border-color: #a855f7 !important;
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.18) 0%, rgba(56, 189, 248, 0.08) 100%);
+  box-shadow: 0 0 16px rgba(168, 85, 247, 0.22);
+}
+
+.cadence-pill-category {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #c084fc;
+}
+
+.cadence-pill-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.cadence-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+}
+
+.cadence-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.cadence-key-center-tag {
+  font-size: 0.74rem;
+  font-weight: 800;
+  background: rgba(56, 189, 248, 0.16);
+  color: var(--accent-primary);
+  padding: 2px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-bottom: 6px;
+}
+
+.cadence-prog-heading {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.cadence-prog-desc {
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.cadence-play-sequence-btn {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border: none;
+  color: #ffffff;
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
+  font-size: 0.92rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+  white-space: nowrap;
+}
+
+.cadence-play-sequence-btn:hover {
+  background: #34d399;
+  transform: translateY(-1px);
+}
+
+.cadence-play-sequence-btn--playing {
+  background: #ef4444;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4);
+}
+
+.cadence-secret-box {
+  background: rgba(168, 85, 247, 0.1);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-left: 4px solid #a855f7;
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  font-size: 0.88rem;
+  color: #e9d5ff;
+  line-height: 1.45;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.cadence-secret-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+/* Stepper */
+.cadence-stepper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  background: var(--bg-surface-elevated);
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+}
+
+.cadence-stepper-track {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.cadence-step-node {
+  background: rgba(15, 23, 42, 0.6);
+  border: 2px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cadence-step-node:hover {
+  border-color: var(--accent-primary);
+}
+
+.cadence-step-node--active {
+  border-color: #38bdf8 !important;
+  background: rgba(56, 189, 248, 0.18);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+}
+
+.cadence-step-roman {
+  font-weight: 800;
+  font-size: 1rem;
+  color: #fde047;
+}
+
+.cadence-step-symbol {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.cadence-anchor-mini-tag {
+  font-size: 0.8rem;
+  color: #fbbf24;
+}
+
+.cadence-step-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cadence-nav-step-btn {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cadence-nav-step-btn:hover:not(:disabled) {
+  background: var(--bg-surface-hover);
+  border-color: var(--border-strong);
+}
+
+.cadence-nav-step-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.cadence-step-counter {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.cadence-step-banner {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(24, 34, 60, 0.8) 100%);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.cadence-step-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.cadence-roman-badge {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: #fde047;
+  background: rgba(245, 158, 11, 0.18);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(245, 158, 11, 0.5);
+  flex-shrink: 0;
+}
+
+.cadence-step-name {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.cadence-inversion-badge {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+
+.cadence-step-tip {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.88rem;
+  color: #e2e8f0;
+  max-width: 500px;
+}
+
+.cadence-tip-lead {
+  font-size: 0.74rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #38bdf8;
+}
+
+.cadence-keyboard-wrapper {
+  margin-top: 4px;
+}
+
+/* ==========================================================================
+   TOPOGRAPHY ("OREO" PRINCIPLE) GUIDES
+   ========================================================================== */
+
+.guide-card--topography {
+  border-color: rgba(168, 85, 247, 0.35);
+  background: linear-gradient(135deg, rgba(20, 16, 36, 0.9) 0%, rgba(13, 20, 36, 0.9) 100%);
+}
+
+.topography-audit-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.topography-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.topography-card {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.topography-card-top {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.topography-card-top h4 {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.topo-badge {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.topo-desc {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.topo-audio-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.topo-play-btn {
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  color: #7dd3fc;
+  padding: 5px 9px;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.topo-play-btn:hover {
+  background: rgba(56, 189, 248, 0.25);
+  border-color: #38bdf8;
+  color: #ffffff;
+}
+
+/* Subdivision Scenario Audit Tag */
+.scenario-btn-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+}
+
+.scenario-audit-badge {
+  font-size: 0.68rem;
+  font-weight: 800;
+  background: rgba(168, 85, 247, 0.25);
+  color: #d8b4fe;
+  padding: 1px 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(168, 85, 247, 0.45);
+  white-space: nowrap;
+}
+
+

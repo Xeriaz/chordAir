@@ -636,6 +636,122 @@ export const TheoryGuide: React.FC<TheoryGuideProps> = ({
           ))}
         </div>
       </section>
+
+      {/* Section 6: Masterclass Topography & Hand Ergonomics */}
+      <section className="guide-card guide-card--topography">
+        <div className="topography-audit-header">
+          <span className="pedagogy-audit-badge">{t.pedagogyAuditBadge}</span>
+          <span className="cadence-audit-footnote">{t.auditAttributionFootnote}</span>
+        </div>
+        <h3 className="guide-section-title">
+          {language === 'lt'
+            ? 'Fortepijono reljefas: 4 taktilinės akordų formos („Oreo“ principas)'
+            : 'Keyboard Topography: The 4 Tactile Triad Shapes ("Oreo" Principle)'}
+        </h3>
+        <p className="guide-text">
+          {language === 'lt'
+            ? 'Tradicinės pamokos dažnai verčia mokytis akordus abėcėlės tvarka (A, B, C...). Meistrai mąsto pirštų pojūčiais: klaviatūra turi 4 fizines formas pagal juodų ir baltų klavišų derinį. Įsiminę šias 4 formas, akordus atpažinsite per sekundę!'
+            : 'Traditional lessons force you to memorize chords alphabetically. Master pianists memorize physical hand shapes: the keyboard only has 4 tactile profiles. Pre-shaping your hand to these 4 profiles unlocks instant tactile recognition.'}
+        </p>
+
+        <div className="topography-grid">
+          {/* Group 1: All White */}
+          <div className="topography-card">
+            <div className="topography-card-top">
+              <span className="topo-badge topo-badge--white">⬜ ⬜ ⬜</span>
+              <h4>{language === 'lt' ? '1. Visi balti klavišai (Plokštuma)' : '1. All-White Keys (The Flat Plane)'}</h4>
+            </div>
+            <p className="topo-desc">
+              {language === 'lt'
+                ? 'C, F, G mažorai. Visi 3 pirštai (1-3-5) guli tolygiai ant apatinės baltų klavišų lentynos. Laisviausia rankos arka.'
+                : 'C, F, G Major. All 3 fingers (1-3-5) rest evenly on the lower white key plane. The most natural relaxed hand arch.'}
+            </p>
+            <div className="topo-audio-row">
+              <button type="button" className="topo-play-btn" onClick={() => playChord([60, 64, 67])}>
+                🔊 C (C–E–G)
+              </button>
+              <button type="button" className="topo-play-btn" onClick={() => playChord([65, 69, 72])}>
+                🔊 F (F–A–C)
+              </button>
+              <button type="button" className="topo-play-btn" onClick={() => playChord([67, 71, 74])}>
+                🔊 G (G–B–D)
+              </button>
+            </div>
+          </div>
+
+          {/* Group 2: White - Black - White (Oreo) */}
+          <div className="topography-card">
+            <div className="topography-card-top">
+              <span className="topo-badge topo-badge--oreo">⬜ ⬛ ⬜</span>
+              <h4>{language === 'lt' ? '2. „Oreo“ forma (Baltas–Juodas–Baltas)' : '2. The "Oreo" Shape (White–Black–White)'}</h4>
+            </div>
+            <p className="topo-desc">
+              {language === 'lt'
+                ? 'D, E, A mažorai. Du balti „sausainiai“ išorėje (nykštys ir mažylis), o vidurinis pirštas 3 siekia giliau į pakeltą juodą klavišą.'
+                : 'D, E, A Major. Two white outer wafers (thumb 1 & pinky 5) sandwiching an elevated black center key (middle finger 3).'}
+            </p>
+            <div className="topo-audio-row">
+              <button type="button" className="topo-play-btn" onClick={() => playChord([62, 66, 69])}>
+                🔊 D (D–F♯–A)
+              </button>
+              <button type="button" className="topo-play-btn" onClick={() => playChord([64, 68, 71])}>
+                🔊 E (E–G♯–B)
+              </button>
+              <button type="button" className="topo-play-btn" onClick={() => playChord([69, 73, 76])}>
+                🔊 A (A–C♯–E)
+              </button>
+            </div>
+          </div>
+
+          {/* Group 3: Black - White - Black (Reverse Oreo) */}
+          <div className="topography-card">
+            <div className="topography-card-top">
+              <span className="topo-badge topo-badge--reverse">⬛ ⬜ ⬛</span>
+              <h4>{language === 'lt' ? '3. „Atvirkštinis Oreo“ (Juodas–Baltas–Juodas)' : '3. "Reverse Oreo" (Black–White–Black)'}</h4>
+            </div>
+            <p className="topo-desc">
+              {language === 'lt'
+                ? 'D♭, E♭, A♭ mažorai. Nykštys ir mažylis pakelti ant juodų klavišų, o vidurinis pirštas 3 nusileidžia į balto klavišo slėnį.'
+                : 'D♭, E♭, A♭ Major. Thumb 1 and pinky 5 are elevated high on black keys, while finger 3 dips down into the white valley.'}
+            </p>
+            <div className="topo-audio-row">
+              <button type="button" className="topo-play-btn" onClick={() => playChord([61, 65, 68])}>
+                🔊 D♭ (D♭–F–A♭)
+              </button>
+              <button type="button" className="topo-play-btn" onClick={() => playChord([63, 67, 70])}>
+                🔊 E♭ (E♭–G–B♭)
+              </button>
+              <button type="button" className="topo-play-btn" onClick={() => playChord([68, 72, 75])}>
+                🔊 A♭ (A♭–C–E♭)
+              </button>
+            </div>
+          </div>
+
+          {/* Group 4: Oddballs */}
+          <div className="topography-card">
+            <div className="topography-card-top">
+              <span className="topo-badge topo-badge--odd">⚡ 3 Išimtys</span>
+              <h4>{language === 'lt' ? '4. Trys reljefo išimtys' : '4. The Three Asymmetric Oddballs'}</h4>
+            </div>
+            <p className="topo-desc">
+              {language === 'lt'
+                ? 'B mažoras (Baltas–Juodas–Juodas), B♭ mažoras (Juodas–Baltas–Baltas) ir F♯ mažoras (visi 3 juodi klavišai).'
+                : 'B Major (White–Black–Black), B♭ Major (Black–White–White), and F♯ Major (All three on elevated black keys).'}
+            </p>
+            <div className="topo-audio-row">
+              <button type="button" className="topo-play-btn" onClick={() => playChord([71, 75, 78])}>
+                🔊 B (B–D♯–F♯)
+              </button>
+              <button type="button" className="topo-play-btn" onClick={() => playChord([70, 74, 77])}>
+                🔊 B♭ (B♭–D–F)
+              </button>
+              <button type="button" className="topo-play-btn" onClick={() => playChord([66, 70, 73])}>
+                🔊 F♯ (F♯–A♯–C♯)
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
     </article>
   );
 };

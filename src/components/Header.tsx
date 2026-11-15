@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { UI_STRINGS, getInversionText, getPresetText } from '../domain/i18n';
 import { PracticeSettings, SessionStats } from '../domain/types';
 
-export type AppView = 'practice' | 'guide' | 'rhythm' | 'sheet-music';
+export type AppView = 'practice' | 'guide' | 'rhythm' | 'sheet-music' | 'cadence';
 
 interface HeaderProps {
   settings: PracticeSettings;
@@ -11,6 +11,7 @@ interface HeaderProps {
   onSelectView: (view: AppView) => void;
   onOpenSettings: () => void;
   onResetStats: () => void;
+  onToggleBlindMode?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -20,6 +21,7 @@ export const Header: React.FC<HeaderProps> = ({
   onSelectView,
   onOpenSettings,
   onResetStats,
+  onToggleBlindMode,
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -71,6 +73,7 @@ export const Header: React.FC<HeaderProps> = ({
   const isBookActive = activeView === 'sheet-music';
   const isTheoryActive = activeView === 'guide';
   const isRhythmActive = activeView === 'rhythm';
+  const isCadenceActive = activeView === 'cadence';
 
   const handleSelectNavView = (view: AppView) => {
     onSelectView(view);
@@ -150,6 +153,30 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           <div className="action-buttons">
+            {/* Quick Audiation (Blind Mode) Toggle for Practice */}
+            {isPracticeActive && onToggleBlindMode && (
+              <button
+                type="button"
+                className={`icon-btn audiation-quick-btn ${
+                  settings.blindMode ? 'audiation-quick-btn--active' : ''
+                }`}
+                onClick={onToggleBlindMode}
+                title={
+                  settings.blindMode
+                    ? `${t.blindModeActiveLabel} (Click to disable)`
+                    : `${t.blindModeTitle} (${t.pedagogyAuditBadge})`
+                }
+                aria-pressed={Boolean(settings.blindMode)}
+              >
+                <span aria-hidden="true" className="audiation-btn-icon">
+                  {settings.blindMode ? '🎧' : '👂'}
+                </span>
+                <span className="audiation-btn-text">
+                  {settings.blindMode ? t.blindModeActiveLabel : 'Audiation'}
+                </span>
+              </button>
+            )}
+
             {/* Unified Lessons & Navigation Dropdown Menu */}
             <div className="nav-menu-wrapper" ref={menuRef}>
               <button
@@ -192,6 +219,23 @@ export const Header: React.FC<HeaderProps> = ({
                         <span className="nav-dropdown-item-desc">{t.navPracticeSubtitle}</span>
                       </div>
                       {isPracticeActive && <span className="nav-dropdown-active-dot" aria-hidden="true" />}
+                    </button>
+
+                    <button
+                      type="button"
+                      role="menuitem"
+                      className={`nav-dropdown-item ${isCadenceActive ? 'nav-dropdown-item--active' : ''}`}
+                      onClick={() => handleSelectNavView('cadence')}
+                    >
+                      <span className="nav-dropdown-item-icon" aria-hidden="true">⚓</span>
+                      <div className="nav-dropdown-item-info">
+                        <div className="nav-dropdown-item-title-row">
+                          <span className="nav-dropdown-item-title">{t.cadenceTab}</span>
+                          <span className="view-nav-badge view-nav-badge--audit">✨ Audit</span>
+                        </div>
+                        <span className="nav-dropdown-item-desc">{t.navCadenceSubtitle}</span>
+                      </div>
+                      {isCadenceActive && <span className="nav-dropdown-active-dot" aria-hidden="true" />}
                     </button>
 
                     <button

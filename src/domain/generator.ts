@@ -49,18 +49,45 @@ export function buildChordAnswerOption(
 }
 
 /**
+ * Assigns standard anatomical right-hand fingerings to voiced notes based on chord inversion.
+ */
+export function assignRightHandFingering(notes: VoicedNote[], inversionIndex: number): void {
+  const count = notes.length;
+  if (count === 3) {
+    // Triads: Root is 1-3-5, 1st inv (wider interval on top) is 1-2-5, 2nd inv is 1-3-5
+    const fingers = inversionIndex === 1 ? ['1', '2', '5'] : ['1', '3', '5'];
+    notes.forEach((n, i) => {
+      n.fingering = fingers[i] ?? '5';
+    });
+  } else if (count === 4) {
+    // 7th chords: Root is 1-2-3-5, 1st inv is 1-2-4-5, 2nd/3rd are 1-2-3-5
+    const fingers = inversionIndex === 1 ? ['1', '2', '4', '5'] : ['1', '2', '3', '5'];
+    notes.forEach((n, i) => {
+      n.fingering = fingers[i] ?? '5';
+    });
+  } else if (count === 2) {
+    // 2-note shell / guide-tone pair
+    const fingers = ['1', '4'];
+    notes.forEach((n, i) => {
+      n.fingering = fingers[i] ?? '4';
+    });
+  }
+}
+
+/**
  * Computes the voiced MIDI notes for a given root, chord quality, and inversion
  * so that all notes fit within the 2-octave keyboard (MIDI 60..83).
  */
 export function voiceChordOnKeyboard(
   rootPitchClass: PitchClass,
   quality: ChordQualityDefinition,
-  inversion: InversionDefinition
+  inversion: InversionDefinition,
+  options?: { shellVoicings?: boolean }
 ): VoicedNote[] {
   const rootMidiBase = PIANO_START_MIDI + rootPitchClass; // C4 (60) .. B4 (71)
 
   // Build root position notes first
-  const unshifted = quality.intervals.map((semitones, idx) => {
+  let unshifted = quality.intervals.map((semitones, idx) => {
     const midi = rootMidiBase + semitones;
     const pitchClass = (midi % 12) as PitchClass;
     const roleMeta = ROLE_ORDER[idx] ?? { role: 'seventh' as const, label: 'Tone' };
@@ -76,6 +103,11 @@ export function voiceChordOnKeyboard(
       isBass: false,
     };
   });
+
+  // If shell voicings are requested for a 7th chord, drop the acoustically neutral 5th
+  if (options?.shellVoicings && quality.category === 'seventh') {
+    unshifted = unshifted.filter((note) => note.role !== 'fifth');
+  }
 
   // Apply inversion by shifting the lowest `inversion.index` notes up by 12 semitones (1 octave)
   const effectiveInversionCount = Math.min(inversion.index, unshifted.length - 1);
@@ -109,6 +141,9 @@ export function voiceChordOnKeyboard(
   if (inverted.length > 0) {
     inverted[0].isBass = true;
   }
+
+  // Assign standard anatomical fingering based on inversion and note count
+  assignRightHandFingering(inverted, inversion.index);
 
   return inverted;
 }
@@ -204,7 +239,9 @@ export function generatePracticeCard(
       .map((id) => INVERSIONS[id])
       .filter((inv) => {
         if (!inv || qualityDef.intervals.length < inv.minNotes) return false;
-        const voiced = voiceChordOnKeyboard(chosenRoot, qualityDef, inv);
+        const voiced = voiceChordOnKeyboard(chosenRoot, qualityDef, inv, {
+          shellVoicings: settings.shellVoicings,
+        });
         return voiced[voiced.length - 1].midi <= PIANO_END_MIDI;
       });
 
@@ -220,7 +257,9 @@ export function generatePracticeCard(
   }
 
   const quality = CHORD_QUALITIES[chosenQualityId];
-  const voicedNotes = voiceChordOnKeyboard(chosenRoot, quality, chosenInversion);
+  const voicedNotes = voiceChordOnKeyboard(chosenRoot, quality, chosenInversion, {
+    shellVoicings: settings.shellVoicings,
+  });
   const answerMeta = buildChordAnswerOption(chosenRoot, chosenQualityId);
   const options = buildAnswerOptions(chosenRoot, chosenQualityId, activeQualities, 4);
 

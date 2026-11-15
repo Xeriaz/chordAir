@@ -379,6 +379,38 @@ export const UI_STRINGS = {
     autoPlayAudioTitle: 'Auto-play chord sound on each card',
     autoPlayAudioDesc:
       'Automatically play the grand piano chord sound when a card appears or is answered.',
+    cadenceTab: 'Cadences',
+    cadenceTabAria: 'Practice smooth voice-leading cadence progressions and common-tone anchoring',
+    openCadenceBtn: 'Cadences',
+    openCadenceAria: 'Open voice-leading cadence progressions trainer',
+    navCadenceSubtitle: 'Voice leading, ii-V-I cadences & common-tone anchors',
+    pedagogyAuditBadge: '✨ Pedagogy Audit (Masterclass)',
+    pedagogyAuditTooltip:
+      'Origin: Conservatory Piano Pedagogue & Music Theorist audit — professional piano techniques beyond standard beginner lessons.',
+    auditAttributionFootnote:
+      'Note: This feature stems from the expert piano pedagogue audit recommendations.',
+    blindModeTitle: '🎧 Blind / Audiation Mode (Hear First)',
+    blindModeDesc:
+      'Keys remain veiled until you guess or reveal. Trains hearing chord qualities with your inner ear before seeing keys.',
+    blindModeActiveLabel: '🎧 Audiation Active',
+    blindModeVeilText:
+      '🎧 Audiation Mode: Listen to the chord quality first. Keys will reveal once you pick an answer or reveal.',
+    showFingeringTitle: '🖐️ Anatomical Fingerings (1-3-5, 1-2-5, etc.)',
+    showFingeringDesc:
+      'Displays standard right-hand piano fingerings (1=Thumb, 2=Index, 3=Middle, 4=Ring, 5=Pinky) adjusted for inversions.',
+    shellVoicingsTitle: '🍷 Guide Tones / Shell Voicings (3rd + 7th Priority)',
+    shellVoicingsDesc:
+      'For 7th chords, omits the redundant 5th to isolate the expressive 3rd and 7th core (the jazz/pop piano secret).',
+    fingeringLegend: 'RH Finger',
+    commonToneAnchorLabel: '⚓ Common Tone Anchor',
+    cadenceExplorerTitle: 'Voice Leading & Cadence Explorer',
+    cadenceExplorerSubtitle:
+      'Learn how professional pianists transition between chords smoothly by locking common tones instead of jumping.',
+    playSequenceBtn: '▶ Play Cadence Sequence',
+    stopSequenceBtn: '⏹ Stop',
+    stepForward: 'Next Step →',
+    stepBack: '← Prev Step',
+    stepIndicator: (current: number, total: number) => `Step ${current} of ${total}`,
     doneSettingsButton: 'Done & Continue Practice',
   },
   lt: {
@@ -521,6 +553,38 @@ export const UI_STRINGS = {
     autoPlayAudioTitle: 'Automatiškai pagroti akordą',
     autoPlayAudioDesc:
       'Automatiškai atkurti fortepijono akordo skambesį pasirodžius naujai kortelei arba atsakant.',
+    cadenceTab: 'Kadencijos',
+    cadenceTabAria: 'Mokykitės sklandaus balsų vedimo kadencijų ir bendrų garsų inkaravimo',
+    openCadenceBtn: 'Kadencijos',
+    openCadenceAria: 'Atidaryti sklandaus balsų vedimo kadencijų treniruoklį',
+    navCadenceSubtitle: 'Balsų vedimas, ii-V-I kadencijos ir inkaravimas',
+    pedagogyAuditBadge: '✨ Pedagoginis auditas (Meistriškumo pamoka)',
+    pedagogyAuditTooltip:
+      'Kilmė: Koncertuojančio pianisto ir konservatorijos pedagogo auditas — profesinės technikos, retai mokomos pradinėse pamokose.',
+    auditAttributionFootnote:
+      'Pastaba: Ši funkcija kilo iš profesionalaus fortepijono pedagogo audito rekomendacijų.',
+    blindModeTitle: '🎧 Klausos (Audiation) režimas (pirmiausia garsas)',
+    blindModeDesc:
+      'Klavišai lieka paslėpti, kol neatspėjate arba neatskleidžiate. Lavina vidinę klausą ir gebėjimą atpažinti akordą prieš jį pamatant.',
+    blindModeActiveLabel: '🎧 Audiation aktyvus',
+    blindModeVeilText:
+      '🎧 Klausos režimas: Įsiklausykite į akordo skambesį. Klavišai pasirodys pasirinkus atsakymą arba atskleidus.',
+    showFingeringTitle: '🖐️ Anatominiai pirštuotės numeriai (1-3-5, 1-2-5 ir kt.)',
+    showFingeringDesc:
+      'Rodo standartinius dešinės rankos pirštus (1=nykštys, 2=smilius, 3=didysis, 4=bevardis, 5=mažylis) pagal apvertimą.',
+    shellVoicingsTitle: '🍷 Vedantieji tonai / Glaustieji akordai (3 ir 7 natos)',
+    shellVoicingsDesc:
+      'Septakorduose pašalina akustiškai neutralią 5-ąją natą, išryškindamas emocinę 3 ir 7 natų šerdį (džiazo ir pop paslaptis).',
+    fingeringLegend: 'DR pirštas',
+    commonToneAnchorLabel: '⚓ Bendro garso inkaras',
+    cadenceExplorerTitle: 'Balsų vedimo ir kadencijų treniruoklis',
+    cadenceExplorerSubtitle:
+      'Sužinokite, kaip profesionalūs pianistai sklandžiai pereina tarp akordų, išlaikydami bendras natas vietoje.',
+    playSequenceBtn: '▶ Groti kadencijos seką',
+    stopSequenceBtn: '⏹ Sustabdyti',
+    stepForward: 'Kitas žingsnis →',
+    stepBack: '← Ankstesnis žingsnis',
+    stepIndicator: (current: number, total: number) => `Žingsnis ${current} iš ${total}`,
     doneSettingsButton: 'Atlikta — tęsti praktiką',
   },
 } as const;

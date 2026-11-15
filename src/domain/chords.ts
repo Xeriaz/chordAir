@@ -204,6 +204,9 @@ export const DEFAULT_SETTINGS: PracticeSettings = {
   enabledInversions: ['root'],
   showAllKeyLabels: true,
   autoPlayAudio: false,
+  blindMode: false,
+  showFingering: true,
+  shellVoicings: false,
 };
 
 /**

@@ -404,9 +404,16 @@ export const SubdivisionGuide: React.FC<SubdivisionGuideProps> = ({
                 className={`scenario-btn ${activeScenarioId === scenario.id ? 'scenario-btn--active' : ''}`}
                 onClick={() => handleSelectScenario(scenario)}
               >
-                <span className="scenario-btn-title">
-                  {isLt ? scenario.titleLt : scenario.titleEn}
-                </span>
+                <div className="scenario-btn-header">
+                  <span className="scenario-btn-title">
+                    {isLt ? scenario.titleLt : scenario.titleEn}
+                  </span>
+                  {scenario.isPedagogyAudit && (
+                    <span className="scenario-audit-badge" title="Pedagogy Audit: Masterclass Comping Pattern">
+                      ✨ {isLt ? 'Audito metodas' : 'Pedagogy Audit'}
+                    </span>
+                  )}
+                </div>
                 <span className="scenario-btn-badge">
                   {scenario.baseUnit === '8th'
                     ? isLt

@@ -361,6 +361,81 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   <p className="quality-desc">{t.autoPlayAudioDesc}</p>
                 </div>
               </label>
+
+              {/* Pedagogy Audit Feature: Audiation / Blind Mode */}
+              <label
+                className={`quality-item ${
+                  settings.blindMode ? 'quality-item--checked' : ''
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  checked={Boolean(settings.blindMode)}
+                  onChange={() =>
+                    onUpdateSettings({
+                      ...settings,
+                      blindMode: !settings.blindMode,
+                    })
+                  }
+                />
+                <div className="quality-item-body">
+                  <div className="quality-title-row">
+                    <span className="quality-title">{t.blindModeTitle}</span>
+                    <span className="pedagogy-audit-badge">{t.pedagogyAuditBadge}</span>
+                  </div>
+                  <p className="quality-desc">{t.blindModeDesc}</p>
+                </div>
+              </label>
+
+              {/* Pedagogy Audit Feature: Anatomical Fingerings */}
+              <label
+                className={`quality-item ${
+                  settings.showFingering ? 'quality-item--checked' : ''
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  checked={Boolean(settings.showFingering)}
+                  onChange={() =>
+                    onUpdateSettings({
+                      ...settings,
+                      showFingering: !settings.showFingering,
+                    })
+                  }
+                />
+                <div className="quality-item-body">
+                  <div className="quality-title-row">
+                    <span className="quality-title">{t.showFingeringTitle}</span>
+                    <span className="pedagogy-audit-badge">{t.pedagogyAuditBadge}</span>
+                  </div>
+                  <p className="quality-desc">{t.showFingeringDesc}</p>
+                </div>
+              </label>
+
+              {/* Pedagogy Audit Feature: Guide Tone / Shell Voicings */}
+              <label
+                className={`quality-item ${
+                  settings.shellVoicings ? 'quality-item--checked' : ''
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  checked={Boolean(settings.shellVoicings)}
+                  onChange={() =>
+                    onUpdateSettings({
+                      ...settings,
+                      shellVoicings: !settings.shellVoicings,
+                    })
+                  }
+                />
+                <div className="quality-item-body">
+                  <div className="quality-title-row">
+                    <span className="quality-title">{t.shellVoicingsTitle}</span>
+                    <span className="pedagogy-audit-badge">{t.pedagogyAuditBadge}</span>
+                  </div>
+                  <p className="quality-desc">{t.shellVoicingsDesc}</p>
+                </div>
+              </label>
             </div>
           </section>
 

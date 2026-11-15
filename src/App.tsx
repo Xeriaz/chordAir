@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { AnswerGrid } from './components/AnswerGrid';
 import { BookPageViewer } from './components/BookPageViewer';
+import { CadenceGuide } from './components/CadenceGuide';
 import { FeedbackPanel } from './components/FeedbackPanel';
 import { AppView, Header } from './components/Header';
 import { PianoKeyboard } from './components/PianoKeyboard';
@@ -61,6 +62,9 @@ export function sanitizeSettings(rawInput: unknown): PracticeSettings {
     enabledInversions: validInversions,
     showAllKeyLabels: parsed.showAllKeyLabels !== undefined ? Boolean(parsed.showAllKeyLabels) : true,
     autoPlayAudio: Boolean(parsed.autoPlayAudio),
+    blindMode: Boolean(parsed.blindMode),
+    showFingering: parsed.showFingering !== undefined ? Boolean(parsed.showFingering) : true,
+    shellVoicings: Boolean(parsed.shellVoicings),
   };
 }
 
@@ -159,18 +163,18 @@ export const App: React.FC = () => {
         };
       });
 
-      if (settings.autoPlayAudio) {
+      if (settings.autoPlayAudio || settings.blindMode) {
         playChord(card.highlightedMidis);
       }
     },
-    [selectedOptionId, card, settings.autoPlayAudio]
+    [selectedOptionId, card, settings.autoPlayAudio, settings.blindMode]
   );
 
   const handleNextCard = useCallback(() => {
     const next = generatePracticeCard(settings, card.id);
     setCard(next);
     setSelectedOptionId(null);
-    if (settings.autoPlayAudio) {
+    if (settings.autoPlayAudio || settings.blindMode) {
       playChord(next.highlightedMidis);
     }
   }, [settings, card.id]);
@@ -242,10 +246,21 @@ export const App: React.FC = () => {
         onSelectView={setActiveView}
         onOpenSettings={() => setIsSettingsOpen(true)}
         onResetStats={handleResetStats}
+        onToggleBlindMode={() =>
+          handleUpdateSettings({ ...settings, blindMode: !settings.blindMode })
+        }
       />
 
       <main id="main-practice" className="practice-main">
-        {activeView === 'sheet-music' ? (
+        {activeView === 'cadence' ? (
+          <CadenceGuide
+            language={language}
+            onBackToPractice={() => {
+              setActiveView('practice');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+          />
+        ) : activeView === 'sheet-music' ? (
           <BookPageViewer
             initialPage={1}
             language={language}
@@ -284,6 +299,8 @@ export const App: React.FC = () => {
               showAllKeyLabels={settings.showAllKeyLabels}
               isRevealed={selectedOptionId !== null}
               language={language}
+              blindMode={settings.blindMode}
+              showFingering={settings.showFingering}
             />
 
             <AnswerGrid

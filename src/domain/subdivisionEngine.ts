@@ -240,6 +240,10 @@ export interface RhythmicScenario {
   timeSignature: '4/4' | '3/4';
   totalUnits: number;
   notes: NoteType[];
+  /** Pedagogy Audit feature flag */
+  isPedagogyAudit?: boolean;
+  compingStyleEn?: string;
+  compingStyleLt?: string;
 }
 
 export const PRESET_SCENARIOS: RhythmicScenario[] = [
@@ -253,6 +257,48 @@ export const PRESET_SCENARIOS: RhythmicScenario[] = [
     timeSignature: '4/4',
     totalUnits: 8,
     notes: ['quarter', '8th', '8th', 'half'],
+  },
+  {
+    id: 'scenario-charleston-audit',
+    titleEn: '🎹 The Charleston Piano Comping Groove',
+    titleLt: '🎹 Čarlstono akordų pritarimo ritmas',
+    descriptionEn: 'The hallmark swing & jazz accompaniment: hit beat 1 (dotted quarter, 3 units) followed by an offbeat kick on 2-and (1 unit).',
+    descriptionLt: 'Klasikinis džiazo ir svingo akordų ritmas: smūgis 1 dalyje (punktuota ketvirtinė, 3 vnt.) ir staigus sinkopuotas atsakymas ties 2-ir (1 vnt.).',
+    baseUnit: '8th',
+    timeSignature: '4/4',
+    totalUnits: 8,
+    notes: ['dotted-quarter', '8th', 'half'],
+    isPedagogyAudit: true,
+    compingStyleEn: 'Charleston Jazz Comping (Dotted quarter + 8th stab)',
+    compingStyleLt: 'Čarlstono džiazo pritarimas (Punktuota ketvirtinė + aštuntinės smūgis)',
+  },
+  {
+    id: 'scenario-pop-ballad-audit',
+    titleEn: '🎹 Pop & Rock Ballad Steady Pulse (4/4)',
+    titleLt: '🎹 Populiariosios baladės ketvirtinių pulsacija (4/4)',
+    descriptionEn: 'Four grounded quarter-note attacks. The cornerstone of pop piano accompaniment (Adele, Beatles, Elton John).',
+    descriptionLt: 'Keturios tvirtos ketvirtinės natos. Populiariosios fortepijono muzikos pamatas (Adele, Beatles, Elton John).',
+    baseUnit: '8th',
+    timeSignature: '4/4',
+    totalUnits: 8,
+    notes: ['quarter', 'quarter', 'quarter', 'quarter'],
+    isPedagogyAudit: true,
+    compingStyleEn: 'Steady Quarter-Note Ballad Drive',
+    compingStyleLt: 'Tolygi ketvirtinių baladės pulsacija',
+  },
+  {
+    id: 'scenario-offbeat-reggae-audit',
+    titleEn: '🎹 Syncopated Upbeat / Reggae Stabs',
+    titleLt: '🎹 Silpnųjų dalių sinkopės (Regis / Ska)',
+    descriptionEn: 'Alternating downbeat pulse and snappy upbeat chord stabs. Teaches hearing the invisible pulse on the "and".',
+    descriptionLt: 'Kintantys takto dalių smūgiai ir staigūs akordų atsakoriai ant silpnųjų dalių („ir“). Moko jausti vidinį pulsą.',
+    baseUnit: '8th',
+    timeSignature: '4/4',
+    totalUnits: 8,
+    notes: ['8th', '8th', '8th', '8th', '8th', '8th', '8th', '8th'],
+    isPedagogyAudit: true,
+    compingStyleEn: 'Offbeat Syncopated Stabs',
+    compingStyleLt: 'Sinkopuoti silpnųjų dalių smūgiai',
   },
   {
     id: 'scenario-2-syncopation',

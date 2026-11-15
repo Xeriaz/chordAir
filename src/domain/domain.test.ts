@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { INITIAL_STATS, sanitizeSettings, sanitizeStats } from '../App';
+import { CADENCE_PROGRESSIONS } from './cadences';
 import { CHORD_QUALITIES, DEFAULT_SETTINGS, INVERSIONS, detectPresetForQualities } from './chords';
 import {
   buildAnswerOptions,
@@ -146,5 +147,67 @@ describe('ChordAir domain logic', () => {
     const enKeys = Object.keys(UI_STRINGS.en).sort();
     const ltKeys = Object.keys(UI_STRINGS.lt).sort();
     expect(ltKeys).toEqual(enKeys);
+  });
+
+  describe('Pedagogy Audit Masterclass features', () => {
+    it('assigns anatomical right-hand fingerings to triads and inversions', () => {
+      // Root position triad: 1 - 3 - 5
+      const rootTriad = voiceChordOnKeyboard(0, CHORD_QUALITIES.major, INVERSIONS.root);
+      expect(rootTriad.map((n) => n.fingering)).toEqual(['1', '3', '5']);
+
+      // 1st inversion triad: 1 - 2 - 5 (wider 4th interval at top)
+      const firstInvTriad = voiceChordOnKeyboard(0, CHORD_QUALITIES.major, INVERSIONS.first);
+      expect(firstInvTriad.map((n) => n.fingering)).toEqual(['1', '2', '5']);
+
+      // 2nd inversion triad: 1 - 3 - 5
+      const secondInvTriad = voiceChordOnKeyboard(0, CHORD_QUALITIES.major, INVERSIONS.second);
+      expect(secondInvTriad.map((n) => n.fingering)).toEqual(['1', '3', '5']);
+
+      // 7th chord root position: 1 - 2 - 3 - 5
+      const rootSeventh = voiceChordOnKeyboard(0, CHORD_QUALITIES.major7, INVERSIONS.root);
+      expect(rootSeventh.map((n) => n.fingering)).toEqual(['1', '2', '3', '5']);
+    });
+
+    it('correctly creates shell voicings for 7th chords by omitting the redundant 5th', () => {
+      const fullSeventh = voiceChordOnKeyboard(0, CHORD_QUALITIES.dominant7, INVERSIONS.root);
+      expect(fullSeventh).toHaveLength(4);
+
+      const shellSeventh = voiceChordOnKeyboard(0, CHORD_QUALITIES.dominant7, INVERSIONS.root, {
+        shellVoicings: true,
+      });
+      expect(shellSeventh).toHaveLength(3);
+      const roles = shellSeventh.map((n) => n.role);
+      expect(roles).toContain('root');
+      expect(roles).toContain('third');
+      expect(roles).toContain('seventh');
+      expect(roles).not.toContain('fifth');
+    });
+
+    it('validates cadence progression datasets have correct ranges and common tone anchors', () => {
+      expect(CADENCE_PROGRESSIONS.length).toBeGreaterThanOrEqual(4);
+      for (const prog of CADENCE_PROGRESSIONS) {
+        expect(prog.steps.length).toBeGreaterThanOrEqual(3);
+        for (const step of prog.steps) {
+          for (const note of step.notes) {
+            expect(note.midi).toBeGreaterThanOrEqual(PIANO_START_MIDI);
+            expect(note.midi).toBeLessThanOrEqual(PIANO_END_MIDI);
+            expect(note.fingering).toBeDefined();
+          }
+        }
+      }
+    });
+
+    it('sanitizes and preserves blindMode, showFingering, and shellVoicings', () => {
+      const sanitized = sanitizeSettings({
+        enabledQualities: ['major'],
+        enabledInversions: ['root'],
+        blindMode: true,
+        showFingering: false,
+        shellVoicings: true,
+      });
+      expect(sanitized.blindMode).toBe(true);
+      expect(sanitized.showFingering).toBe(false);
+      expect(sanitized.shellVoicings).toBe(true);
+    });
   });
 });
