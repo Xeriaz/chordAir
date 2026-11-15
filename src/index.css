@@ -4414,28 +4414,7 @@ input:focus-visible,
   font-style: italic;
 }
 
-/* Audiation (Blind Mode) Quick Button & Veil */
-.audiation-quick-btn {
-  background: rgba(168, 85, 247, 0.12);
-  border: 1px solid rgba(168, 85, 247, 0.35);
-  color: #d8b4fe;
-  gap: 6px;
-  padding: 6px 12px;
-}
-
-.audiation-quick-btn:hover {
-  background: rgba(168, 85, 247, 0.24);
-  border-color: #c084fc;
-  color: #f3e8ff;
-}
-
-.audiation-quick-btn--active {
-  background: linear-gradient(135deg, rgba(168, 85, 247, 0.35) 0%, rgba(99, 102, 241, 0.35) 100%);
-  border-color: #a855f7 !important;
-  color: #f3e8ff !important;
-  box-shadow: 0 0 14px rgba(168, 85, 247, 0.35);
-}
-
+/* Audiation (Blind Mode) Veil Banner */
 .blind-veil-banner {
   background: linear-gradient(135deg, rgba(24, 17, 44, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
   border: 1px solid rgba(168, 85, 247, 0.5);

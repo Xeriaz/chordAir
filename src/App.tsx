@@ -246,9 +246,6 @@ export const App: React.FC = () => {
         onSelectView={setActiveView}
         onOpenSettings={() => setIsSettingsOpen(true)}
         onResetStats={handleResetStats}
-        onToggleBlindMode={() =>
-          handleUpdateSettings({ ...settings, blindMode: !settings.blindMode })
-        }
       />
 
       <main id="main-practice" className="practice-main">

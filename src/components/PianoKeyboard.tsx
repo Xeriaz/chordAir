@@ -170,7 +170,7 @@ export const PianoKeyboard: React.FC<PianoKeyboardProps> = ({
           )}
           {blindMode && (
             <span className="pedagogy-audit-tag" title={t.pedagogyAuditTooltip}>
-              {t.blindModeActiveLabel}
+              🎧 {t.blindModeActiveLabel}
             </span>
           )}
         </div>

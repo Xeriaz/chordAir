@@ -392,9 +392,9 @@ export const UI_STRINGS = {
     blindModeTitle: '🎧 Blind / Audiation Mode (Hear First)',
     blindModeDesc:
       'Keys remain veiled until you guess or reveal. Trains hearing chord qualities with your inner ear before seeing keys.',
-    blindModeActiveLabel: '🎧 Audiation Active',
+    blindModeActiveLabel: 'Audiation Active',
     blindModeVeilText:
-      '🎧 Audiation Mode: Listen to the chord quality first. Keys will reveal once you pick an answer or reveal.',
+      'Audiation Mode: Listen to the chord quality first. Keys will reveal once you pick an answer or reveal.',
     showFingeringTitle: '🖐️ Anatomical Fingerings (1-3-5, 1-2-5, etc.)',
     showFingeringDesc:
       'Displays standard right-hand piano fingerings (1=Thumb, 2=Index, 3=Middle, 4=Ring, 5=Pinky) adjusted for inversions.',
@@ -566,9 +566,9 @@ export const UI_STRINGS = {
     blindModeTitle: '🎧 Klausos (Audiation) režimas (pirmiausia garsas)',
     blindModeDesc:
       'Klavišai lieka paslėpti, kol neatspėjate arba neatskleidžiate. Lavina vidinę klausą ir gebėjimą atpažinti akordą prieš jį pamatant.',
-    blindModeActiveLabel: '🎧 Audiation aktyvus',
+    blindModeActiveLabel: 'Audiation aktyvus',
     blindModeVeilText:
-      '🎧 Klausos režimas: Įsiklausykite į akordo skambesį. Klavišai pasirodys pasirinkus atsakymą arba atskleidus.',
+      'Klausos režimas: Įsiklausykite į akordo skambesį. Klavišai pasirodys pasirinkus atsakymą arba atskleidus.',
     showFingeringTitle: '🖐️ Anatominiai pirštuotės numeriai (1-3-5, 1-2-5 ir kt.)',
     showFingeringDesc:
       'Rodo standartinius dešinės rankos pirštus (1=nykštys, 2=smilius, 3=didysis, 4=bevardis, 5=mažylis) pagal apvertimą.',

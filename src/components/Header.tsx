@@ -11,7 +11,6 @@ interface HeaderProps {
   onSelectView: (view: AppView) => void;
   onOpenSettings: () => void;
   onResetStats: () => void;
-  onToggleBlindMode?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -21,7 +20,6 @@ export const Header: React.FC<HeaderProps> = ({
   onSelectView,
   onOpenSettings,
   onResetStats,
-  onToggleBlindMode,
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -153,30 +151,6 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           <div className="action-buttons">
-            {/* Quick Audiation (Blind Mode) Toggle for Practice */}
-            {isPracticeActive && onToggleBlindMode && (
-              <button
-                type="button"
-                className={`icon-btn audiation-quick-btn ${
-                  settings.blindMode ? 'audiation-quick-btn--active' : ''
-                }`}
-                onClick={onToggleBlindMode}
-                title={
-                  settings.blindMode
-                    ? `${t.blindModeActiveLabel} (Click to disable)`
-                    : `${t.blindModeTitle} (${t.pedagogyAuditBadge})`
-                }
-                aria-pressed={Boolean(settings.blindMode)}
-              >
-                <span aria-hidden="true" className="audiation-btn-icon">
-                  {settings.blindMode ? '🎧' : '👂'}
-                </span>
-                <span className="audiation-btn-text">
-                  {settings.blindMode ? t.blindModeActiveLabel : 'Audiation'}
-                </span>
-              </button>
-            )}
-
             {/* Unified Lessons & Navigation Dropdown Menu */}
             <div className="nav-menu-wrapper" ref={menuRef}>
               <button
