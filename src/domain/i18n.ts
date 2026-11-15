@@ -135,18 +135,18 @@ const LT_INVERSIONS: Record<InversionId, InversionTranslation> = {
     name: '1-asis apvertimas (sekstakordas)',
     shortLabel: '1 apvert.',
     description:
-      'Tas pats akordas sukeistomis natomis: vidurinė nata (tercija) yra apačioje, o pagrindinis garsas perkeltas oktava aukščiau.',
+      'Tas pats akordas sukeistomis natomis: apačioje skamba tercija, o pagrindinis garsas perkeltas oktava aukščiau (trigarsiui – sekstakordas, septakordui – kvintsekstakordas).',
   },
   second: {
     name: '2-asis apvertimas (kvartsekstakordas)',
     shortLabel: '2 apvert.',
     description:
-      'Tas pats akordas sukeistomis natomis: kvinta yra apačioje, o apatinės natos perkeltos oktava aukščiau.',
+      'Tas pats akordas sukeistomis natomis: apačioje skamba kvinta, o žemesnės natos perkeltos oktava aukščiau (trigarsiui – kvartsekstakordas, septakordui – terckvartakordas).',
   },
   third: {
     name: '3-iasis apvertimas (sekundakordas)',
     shortLabel: '3 apvert.',
-    description: '4 natų septakordams: septima yra apačioje (bosiniame balse).',
+    description: '4 natų septakordams: apačioje bosiniame balse skamba septima (sekundakordas).',
   },
 };
 
