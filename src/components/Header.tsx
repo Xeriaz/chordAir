@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { UI_STRINGS, getInversionText, getPresetText } from '../domain/i18n';
 import { PracticeSettings, SessionStats } from '../domain/types';
 
-export type AppView = 'practice' | 'guide' | 'rhythm' | 'sheet-music' | 'cadence';
+export type AppView = 'practice' | 'guide' | 'rhythm' | 'sheet-music' | 'cadence' | 'octaves';
 
 interface HeaderProps {
   settings: PracticeSettings;
@@ -72,6 +72,7 @@ export const Header: React.FC<HeaderProps> = ({
   const isTheoryActive = activeView === 'guide';
   const isRhythmActive = activeView === 'rhythm';
   const isCadenceActive = activeView === 'cadence';
+  const isOctavesActive = activeView === 'octaves';
 
   const handleSelectNavView = (view: AppView) => {
     onSelectView(view);
@@ -210,6 +211,23 @@ export const Header: React.FC<HeaderProps> = ({
                         <span className="nav-dropdown-item-desc">{t.navCadenceSubtitle}</span>
                       </div>
                       {isCadenceActive && <span className="nav-dropdown-active-dot" aria-hidden="true" />}
+                    </button>
+
+                    <button
+                      type="button"
+                      role="menuitem"
+                      className={`nav-dropdown-item ${isOctavesActive ? 'nav-dropdown-item--active' : ''}`}
+                      onClick={() => handleSelectNavView('octaves')}
+                    >
+                      <span className="nav-dropdown-item-icon" aria-hidden="true">🎹</span>
+                      <div className="nav-dropdown-item-info">
+                        <div className="nav-dropdown-item-title-row">
+                          <span className="nav-dropdown-item-title">{t.octavesTab}</span>
+                          <span className="view-nav-badge view-nav-badge--audit">88 Keys</span>
+                        </div>
+                        <span className="nav-dropdown-item-desc">{t.navOctavesSubtitle}</span>
+                      </div>
+                      {isOctavesActive && <span className="nav-dropdown-active-dot" aria-hidden="true" />}
                     </button>
 
                     <button

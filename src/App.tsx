@@ -4,6 +4,7 @@ import { BookPageViewer } from './components/BookPageViewer';
 import { CadenceGuide } from './components/CadenceGuide';
 import { FeedbackPanel } from './components/FeedbackPanel';
 import { AppView, Header } from './components/Header';
+import { OctaveGuide } from './components/OctaveGuide';
 import { PianoKeyboard } from './components/PianoKeyboard';
 import { SettingsModal } from './components/SettingsModal';
 import { SubdivisionGuide } from './components/SubdivisionGuide';
@@ -251,6 +252,14 @@ export const App: React.FC = () => {
       <main id="main-practice" className="practice-main">
         {activeView === 'cadence' ? (
           <CadenceGuide
+            language={language}
+            onBackToPractice={() => {
+              setActiveView('practice');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+          />
+        ) : activeView === 'octaves' ? (
+          <OctaveGuide
             language={language}
             onBackToPractice={() => {
               setActiveView('practice');

@@ -4989,4 +4989,753 @@ input:focus-visible,
   white-space: nowrap;
 }
 
+/* ==========================================================================
+   OCTAVE GUIDE & REGISTER MAP STYLES
+   ========================================================================== */
+
+.octave-guide-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 12px 16px 40px;
+}
+
+.octave-nav-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  background: rgba(15, 23, 42, 0.7);
+  padding: 6px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+}
+
+.octave-tab-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  padding: 9px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.octave-tab-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.octave-tab-btn--active {
+  background: var(--bg-surface-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Panoramic Ribbon */
+.octave-panoramic-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.octave-section-heading {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.octave-section-sub {
+  font-size: 0.84rem;
+  color: var(--text-muted);
+}
+
+.octave-ribbon {
+  display: flex;
+  width: 100%;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  min-height: 80px;
+  gap: 2px;
+  padding: 3px;
+}
+
+.octave-ribbon-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 8px 4px;
+  background: rgba(30, 41, 59, 0.6);
+  border: none;
+  border-top: 4px solid;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+  text-align: center;
+  min-width: 0;
+}
+
+.octave-ribbon-block:hover {
+  background: rgba(51, 65, 85, 0.9);
+  transform: translateY(-1px);
+}
+
+.octave-ribbon-block--selected {
+  background: rgba(56, 189, 248, 0.22) !important;
+  outline: 2px solid #38bdf8;
+  z-index: 2;
+}
+
+.octave-ribbon-num {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.octave-ribbon-name {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.octave-ribbon-symbol {
+  font-size: 0.68rem;
+  font-family: ui-monospace, monospace;
+  color: #fef08a;
+}
+
+.middle-c-pill {
+  position: absolute;
+  bottom: 3px;
+  font-size: 0.62rem;
+  font-weight: 900;
+  background: #eab308;
+  color: #000000;
+  padding: 1px 4px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+/* Detail Stage */
+.octave-detail-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.octave-banner {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  border-left: 6px solid;
+  padding: 18px 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.octave-banner-main {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-width: 0;
+  flex: 1 1 320px;
+}
+
+.octave-badge-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.octave-num-badge {
+  font-size: 1.5rem;
+  font-weight: 900;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.octave-scientific-tag {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--text-muted);
+}
+
+.octave-text-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.octave-title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.octave-title {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.octave-helmholtz-badge {
+  background: rgba(254, 240, 138, 0.15);
+  color: #fef08a;
+  border: 1px solid rgba(254, 240, 138, 0.35);
+  font-weight: 800;
+  font-size: 0.95rem;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-family: ui-monospace, monospace;
+}
+
+.octave-desc {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #cbd5e1;
+  line-height: 1.45;
+}
+
+.octave-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.octave-play-scale-btn {
+  background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+  color: #ffffff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  font-weight: 800;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.octave-play-scale-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);
+}
+
+.octave-play-scale-btn--playing {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+/* Playable Octave Keys */
+.octave-keyboard-card {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.octave-keyboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.octave-keyboard-hint {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.octave-freq-indicator {
+  font-size: 0.82rem;
+  color: #38bdf8;
+}
+
+.octave-keys-container {
+  display: flex;
+  width: 100%;
+  border: 2px solid #0f172a;
+  border-radius: var(--radius-sm);
+  overflow-x: auto;
+  background: #0f172a;
+  min-height: 140px;
+  position: relative;
+  padding-bottom: 2px;
+}
+
+.octave-key {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 8px 2px;
+  border: 1px solid #1e293b;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  border-radius: 0 0 4px 4px;
+}
+
+.octave-key--white {
+  flex: 1 1 0;
+  min-width: 36px;
+  background: #f8fafc;
+  color: #0f172a;
+  height: 140px;
+  z-index: 1;
+}
+
+.octave-key--white:hover {
+  background: #e2e8f0;
+}
+
+.octave-key--black {
+  background: #0f172a;
+  color: #f8fafc;
+  height: 92px;
+  border-color: #334155;
+  margin-left: -14px;
+  margin-right: -14px;
+  z-index: 3;
+  width: 28px;
+  flex: none;
+}
+
+.octave-key--black:hover {
+  background: #1e293b;
+}
+
+.octave-key--active {
+  background: #38bdf8 !important;
+  color: #0f172a !important;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.8);
+}
+
+.octave-key-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  font-size: 0.7rem;
+  pointer-events: none;
+}
+
+.octave-key-name {
+  font-weight: 800;
+}
+
+.octave-key-helmholtz {
+  font-family: ui-monospace, monospace;
+  font-size: 0.68rem;
+  opacity: 0.9;
+}
+
+.octave-key-scientific {
+  font-size: 0.62rem;
+  opacity: 0.7;
+}
+
+/* Specs Grid */
+.octave-specs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.octave-spec-item {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.octave-spec-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.octave-spec-value {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.octave-spec-value--tip {
+  color: #fde047;
+  font-size: 0.84rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* Rules Tab */
+.octave-rules-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+.octave-rule-card {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.octave-rule-icon {
+  font-size: 1.6rem;
+}
+
+.octave-rule-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.octave-rule-body {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #cbd5e1;
+  line-height: 1.5;
+}
+
+.octave-rule-body code {
+  background: rgba(254, 240, 138, 0.15);
+  color: #fef08a;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-family: ui-monospace, monospace;
+}
+
+/* Comparison Table */
+.octave-table-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  margin-top: 14px;
+}
+
+.octave-table-heading {
+  margin: 0 0 14px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.octave-table-wrapper {
+  overflow-x: auto;
+}
+
+.octave-comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+  text-align: left;
+}
+
+.octave-comparison-table th {
+  background: rgba(15, 23, 42, 0.7);
+  padding: 10px 14px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-bottom: 2px solid var(--border-subtle);
+}
+
+.octave-comparison-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+}
+
+.octave-comparison-table tr:hover {
+  background: rgba(56, 189, 248, 0.08);
+  cursor: pointer;
+}
+
+.octave-row--selected {
+  background: rgba(56, 189, 248, 0.16) !important;
+}
+
+.code-helmholtz {
+  background: rgba(254, 240, 138, 0.15);
+  color: #fef08a;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: ui-monospace, monospace;
+  font-weight: 800;
+}
+
+.octave-dot-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.74rem;
+}
+
+/* Quiz Tab */
+.octave-quiz-card {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.octave-quiz-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.octave-quiz-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.octave-quiz-sub {
+  margin: 4px 0 0;
+  font-size: 0.86rem;
+  color: var(--text-muted);
+}
+
+.octave-quiz-score-badge {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid var(--border-subtle);
+  padding: 6px 14px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.score-label {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.score-value {
+  font-size: 0.95rem;
+  color: #38bdf8;
+  font-weight: 900;
+}
+
+.octave-quiz-prompt-box {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.9) 100%);
+  border: 2px dashed rgba(56, 189, 248, 0.4);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.quiz-sound-icon {
+  font-size: 2.2rem;
+}
+
+.quiz-prompt-text {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.quiz-replay-btn {
+  background: rgba(56, 189, 248, 0.2);
+  border: 1px solid #38bdf8;
+  color: #f0f9ff;
+  padding: 8px 18px;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.quiz-replay-btn:hover {
+  background: rgba(56, 189, 248, 0.35);
+  transform: translateY(-1px);
+}
+
+.octave-quiz-options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.quiz-option-btn {
+  background: var(--bg-surface);
+  border: 2px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+}
+
+.quiz-option-btn:hover:not(:disabled) {
+  border-color: #38bdf8;
+  background: rgba(56, 189, 248, 0.08);
+}
+
+.quiz-option-btn--correct {
+  border-color: #22c55e !important;
+  background: rgba(34, 197, 94, 0.2) !important;
+}
+
+.quiz-option-btn--incorrect {
+  border-color: #ef4444 !important;
+  background: rgba(239, 68, 68, 0.2) !important;
+  opacity: 0.65;
+}
+
+.quiz-option-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.quiz-option-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.quiz-option-name {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.quiz-option-symbols {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+
+.quiz-feedback-banner {
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.quiz-feedback-banner--correct {
+  background: rgba(34, 197, 94, 0.2);
+  border: 1px solid #22c55e;
+  color: #dcfce7;
+}
+
+.quiz-feedback-banner--incorrect {
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid #ef4444;
+  color: #fee2e2;
+}
+
+.quiz-feedback-sub {
+  margin: 4px 0 0;
+  font-size: 0.84rem;
+  opacity: 0.9;
+}
+
+.quiz-next-btn {
+  background: #ffffff;
+  color: #0f172a;
+  border: none;
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.quiz-next-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+}
+
+@media (max-width: 640px) {
+  .octave-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .octave-banner-main {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .octave-actions {
+    width: 100%;
+  }
+  .octave-play-scale-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+
 
