@@ -1,4 +1,4 @@
-import { VoicedNote } from './types';
+import { ChordQualityId, VoicedNote } from './types';
 
 export interface CadenceChordStep {
   stepIndex: number;
@@ -6,6 +6,7 @@ export interface CadenceChordStep {
   nameEn: string;
   nameLt: string;
   symbol: string;
+  qualityId?: ChordQualityId;
   inversionLabelEn: string;
   inversionLabelLt: string;
   voiceLeadingTipEn: string;
@@ -132,6 +133,7 @@ export const CADENCE_PROGRESSIONS: CadenceProgression[] = [
         nameEn: 'D Minor 7th',
         nameLt: 'D minorinis septakordas',
         symbol: 'Dm7',
+        qualityId: 'minor7',
         inversionLabelEn: 'Root position',
         inversionLabelLt: 'Pagrindinė padėtis',
         voiceLeadingTipEn: 'Dm7: [D4, F4, A4, C5]. Notice the guide-tone 7th (C5) and 3rd (F4).',
@@ -150,6 +152,7 @@ export const CADENCE_PROGRESSIONS: CadenceProgression[] = [
         nameEn: 'G Dominant 7th',
         nameLt: 'G dominantseptakordas',
         symbol: 'G7',
+        qualityId: 'dominant7',
         inversionLabelEn: '2nd inversion voicing',
         inversionLabelLt: 'Balsų glaudinimas',
         voiceLeadingTipEn: '⚓ Anchors: D4 and F4 NEVER MOVE! C5 drops by 1 half step to B4; A4 moves to G4.',
@@ -168,6 +171,7 @@ export const CADENCE_PROGRESSIONS: CadenceProgression[] = [
         nameEn: 'C Major 7th',
         nameLt: 'C didysis septakordas',
         symbol: 'Cmaj7',
+        qualityId: 'major7',
         inversionLabelEn: 'Root position',
         inversionLabelLt: 'Pagrindinė padėtis',
         voiceLeadingTipEn: '⚓ Anchor: B4 and G4 stay anchored! F4 drops 1 half step to E4; D4 resolves to C4.',

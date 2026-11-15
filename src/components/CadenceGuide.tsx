@@ -10,6 +10,19 @@ interface CadenceGuideProps {
   onBackToPractice: () => void;
 }
 
+const renderRomanNumeral = (numeral: string) => {
+  const match = numeral.match(/^([ivxldmIVXLCDM]+)(.*)$/);
+  if (!match) return numeral;
+  const [, root, ext] = match;
+  if (!ext) return root;
+  return (
+    <>
+      <span className="cadence-roman-root">{root}</span>
+      <span className="cadence-roman-ext">{ext}</span>
+    </>
+  );
+};
+
 export const CadenceGuide: React.FC<CadenceGuideProps> = ({
   language,
   onBackToPractice,
@@ -177,7 +190,7 @@ export const CadenceGuide: React.FC<CadenceGuideProps> = ({
                   className={`cadence-step-node ${isActive ? 'cadence-step-node--active' : ''}`}
                   onClick={() => handleStepChange(idx)}
                 >
-                  <span className="cadence-step-roman">{step.romanNumeral}</span>
+                  <span className="cadence-step-roman">{renderRomanNumeral(step.romanNumeral)}</span>
                   <span className="cadence-step-symbol">{step.symbol}</span>
                   {hasAnchor && (
                     <span className="cadence-anchor-mini-tag" title={t.commonToneAnchorLabel}>
@@ -215,10 +228,16 @@ export const CadenceGuide: React.FC<CadenceGuideProps> = ({
         {/* Current Step Detail Banner */}
         <div className="cadence-step-banner">
           <div className="cadence-step-left">
-            <span className="cadence-roman-badge">{currentStep.romanNumeral}</span>
-            <div>
+            <span
+              className="cadence-roman-badge"
+              title={`${isLt ? currentStep.nameLt : currentStep.nameEn} (${currentStep.symbol})`}
+            >
+              {renderRomanNumeral(currentStep.romanNumeral)}
+            </span>
+            <div className="cadence-step-info">
               <h4 className="cadence-step-name">
-                {isLt ? currentStep.nameLt : currentStep.nameEn} ({currentStep.symbol})
+                {isLt ? currentStep.nameLt : currentStep.nameEn}{' '}
+                <span className="cadence-step-symbol-pill">({currentStep.symbol})</span>
               </h4>
               <span className="cadence-inversion-badge">
                 {isLt ? currentStep.inversionLabelLt : currentStep.inversionLabelEn}
@@ -236,11 +255,16 @@ export const CadenceGuide: React.FC<CadenceGuideProps> = ({
           <PianoKeyboard
             voicedNotes={currentStep.notes}
             qualityId={
-              currentStep.notes.length === 4
-                ? 'dominant7'
+              currentStep.qualityId ??
+              (currentStep.notes.length === 4
+                ? currentStep.symbol.includes('maj7')
+                  ? 'major7'
+                  : currentStep.symbol.includes('m7')
+                  ? 'minor7'
+                  : 'dominant7'
                 : currentStep.nameEn.toLowerCase().includes('minor')
                 ? 'minor'
-                : 'major'
+                : 'major')
             }
             showAllKeyLabels={true}
             isRevealed={true}

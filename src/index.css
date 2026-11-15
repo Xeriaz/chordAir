@@ -4703,6 +4703,22 @@ input:focus-visible,
   font-weight: 800;
   font-size: 1rem;
   color: #fde047;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 1px;
+}
+
+.cadence-step-roman .cadence-roman-root {
+  font-size: 0.98rem;
+  font-weight: 800;
+}
+
+.cadence-step-roman .cadence-roman-ext {
+  font-size: 0.72rem;
+  font-weight: 700;
+  transform: translateY(-2px);
+  display: inline-block;
+  color: #fef08a;
 }
 
 .cadence-step-symbol {
@@ -4766,21 +4782,48 @@ input:focus-visible,
   display: flex;
   align-items: center;
   gap: 14px;
+  min-width: 0;
+  flex: 1 1 260px;
+}
+
+.cadence-step-info {
+  min-width: 0;
+  flex: 1 1 auto;
 }
 
 .cadence-roman-badge {
-  font-size: 1.4rem;
+  font-size: 1.15rem;
   font-weight: 900;
   color: #fde047;
   background: rgba(245, 158, 11, 0.18);
-  width: 44px;
+  min-width: 44px;
+  width: auto;
   height: 44px;
-  border-radius: 50%;
-  display: flex;
+  padding: 0 12px;
+  border-radius: 22px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   border: 2px solid rgba(245, 158, 11, 0.5);
   flex-shrink: 0;
+  box-sizing: border-box;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.cadence-roman-badge .cadence-roman-root {
+  font-size: 1.25rem;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+}
+
+.cadence-roman-badge .cadence-roman-ext {
+  font-size: 0.82rem;
+  font-weight: 800;
+  margin-left: 2px;
+  color: #fef08a;
+  display: inline-block;
+  transform: translateY(-3px);
 }
 
 .cadence-step-name {
@@ -4788,11 +4831,22 @@ input:focus-visible,
   font-size: 1.05rem;
   font-weight: 800;
   color: var(--text-primary);
+  line-height: 1.35;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.cadence-step-symbol-pill {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #38bdf8;
 }
 
 .cadence-inversion-badge {
-  font-size: 0.74rem;
+  font-size: 0.76rem;
   color: var(--text-muted);
+  display: block;
+  margin-top: 2px;
 }
 
 .cadence-step-tip {
@@ -4801,7 +4855,22 @@ input:focus-visible,
   gap: 2px;
   font-size: 0.88rem;
   color: #e2e8f0;
-  max-width: 500px;
+  max-width: 520px;
+  flex: 1 1 280px;
+}
+
+@media (max-width: 640px) {
+  .cadence-step-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .cadence-step-left {
+    width: 100%;
+  }
+  .cadence-step-tip {
+    max-width: 100%;
+  }
 }
 
 .cadence-tip-lead {
