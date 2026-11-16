@@ -379,7 +379,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   }
                 />
                 <div className="quality-item-body">
-                  <div className="quality-title-row">
+                  <div className="quality-item-title-row">
                     <span className="quality-title">{t.blindModeTitle}</span>
                     <span className="pedagogy-audit-badge">{t.pedagogyAuditBadge}</span>
                   </div>
@@ -404,7 +404,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   }
                 />
                 <div className="quality-item-body">
-                  <div className="quality-title-row">
+                  <div className="quality-item-title-row">
                     <span className="quality-title">{t.showFingeringTitle}</span>
                     <span className="pedagogy-audit-badge">{t.pedagogyAuditBadge}</span>
                   </div>
@@ -429,7 +429,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   }
                 />
                 <div className="quality-item-body">
-                  <div className="quality-title-row">
+                  <div className="quality-item-title-row">
                     <span className="quality-title">{t.shellVoicingsTitle}</span>
                     <span className="pedagogy-audit-badge">{t.pedagogyAuditBadge}</span>
                   </div>

@@ -97,7 +97,7 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="logo-key" />
             <span className="logo-key logo-key--active" />
           </div>
-          <div>
+          <div className="brand-text-container">
             <h1 className="brand-title">ChordAir</h1>
             <button
               type="button"
@@ -106,11 +106,11 @@ export const Header: React.FC<HeaderProps> = ({
               aria-label={t.currentLevelAria(levelLabel, inversionSummary)}
             >
               <span className="level-dot" aria-hidden="true" />
-              <span>{levelLabel}</span>
+              <span className="level-badge-name">{levelLabel}</span>
               <span className="level-sep" aria-hidden="true">
                 ·
               </span>
-              <span>{inversionSummary}</span>
+              <span className="level-badge-inv">{inversionSummary}</span>
             </button>
           </div>
         </div>
