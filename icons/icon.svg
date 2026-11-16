@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="ChordAir Icon">
+  <rect width="512" height="512" rx="112" fill="#090d16" />
+  <rect x="18" y="18" width="476" height="476" rx="96" fill="none" stroke="#283655" stroke-width="16" />
+  <!-- Left Key (Active Sky Blue) -->
+  <rect x="92" y="96" width="92" height="320" rx="28" fill="#38bdf8" />
+  <!-- Middle Key (White/Slate) -->
+  <rect x="210" y="96" width="92" height="320" rx="28" fill="#e2e8f0" />
+  <!-- Right Key (Active Sky Blue) -->
+  <rect x="328" y="96" width="92" height="320" rx="28" fill="#38bdf8" />
+</svg>
